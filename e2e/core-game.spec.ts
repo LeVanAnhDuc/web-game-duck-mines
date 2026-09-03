@@ -39,7 +39,9 @@ test.describe("FR-01: the first move never explodes", () => {
         await cell(page, 40).click();
         expect(await openCells(page).count()).toBeGreaterThan(1);
       }).toPass({ timeout: 10_000 });
-      await expect(page.getByTestId("outcome")).toHaveCount(0);
+      // the outcome line is a permanent sr-only region, so absence is read off the
+      // dialog: no dialog means the board is still in play
+      await expect(page.getByTestId("result-dialog")).toHaveCount(0);
     });
   }
 });
@@ -138,5 +140,32 @@ test.describe("the same seed gives the same board", () => {
         .evaluateAll((els) => els.map((el) => el.textContent ?? "").join("|"));
     };
     expect(await fingerprint()).toBe(await fingerprint());
+  });
+});
+
+test.describe("the result dialog", () => {
+  test("covers the board without replacing it, and starts the next one", async ({ page }) => {
+    await page.goto("/?seed=20260903");
+    await expect(async () => {
+      await cell(page, 40).click();
+      expect(await openCells(page).count()).toBeGreaterThan(1);
+    }).toPass({ timeout: 10_000 });
+
+    // walk the board until it ends; the seed is fixed so this terminates
+    for (let i = 0; i < 81; i += 1) {
+      if ((await page.getByTestId("result-dialog").count()) > 0) break;
+      await cell(page, i).click({ force: true });
+    }
+
+    const dialog = page.getByTestId("result-dialog");
+    await expect(dialog).toHaveCount(1);
+    // the board is still there behind it - on a loss the revealed mines are the point
+    await expect(page.locator("button.ms-cell")).toHaveCount(81);
+    // and the keyboard is not stranded
+    await expect(page.locator(".ms-dialog-action")).toBeFocused();
+
+    await page.locator(".ms-dialog-action").click();
+    await expect(dialog).toHaveCount(0);
+    await expect(openCells(page)).toHaveCount(0);
   });
 });

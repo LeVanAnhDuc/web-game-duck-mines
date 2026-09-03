@@ -378,3 +378,108 @@ a:hover {
   cursor: not-allowed;
   opacity: 0.45;
 }
+
+/* ── dialog ket qua ────────────────────────────────────────────────────────
+ * Neo o day chu khong giua man, de con thay ban phia sau - quan trong nhat o
+ * trang thai thua, vi cac qua min vua hien ra chinh la thu can nhin.
+ */
+.ms-scrim {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: var(--space-5) var(--space-4);
+  background: rgb(11 17 22 / 34%);
+}
+
+.ms-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: flex-start;
+  width: 100%;
+  max-width: 380px;
+  padding: var(--space-5);
+  border: 1px solid var(--edge-cell-tile);
+  border-radius: 16px;
+  background: var(--bg-cell-open);
+  box-shadow: 0 12px 28px rgb(0 0 0 / 24%);
+}
+
+.ms-dialog-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ms-dialog-icon {
+  width: 22px;
+  height: 22px;
+  stroke: var(--fg-default);
+  stroke-width: 2;
+}
+
+.ms-dialog-icon--boom {
+  stroke: var(--bg-mine-boom);
+}
+
+.ms-dialog-title {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.ms-dialog-time {
+  font-family: var(--font-num);
+  font-size: 20px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.ms-dialog-note {
+  font-size: 14px;
+  color: var(--fg-muted);
+}
+
+.ms-dialog-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  align-self: stretch;
+  min-height: var(--tap-min);
+  border: 1px solid var(--edge-cell-tile);
+  border-radius: 10px;
+  background: var(--bg-board);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--fg-default);
+  cursor: pointer;
+}
+
+.ms-dialog-action svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--fg-default);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ms-dialog-action:focus-visible {
+  outline: 2px solid var(--ring-focus);
+  outline-offset: 2px;
+}
+
+/* Chi cho screen reader: ket qua duoc doc ra ngay, con dialog la thu nhin thay. */
+.ms-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

@@ -121,25 +121,57 @@ describe("Home - playing with the keyboard, FR-11", () => {
 });
 
 describe("Home - the game ends", () => {
-  it("says so, shows every mine and then refuses every further move", () => {
+  function playUntilOver() {
     render(<Home />);
     fireEvent.click(cell(40));
-
     // walk the board until it goes off; the seed is fixed, so this terminates
     for (let i = 0; i < 81; i += 1) {
-      if (screen.queryByTestId("outcome")) break;
+      if (screen.queryByTestId("result-dialog")) break;
       fireEvent.click(cell(i));
     }
+    return screen.getByTestId("result-dialog");
+  }
 
-    const outcome = screen.getByTestId("outcome");
-    expect(["Nổ rồi", "Dọn sạch bàn"]).toContain(outcome.textContent);
+  it("shows the result over the board, not instead of it", () => {
+    const dialog = playUntilOver();
+    expect(["Nổ rồi", "Dọn sạch bàn"]).toContain(
+      dialog.querySelector(".ms-dialog-title")!.textContent,
+    );
+    // the board is still there behind the dialog - on a loss the revealed mines are
+    // the whole point of the screen
+    expect(screen.getAllByRole("button").filter((el) => el.className.includes("ms-cell"))).toHaveLength(81);
+    expect(screen.getByTestId("outcome").textContent).not.toBe("");
+  });
 
-    if (outcome.textContent === "Nổ rồi") {
-      expect(screen.getAllByRole("button").some((el) => el.className.includes("ms-cell--boom"))).toBe(true);
-    }
+  it("shows every mine when the board goes off", () => {
+    const dialog = playUntilOver();
+    if (dialog.querySelector(".ms-dialog-title")!.textContent !== "Nổ rồi") return;
+    expect(screen.getAllByRole("button").some((el) => el.className.includes("ms-cell--boom"))).toBe(true);
+  });
 
+  it("refuses every further move once it is over", () => {
+    playUntilOver();
     const before = openCount();
     for (let i = 0; i < 81; i += 1) fireEvent.click(cell(i));
     expect(openCount()).toBe(before);
+  });
+
+  it("starts a new board from the dialog button", () => {
+    playUntilOver();
+    fireEvent.click(screen.getByText("Bàn mới"));
+    expect(screen.queryByTestId("result-dialog")).toBeNull();
+    expect(openCount()).toBe(0);
+  });
+
+  it("starts a new board on Esc - there is nothing behind a dead board to go back to", () => {
+    const dialog = playUntilOver();
+    fireEvent.keyDown(dialog, { key: "Escape" });
+    expect(screen.queryByTestId("result-dialog")).toBeNull();
+    expect(openCount()).toBe(0);
+  });
+
+  it("puts focus on the new-game button so the keyboard is not stranded", () => {
+    playUntilOver();
+    expect(document.activeElement?.textContent).toContain("Bàn mới");
   });
 });

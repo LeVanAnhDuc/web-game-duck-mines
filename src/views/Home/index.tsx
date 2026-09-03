@@ -3,11 +3,14 @@
 import { useCallback, useEffect, type CSSProperties, type KeyboardEvent } from "react";
 import { Moon, Settings } from "lucide-react";
 import { DIFFICULTIES } from "@/game/core/constants";
+import { hasWrongFlag } from "@/game/core/rules";
 import { useBoardCursor } from "@/hooks/useBoardCursor";
 import { useGame } from "@/hooks/useGame";
 import { strings } from "@/lib/strings";
 import { Board } from "./mains/Board";
 import { Hud } from "./mains/Hud";
+import { ResultDialog } from "./mains/ResultDialog";
+import { formatElapsed, useTimer } from "@/hooks/useTimer";
 
 /**
  * Difficulty is locked to beginner in this feature; the picker belongs to
@@ -42,6 +45,9 @@ export function Home() {
   const { state, act, reset } = useGame(DIFFICULTY);
   const { cols, rows, mineCount } = DIFFICULTIES[DIFFICULTY];
   const { cursor, move, moveToRowEdge } = useBoardCursor(cols, rows);
+  // One clock for the whole screen: the HUD readout and the result dialog must not
+  // be able to disagree about how long the board took.
+  const elapsed = useTimer(state.startedAt, state.endedAt, state.status);
 
   const onKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
@@ -112,13 +118,7 @@ export function Home() {
         </div>
       </header>
 
-      <Hud
-        board={state.board}
-        status={state.status}
-        startedAt={state.startedAt}
-        endedAt={state.endedAt}
-        onReset={reset}
-      />
+      <Hud board={state.board} elapsed={elapsed} onReset={reset} />
 
       <p className="ms-difficulty">{strings.boardLabel(cols, rows, mineCount)}</p>
 
@@ -131,17 +131,22 @@ export function Home() {
         onKeyDown={onKeyDown}
       />
 
-      {state.status === "won" || state.status === "lost" ? (
-        <p className="ms-outcome" role="status" data-testid="outcome">
-          {state.status === "won" ? strings.wonTitle : strings.lostTitle}
-        </p>
-      ) : null}
+      <p className="ms-sr-only" role="status" data-testid="outcome">
+        {state.status === "won" ? strings.wonTitle : state.status === "lost" ? strings.lostTitle : ""}
+      </p>
 
       <p className="ms-hints">
         <span>{strings.hintRightClick}</span>
         <span>{strings.hintMiddleClick}</span>
         <span>{strings.hintKeys}</span>
       </p>
+
+      <ResultDialog
+        status={state.status}
+        seconds={elapsed}
+        wrongFlags={hasWrongFlag(state.board)}
+        onReset={reset}
+      />
     </main>
   );
 }
