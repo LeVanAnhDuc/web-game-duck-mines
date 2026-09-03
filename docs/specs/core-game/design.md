@@ -135,7 +135,8 @@ no-op — không có số nào để chord.
 | | `chord(board, i)` | Trả `{ board, exploded }` |
 | `mark.ts` | `cycleMark(board, i, allowUnsure)` | `allowUnsure` là tham số, không phải cờ toàn cục |
 | `rules.ts` | `isWon(board)` | Đếm ô đã mở == `cols*rows - mineCount` |
-| | `revealAllMines(board, explodedIndex)` | **Không xoá cờ đã cắm** (bất biến #6) |
+| | `revealAllMines(board)` | Hiện mọi mìn chưa cắm cờ. **Không xoá cờ đã cắm** (bất biến #6). Không cần `explodedIndex` — nó ở `GameState`, chỉ dùng để vẽ |
+| | `minesRemaining(board)` | `mineCount − số cờ`, âm được (FR-06) |
 | `reducer.ts` | `reducer(state, action)` | Thuần. Không import gì ngoài `core/` |
 
 **Flood fill dùng stack, không đệ quy.** Trên bàn Khó vùng lớn nhất có thể tới hàng
