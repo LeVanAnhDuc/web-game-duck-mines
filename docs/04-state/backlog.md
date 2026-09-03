@@ -24,10 +24,18 @@ KHÔNG chứa: tính năng ngoài phạm vi (-> 01-product/overview.md §Non-Goa
 (`core/` thuần tách khỏi React), 9 bất biến, palette + typeface đã đo tương phản
 (`MASTER.md` + `ADR-0001`), rà `nfr.md`, và bốn tier-1 doc.
 
-**Dừng ở:** bước mockup canvas của `feature-flow` §1.2 cho feature `core-game`.
-Wireframe ASCII (mobile 375 + desktop 1440 + sheet cài đặt) đã được duyệt trong hội
-thoại; canvas `.dc.html` chưa dựng. Sau canvas mới viết `docs/specs/core-game/design.md`
-rồi `plan.md`.
+**Dừng ở:** cổng duyệt mockup của `feature-flow` §1.3–1.5 cho feature `core-game`.
+Wireframe ASCII đã duyệt; canvas đã dựng và đã publish —
+`https://claude.ai/code/artifact/6cf98b19-3c5b-41f7-8184-765ef4ea9cf9`
+(10 artboard: đang chơi / thua / thắng × 375 · 768 · 1440, cộng một artboard dark
+theme ở 1440). **Đang chờ duyệt tường minh.** Chỉ sau khi duyệt mới viết
+`docs/specs/core-game/design.md` rồi `plan.md`.
+
+Nguồn của canvas nằm ở `.design/` — **gitignored có chủ ý**, vì `.claude/CLAUDE.md`
+quy định mockup không để lại dấu vết trong repo: `gen.py` là luật
+chơi + solver, `pages.py` sinh 10 file `.dc.html` + `canvas.json`, `check.py` kiểm
+thế bàn. Sửa mockup = sửa `.dc.html` rồi seed lại bằng `seed-canvas.mjs` của skill
+`design`, publish lại **cùng đường dẫn file** để giữ nguyên URL.
 
 **Đang chặn:** repo **chưa có `origin`**. Quy ước là branch từ `origin/main` mới nhất
 vào worktree, chưa làm được. MCP `github` phiên 03.09.2026 lỗi xác thực
