@@ -8,7 +8,7 @@
 <!-- BEGIN:auto — bảng dưới do .claude/scripts/docs-regen.sh sinh từ các file ADR. Đừng sửa tay. -->
 | ID | Tiêu đề | Ngày | Trạng thái |
 | --- | --- | --- | --- |
-| — | _chưa có ADR nào_ | — | — |
+| [ADR-0001](0001-design-tokens.md) | Dải nhiệt 8 màu cho chữ số, vỏ xám trung tính, Archivo + IBM Plex Mono | 2026-09-03 | accepted |
 <!-- END:auto -->
 
 Trạng thái: `accepted` · `superseded by ADR-00xx` · `deprecated`

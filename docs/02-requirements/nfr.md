@@ -1,8 +1,8 @@
 # Yêu cầu phi chức năng
 
 > **Trả lời:** Ngưỡng nào áp cho **mọi** feature, để không phải nhắc lại từng lần?
-> **Trạng thái:** 🟡 mặc định đề xuất, chưa rà theo dự án
-> **Cập nhật:** — · commit —
+> **Trạng thái:** 🟢 đủ
+> **Cập nhật:** 2026-09-03 · commit —
 > **Cập nhật khi:** thêm loại tài nguyên mới · thêm nhóm người dùng · sau sự cố sinh ra ngưỡng mới
 
 <!-- CÁCH ĐIỀN
@@ -21,62 +21,71 @@ ID không tái dùng. Bỏ một ngưỡng thì đổi thành ~~(bỏ)~~, không
 Tài liệu thiết kế của feature tham chiếu ID ở dòng `Liên quan:` — KHÔNG chép nội dung sang.
 -->
 
+**Hình dạng dự án này quyết định phần lớn bảng dưới:** một trang tĩnh, chạy hoàn toàn
+ở client, **không server · không database · không tài khoản · không PII · không gọi
+mạng nào sau khi tải trang**. Nên 14 ngưỡng mặc định đã bị đánh `(bỏ)` — chúng nói về
+một hệ thống không tồn tại ở đây. Giữ số, không xoá dòng, vì commit và test sau này
+vẫn có thể nhắc tới ID cũ.
+
 ## Performance
 
 | ID | Ngưỡng | Cách kiểm |
 | --- | --- | --- |
-| NFR-PERF-01 | Mọi endpoint trả danh sách đều phân trang. Mặc định 20, tối đa 100 | review code |
-| NFR-PERF-02 | p95 < 300ms cho endpoint đọc, < 800ms cho endpoint ghi (không tính tác vụ nền) | đo trên môi trường gần production |
-| NFR-PERF-03 | Không có truy vấn N+1 trên đường đi chính | bật log query rồi đi qua luồng chính |
-| NFR-PERF-04 | Mọi cột dùng để filter hoặc sort đều có index | review migration |
+| ~~NFR-PERF-01~~ | ~~Mọi endpoint trả danh sách đều phân trang~~ **(bỏ)** — không có endpoint | — |
+| ~~NFR-PERF-02~~ | ~~p95 < 300ms cho endpoint đọc~~ **(bỏ)** — không có server | — |
+| ~~NFR-PERF-03~~ | ~~Không có truy vấn N+1~~ **(bỏ)** — không có datastore | — |
+| ~~NFR-PERF-04~~ | ~~Mọi cột filter/sort đều có index~~ **(bỏ)** — không có bảng | — |
+| NFR-PERF-05 | Tính reveal cho vùng trống lớn nhất của bàn Khó (30×16) < 16ms | benchmark trong vitest, chạy trên bàn có seed cố định |
+| NFR-PERF-06 | Từ lúc chạm đến lúc bàn vẽ xong < 50ms trên bàn Khó | React Profiler, đo ở nước mở vùng lớn nhất |
+| NFR-PERF-07 | First-load JS < 200KB gzip | số `next build` in ra, kiểm trong CI |
 
 ## Security
 
 | ID | Ngưỡng | Cách kiểm |
 | --- | --- | --- |
-| NFR-SEC-01 | Mọi mutation kiểm quyền ở **server**. Không tin bất kỳ dữ liệu nào từ client | test cho từng endpoint |
-| NFR-SEC-02 | Không log PII, token, mật khẩu, hay nội dung request body có dữ liệu người dùng | review format log |
-| NFR-SEC-03 | Rate limit endpoint đăng nhập / đăng ký / quên mật khẩu: 10 req/phút/IP | test |
+| ~~NFR-SEC-01~~ | ~~Mọi mutation kiểm quyền ở server~~ **(bỏ)** — không có server, không có dữ liệu của người khác để lộ | — |
+| NFR-SEC-02 | Không log gì ra console ở bản production | grep `console.` trong CI |
+| ~~NFR-SEC-03~~ | ~~Rate limit endpoint đăng nhập~~ **(bỏ)** — không có đăng nhập | — |
 | NFR-SEC-04 | Secret chỉ đọc từ biến môi trường. Không hardcode, không commit | grep + review |
-| NFR-SEC-05 | Dependency không có lỗ hổng mức high trở lên | lệnh audit của toolchain, chạy trong CI |
-| NFR-SEC-06 | Lỗi trả về client không chứa stack trace, tên bảng, hay câu SQL | test |
+| NFR-SEC-05 | Dependency không có lỗ hổng mức high trở lên | `yarn audit` trong CI |
+| ~~NFR-SEC-06~~ | ~~Lỗi trả về client không chứa stack trace~~ **(bỏ)** — không có lỗi từ server | — |
 
 ## Accessibility
 
 | ID | Ngưỡng | Cách kiểm |
 | --- | --- | --- |
-| NFR-A11Y-01 | Tương phản chữ thường ≥ 4.5:1, chữ lớn ≥ 3:1 | devtools |
-| NFR-A11Y-02 | Mọi hành động thao tác được bằng bàn phím, và focus luôn thấy được | thử tay |
-| NFR-A11Y-03 | Vùng bấm ≥ 44×44px trên thiết bị cảm ứng | review mockup |
-| NFR-A11Y-04 | Mọi input có label liên kết; thông báo lỗi đọc được bởi screen reader | review |
-| NFR-A11Y-05 | Tôn trọng `prefers-reduced-motion` | review CSS |
+| NFR-A11Y-01 | Tương phản chữ thường ≥ 4.5:1, chữ lớn ≥ 3:1, **ở cả light và dark** | script đo, không dùng mắt — xem [ADR-0001](../decisions/0001-design-tokens.md) |
+| NFR-A11Y-02 | Mọi hành động thao tác được bằng bàn phím, và focus luôn thấy được. Bàn cờ: mũi tên di chuyển · `Space` mở · `F` cắm cờ · `Enter` chord · `R` bàn mới | e2e |
+| NFR-A11Y-03 | Vùng bấm ≥ 44×44px trên thiết bị cảm ứng — **trừ ô bàn cờ**, xem NFR-A11Y-06 | review mockup + e2e |
+| NFR-A11Y-04 | Mọi input có label liên kết; mỗi ô bàn cờ có `aria-label` nói rõ vị trí và trạng thái | review |
+| NFR-A11Y-05 | Tôn trọng `prefers-reduced-motion`: sóng mở ô tắt hoàn toàn, không giảm một nửa | review CSS + e2e |
+| NFR-A11Y-06 | Ô bàn cờ được miễn ngưỡng 44px, **với hai điều kiện**: cạnh ô ≥ 22px, và cơ chế chạm hai pha (đặt ngón để nhắm, nhấc ngón mới là hành động, nhấc ngoài ô thì huỷ) còn hoạt động | e2e ở 375px + thử tay trên máy thật |
+| NFR-A11Y-07 | Không dùng màu làm kênh duy nhất — chữ số phân biệt được khi bỏ hết màu; đã mở / chưa mở phân biệt bằng viền, không bằng độ sáng | screenshot ở chế độ grayscale |
 
 ## i18n
 
 | ID | Ngưỡng | Cách kiểm |
 | --- | --- | --- |
 | NFR-I18N-01 | Không hardcode chuỗi hiển thị trong code | grep |
-| NFR-I18N-02 | Thời gian lưu ở UTC; đổi múi giờ chỉ xảy ra ở tầng hiển thị | test |
-| NFR-I18N-03 | Định dạng số, tiền, ngày theo locale của người dùng | review |
+| ~~NFR-I18N-02~~ | ~~Thời gian lưu ở UTC~~ **(bỏ)** — thời gian duy nhất trong dự án là *khoảng* (giây đã chơi), không phải *mốc*; múi giờ không liên quan | — |
+| ~~NFR-I18N-03~~ | ~~Định dạng số/tiền/ngày theo locale~~ **(bỏ)** — không có tiền, không có ngày; thời gian hiển thị `m:ss` giống nhau ở mọi locale | — |
 
 ## Reliability
 
 | ID | Ngưỡng | Cách kiểm |
 | --- | --- | --- |
-| NFR-REL-01 | Mọi lệnh gọi ra ngoài có timeout và có nhánh xử lý lỗi | review |
-| NFR-REL-02 | Tác vụ ghi quan trọng là idempotent — retry không tạo bản ghi trùng | test |
-| NFR-REL-03 | Không có trạng thái loading vô hạn: mọi request đều có nhánh lỗi trên UI | thử tay |
+| ~~NFR-REL-01~~ | ~~Mọi lệnh gọi ra ngoài có timeout~~ **(bỏ)** — không gọi ra ngoài sau khi tải trang | — |
+| ~~NFR-REL-02~~ | ~~Tác vụ ghi quan trọng là idempotent~~ **(bỏ)** — không có tác vụ ghi ra ngoài máy người chơi | — |
+| NFR-REL-03 | Không có trạng thái loading vô hạn. `localStorage` không dùng được thì game **vẫn chơi được đầy đủ**, chỉ mất lưu kỷ lục, và nói rõ điều đó bằng một dòng — không dialog, không chặn | test nhánh `localStorage` ném lỗi + thử tay ở chế độ riêng tư |
+| NFR-REL-04 | Game chơi được **offline** sau lần tải đầu | thử tay: tải trang, ngắt mạng, reload |
 
 ## Data & Privacy
 
 | ID | Ngưỡng | Cách kiểm |
 | --- | --- | --- |
-| NFR-DATA-01 | Trường nào là PII được liệt kê rõ ở bảng dưới | bảng dưới |
-| NFR-DATA-02 | Xoá tài khoản thì xoá hoặc ẩn danh hoá toàn bộ PII của tài khoản đó | test |
-| NFR-DATA-03 | Có đường khôi phục dữ liệu: backup, hoặc migration ngược đã thử thật | thử thật một lần |
+| ~~NFR-DATA-01~~ | ~~Trường nào là PII được liệt kê rõ~~ **(bỏ)** — xem NFR-DATA-04 | — |
+| ~~NFR-DATA-02~~ | ~~Xoá tài khoản thì xoá toàn bộ PII~~ **(bỏ)** — không có tài khoản | — |
+| ~~NFR-DATA-03~~ | ~~Có đường khôi phục dữ liệu~~ **(bỏ)** — không có dữ liệu phía server để khôi phục; kỷ lục nằm trên máy người chơi và mất được, đó là đánh đổi có ý thức | — |
+| NFR-DATA-04 | Dự án **không thu bất kỳ PII nào**, không analytics, không cookie. `localStorage` chỉ chứa: kỷ lục theo độ khó, độ khó đang chọn, theme, bật/tắt dấu hỏi. Người chơi xoá được toàn bộ bằng một nút trong cài đặt | grep toàn bộ chỗ ghi `localStorage` + review |
 
-**Trường PII trong dự án này:**
-
-| Trường | Nằm ở | Giữ bao lâu |
-| --- | --- | --- |
-| <!-- TODO --> | | |
+**Trường PII trong dự án này:** không có. Xem `NFR-DATA-04`.
