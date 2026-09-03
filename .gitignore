@@ -9,3 +9,17 @@
 # trong repo — nó sống trên claude.ai dưới dạng Artifact. Thư mục này là công cụ
 # sinh ra nó (luật chơi + solver + emitter), giữ ở máy để seed lại khi sửa mockup.
 /.design/
+
+# Toolchain
+/node_modules/
+/.next/
+/out/
+/next-env.d.ts
+*.tsbuildinfo
+yarn-error.log
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
