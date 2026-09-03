@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { flagsPlaced, isWon, isWrongFlag, minesRemaining, revealAllMines } from "./rules";
+import {
+  flagsPlaced,
+  hasWrongFlag,
+  isWon,
+  isWrongFlag,
+  minesRemaining,
+  revealAllMines,
+} from "./rules";
 import { boardFrom, marksOf } from "./testBoard";
 import { FLAGGED } from "./types";
 
@@ -72,5 +79,19 @@ describe("revealAllMines", () => {
     const board = boardFrom(["...", "...", "..."]);
     const bare = { ...board, mines: null };
     expect(revealAllMines(bare)).toBe(bare);
+  });
+});
+
+describe("hasWrongFlag", () => {
+  it("is false when every flag is on a mine", () => {
+    expect(hasWrongFlag(boardFrom(["F..", ".*.", "..."]))).toBe(false);
+  });
+
+  it("is true as soon as one flag sits on a safe cell", () => {
+    expect(hasWrongFlag(boardFrom(["f*.", "...", "..."]))).toBe(true);
+  });
+
+  it("is false with no flags at all - there is nothing to point the player at", () => {
+    expect(hasWrongFlag(boardFrom(["*..", "...", "..."]))).toBe(false);
   });
 });

@@ -1,16 +1,15 @@
 "use client";
 
 import { RotateCcw } from "lucide-react";
-import { formatElapsed, useTimer } from "@/hooks/useTimer";
+import { formatElapsed } from "@/hooks/useTimer";
 import { minesRemaining } from "@/game/core/rules";
 import { strings } from "@/lib/strings";
-import type { Board, GameStatus } from "@/game/core/types";
+import type { Board } from "@/game/core/types";
 
 export type HudProps = {
   board: Board;
-  status: GameStatus;
-  startedAt: number | null;
-  endedAt: number | null;
+  /** seconds, owned by the page so the dialog cannot disagree with the readout */
+  elapsed: number;
   onReset: () => void;
 };
 
@@ -19,9 +18,7 @@ export type HudProps = {
  * into it and the new-game button is the only thing that rises out of it
  * (MASTER.md section 6).
  */
-export function Hud({ board, status, startedAt, endedAt, onReset }: HudProps) {
-  const elapsed = useTimer(startedAt, endedAt, status);
-
+export function Hud({ board, elapsed, onReset }: HudProps) {
   return (
     <div className="ms-hud">
       <MineCounter remaining={minesRemaining(board)} />

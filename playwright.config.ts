@@ -6,7 +6,9 @@ const BASE_URL = `http://127.0.0.1:${PORT}`;
 /**
  * The e2e suite runs against the STATIC EXPORT, not a dev server: that is what
  * GitHub Pages will serve, so it is what gets tested. `next start` cannot serve an
- * exported site, hence a plain file server over `out/`.
+ * exported site, hence scripts/serve.mjs over `out/` - concurrent, because four
+ * projects run in parallel and a single-threaded server starves under them in a way
+ * that reads exactly like application bugs.
  */
 export default defineConfig({
   testDir: "./e2e",
@@ -25,7 +27,7 @@ export default defineConfig({
     { name: "desktop-1440", use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 900 } } },
   ],
   webServer: {
-    command: `python -m http.server ${PORT} --directory out`,
+    command: `node scripts/serve.mjs ${PORT} out`,
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,

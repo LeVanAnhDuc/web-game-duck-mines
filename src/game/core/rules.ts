@@ -53,3 +53,12 @@ export function isWrongFlag(board: Board, index: number): boolean {
   if (!mines) return false;
   return marks[index] === FLAGGED && mines[index] === 0;
 }
+
+/** Whether there is any misplaced flag to point at. */
+export function hasWrongFlag(board: Board): boolean {
+  if (!board.mines) return false;
+  for (let i = 0; i < board.marks.length; i += 1) {
+    if (isWrongFlag(board, i)) return true;
+  }
+  return false;
+}

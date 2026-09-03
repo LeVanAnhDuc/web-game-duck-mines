@@ -65,7 +65,6 @@ type GameState = {
   difficulty: Difficulty;
   board: Board;
   status: GameStatus;
-  seed: number;
   /** mốc nước đầu. Đồng hồ KHÔNG ở đây — xem ADR-0005 */
   startedAt: number | null;
   endedAt: number | null;
@@ -91,10 +90,10 @@ và seed đi vào bằng action**, không phải bằng cách reducer tự lấy
 
 ```ts
 type Action =
-  | { type: "reveal"; index: number; at: number }
+  | { type: "reveal"; index: number; at: number; seed: number }
   | { type: "mark";   index: number; allowUnsure: boolean }
   | { type: "chord";  index: number; at: number }
-  | { type: "reset";  seed: number };
+  | { type: "reset" };
 ```
 
 `at` là `Date.now()` do `useGame` cấp. `reveal` và `chord` cần nó vì chúng có thể mở
@@ -105,6 +104,13 @@ trạng thái lượt chơi nên không cần.
 một cài đặt của người chơi, và cài đặt thuộc feature `settings-records`. Ở feature này
 `useGame` truyền cứng `false`. Khi feature sau tới, nó chỉ đổi chỗ lấy giá trị — reducer
 không phải sửa một dòng nào.
+
+**`seed` cũng đi theo action `reveal`, không nằm trong `GameState`.** Bản đầu của thiết
+kế này để `seed` trong state và cho `useGame` `reset` lại ở `useEffect` lúc mount; e2e
+bắt được cái giá của nó: **một cú click rơi vào khoảng giữa hydrate và effect đó sẽ bị
+`reset` xoá mất**. Hai trong hai mươi seed của test nước-đầu-không-nổ trượt vì đúng
+chuyện này. Đọc seed ngay lúc bấm thì khoảng trống đó không còn tồn tại, và `GameState`
+bớt được một field nó không cần sau khi mìn đã sinh.
 
 Máy trạng thái:
 
@@ -117,7 +123,7 @@ lost, won ──mọi action trừ reset──> KHÔNG ĐỔI GÌ   (bất biế
 lost, won ──reset──> idle
 ```
 
-Ở `idle`, `reveal` làm ba việc theo đúng thứ tự: `plantMines(seed, index)` →
+Ở `idle`, `reveal` làm ba việc theo đúng thứ tự: `plantMines(action.seed, index)` →
 `reveal(index)` → đặt `startedAt = at`, `status = "playing"`. `chord` ở `idle` là
 no-op — không có số nào để chord.
 
