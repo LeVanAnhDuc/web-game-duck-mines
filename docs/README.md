@@ -15,7 +15,7 @@
 | [`04-state/backlog.md`](04-state/backlog.md) | Đang làm gì, tiếp theo làm gì, và đang nợ những gì? | 🟢 đủ | bắt đầu/kết thúc một việc · brainstorm ra việc mới · cố ý … |
 | [`design-system/minesweeper/MASTER.md`](design-system/minesweeper/MASTER.md) | — | — | — |
 | [`decisions/`](decisions/README.md) | Tại sao lại làm thế này? | 5 ADR | mỗi quyết định kỹ thuật |
-| [`../.env.example`](../.env.example) | cần biến nào để chạy được dự án này? | ⚪ chưa áp dụng — chưa có code nào đọc biến m… | code đọc một biến mới (process.env.X / os.getenv / os.Gete… |
+| [`../.env.example`](../.env.example) | cần biến nào để chạy được dự án này? | 🟢 đủ — khớp code: next.config.ts đọc đúng m… | code đọc một biến mới (process.env.X / os.getenv / os.Gete… |
 <!-- END:auto -->
 
 🔴 chưa điền · 🟡 một phần · 🟢 đủ · ⚪ chưa áp dụng

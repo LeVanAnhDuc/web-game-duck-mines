@@ -1,0 +1,26 @@
+{
+  "extends": ["next/core-web-vitals", "prettier"],
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["react", "react-dom", "next", "next/*"],
+            "message": "src/game/core must stay framework-free - invariant #1. Move this to hooks/ or views/."
+          }
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["src/game/core/**/*.ts"],
+      "excludedFiles": ["src/game/core/**/*.test.ts"]
+    },
+    {
+      "files": ["src/**/*.tsx", "src/hooks/**/*.ts", "src/app/**/*.ts", "src/lib/**/*.ts", "src/game/core/**/*.test.ts"],
+      "rules": { "no-restricted-imports": "off" }
+    }
+  ]
+}
