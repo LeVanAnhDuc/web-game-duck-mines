@@ -4,3 +4,8 @@
 .env
 .env.*
 !.env.example
+
+# Nguồn của mockup canvas. `.claude/CLAUDE.md` nói rõ: mockup KHÔNG để lại dấu vết
+# trong repo — nó sống trên claude.ai dưới dạng Artifact. Thư mục này là công cụ
+# sinh ra nó (luật chơi + solver + emitter), giữ ở máy để seed lại khi sửa mockup.
+/.design/

@@ -1,8 +1,8 @@
 # Bất biến chịu lực
 
 > **Trả lời:** Sửa gì thì hệ thống sai **âm thầm** — test vẫn xanh mà kết quả vẫn sai?
-> **Trạng thái:** 🟡 mặc định đề xuất, chưa rà theo dự án
-> **Cập nhật:** — · commit —
+> **Trạng thái:** 🟢 đủ
+> **Cập nhật:** 2026-09-03 · commit —
 > **Cập nhật khi:** phát hiện một bất biến mới — thường là ngay sau khi ai đó vừa phá nó
 
 <!-- CÁCH ĐIỀN
@@ -20,15 +20,17 @@ GIỮ FILE NÀY < 40 DÒNG NỘI DUNG. Nó được đọc mỗi lần sửa cod
 KHÔNG chứa: quy ước format/naming (-> lint config), kiến trúc (-> architecture.md).
 -->
 
+Cả 9 bất biến mặc định đã bị bỏ: chúng nói về server, datastore, migration, tiền và
+quyền sở hữu dữ liệu — không có thứ nào trong dự án này. Thay bằng 9 bất biến thật.
+
 | # | Bất biến | Vi phạm thì sao |
 | --- | --- | --- |
-| 1 | Thời gian lưu ở **UTC**. Đổi múi giờ chỉ xảy ra ở tầng hiển thị | Lệch một ngày ở biên múi giờ. Test viết theo giờ máy vẫn xanh |
-| 2 | Mọi mutation kiểm quyền ở **server**, kể cả khi UI đã ẩn nút | Người dùng gọi API trực tiếp và sửa được dữ liệu của người khác |
-| 3 | Chỉ tầng service truy vấn datastore. Route/handler không query trực tiếp | Bỏ qua lớp kiểm quyền và validate nằm trong service |
-| 4 | Tiền và số cần chính xác **không dùng float** | Sai số tích luỹ, không tái tạo được, phát hiện sau nhiều tháng |
-| 5 | Bản ghi đang được tham chiếu thì **soft-delete**, không hard-delete | Dữ liệu tham chiếu mồ côi, báo cáo cũ thiếu dòng |
-| 6 | Tác vụ ghi quan trọng phải **idempotent** theo một khoá | Retry hoặc double-click tạo bản ghi trùng |
-| 7 | Migration **chỉ tiến**. Không sửa migration đã chạy ở bất kỳ môi trường nào | Lịch sử schema giữa các môi trường lệch nhau, không hoà giải được |
-| 8 | Thứ tự middleware: **auth → validate → handler** | Handler nhận dữ liệu chưa validate, hoặc validate chạy khi chưa biết người gọi |
-| 9 | Không tin `id` gửi từ client để xác định quyền sở hữu. Luôn đối chiếu với session | Truy cập chéo dữ liệu giữa các người dùng |
-| 10 | <!-- TODO: bất biến riêng của dự án này --> | |
+| 1 | `src/game/core/` **không import** React, next, hay bất kỳ API DOM nào | Luật chơi bắt đầu phụ thuộc render. Test phải dựng jsdom, rồi chậm dần, rồi bị bỏ. Ranh giới tan từng PR một |
+| 2 | Mìn sinh **sau** nước đầu, loại trừ ô đã bấm **và 8 ô kề** | Sinh lúc tạo bàn thì "first-click-safe" vẫn có vẻ hoạt động, test vẫn xanh, nhưng người chơi nổ ở nước đầu |
+| 3 | Đồng hồ **không nằm trong** `GameState` | Mỗi giây một state mới → re-render 480 ô mỗi giây. Không test nào đỏ, chỉ là máy nóng và pin hết |
+| 4 | `Cell` phải `memo` và **chỉ nhận prop nguyên thuỷ** | Truyền object hoặc callback mới mỗi lần render làm `memo` vô hiệu hoàn toàn, im lặng tuyệt đối |
+| 5 | Mọi random đi qua `rng.ts` **có seed** | `Math.random()` trực tiếp làm test bàn cụ thể flaky, và flaky ngẫu nhiên thì bị bỏ qua chứ không bị sửa |
+| 6 | `revealAllMines` khi thua **không xoá** cờ đã cắm | Mất khả năng gạch chéo cờ sai — người chơi không biết mình sai ở đâu, mà không có gì báo lỗi |
+| 7 | Sau khi thắng hoặc thua, **mọi** action trong reducer là no-op | Chơi tiếp được sau khi đã nổ; đồng hồ chạy tiếp; kỷ lục ghi sai |
+| 8 | Ô chưa mở **phải có viền**; ô đã mở **không viền** | Đây là cơ chế duy nhất phân biệt hai trạng thái — độ sáng không đủ 3:1, đã đo. Bỏ viền vì thẩm mỹ là phá cả hệ thống ([ADR-0001](../decisions/0001-design-tokens.md)) |
+| 9 | Không viết hex màu thẳng trong code; chỉ đọc qua `var(--…)` | Một theme đúng, theme kia sai, và chỉ phát hiện khi có người đổi sang chế độ tối |
