@@ -9,6 +9,10 @@
 | ID | Tiêu đề | Ngày | Trạng thái |
 | --- | --- | --- | --- |
 | [ADR-0001](0001-design-tokens.md) | Dải nhiệt 8 màu cho chữ số, vỏ xám trung tính, Archivo + IBM Plex Mono | 2026-09-03 | accepted |
+| [ADR-0002](0002-dom-board-not-canvas.md) | Vẽ bàn cờ bằng DOM, không dùng Canvas | 2026-09-03 | accepted |
+| [ADR-0003](0003-mines-planted-after-first-move.md) | Sinh mìn sau nước đầu, loại trừ ô đã bấm và 8 ô kề | 2026-09-03 | accepted |
+| [ADR-0004](0004-input-branches-on-pointertype.md) | Phân nhánh input theo `pointerType`, không theo user-agent | 2026-09-03 | accepted |
+| [ADR-0005](0005-timer-outside-gamestate.md) | Đồng hồ nằm ngoài `GameState`, reducer chỉ giữ mốc bắt đầu | 2026-09-03 | accepted |
 <!-- END:auto -->
 
 Trạng thái: `accepted` · `superseded by ADR-00xx` · `deprecated`
