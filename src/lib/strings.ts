@@ -8,8 +8,8 @@ export const strings = {
   appDescription:
     "Minesweeper đúng luật bản gốc, chơi được bằng ngón tay trên điện thoại.",
 
-  boardLabel: (cols: number, rows: number, mines: number) =>
-    `Dễ: ${cols}×${rows}, ${mines} mìn`,
+  boardLabel: (name: string, cols: number, rows: number, mines: number) =>
+    `${name}: ${cols}×${rows}, ${mines} mìn`,
 
   minesRemaining: "Số mìn còn lại",
   elapsed: "Thời gian đã chơi",
@@ -29,8 +29,42 @@ export const strings = {
   cellWrongFlag: (row: number, col: number) => `hàng ${row}, cột ${col}, cờ cắm sai`,
 
   wonTitle: "Dọn sạch bàn",
+  wonRecord: "Nhanh nhất từ trước tới giờ",
   lostTitle: "Nổ rồi",
   lostHint: "Cờ bị gạch chéo là chỗ cắm sai.",
+
+  settingsTitle: "Cài đặt",
+  close: "Đóng",
+
+  sectionDifficulty: "Độ khó",
+  sectionPlay: "Lối chơi",
+  sectionSound: "Âm thanh",
+  sectionTheme: "Giao diện",
+  sectionRecords: "Kỷ lục",
+
+  difficultyBeginner: "Dễ",
+  difficultyIntermediate: "Trung bình",
+  difficultyExpert: "Khó",
+  difficultySpec: (cols: number, rows: number, mines: number) =>
+    `${cols}×${rows} · ${mines} mìn`,
+
+  abandonQuestion: (name: string) => `Bỏ bàn đang chơi để sang mức ${name}?`,
+  abandonConfirm: "Bỏ bàn",
+  abandonCancel: "Giữ lại",
+
+  unsureLabel: "Dấu hỏi ❓ trong chu kỳ cờ",
+  unsureHelp: "Chạm lần nữa sau lá cờ để đánh dấu ô chưa chắc.",
+
+  soundLabel: "Tiếng khi mìn nổ",
+  soundHelp: "Mặc định tắt. Không có âm nào khác — mở ô và cắm cờ luôn im lặng.",
+
+  themeSystem: "Theo hệ",
+  themeLight: "Sáng",
+  themeDark: "Tối",
+
+  noRecord: "—",
+  clearRecords: "Xoá kỷ lục",
+  recordsStorageOff: "Máy này không cho lưu, nên kỷ lục sẽ mất khi đóng tab.",
 
   hintRightClick: "Chuột phải cắm cờ",
   hintMiddleClick: "Chuột giữa mở quanh",

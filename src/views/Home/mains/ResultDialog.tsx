@@ -9,6 +9,8 @@ import type { GameStatus } from "@/game/core/types";
 export type ResultDialogProps = {
   status: GameStatus;
   seconds: number;
+  /** true when this run just became the best time for its difficulty */
+  isRecord: boolean;
   /** only then is the "slashed flags" line about something on screen */
   wrongFlags: boolean;
   onReset: () => void;
@@ -18,10 +20,16 @@ export type ResultDialogProps = {
  * Anchored to the bottom rather than centred, so the board stays visible behind it -
  * which matters most on a loss, where the revealed mines are the point.
  *
- * No confetti and no shake. Winning says the time; losing says where to look. The
- * best-time line belongs to settings-records, so it is absent rather than faked.
+ * No confetti and no shake. Winning says the time, and says so plainly when that
+ * time is the new best; losing says where to look.
  */
-export function ResultDialog({ status, seconds, wrongFlags, onReset }: ResultDialogProps) {
+export function ResultDialog({
+  status,
+  seconds,
+  isRecord,
+  wrongFlags,
+  onReset,
+}: ResultDialogProps) {
   const button = useRef<HTMLButtonElement>(null);
   const open = status === "won" || status === "lost";
 
@@ -58,6 +66,11 @@ export function ResultDialog({ status, seconds, wrongFlags, onReset }: ResultDia
         {won ? (
           <span className="ms-dialog-time" data-testid="result-time">
             {formatElapsed(seconds)}
+          </span>
+        ) : null}
+        {won && isRecord ? (
+          <span className="ms-dialog-note" data-testid="result-record">
+            {strings.wonRecord}
           </span>
         ) : null}
         {!won && wrongFlags ? (

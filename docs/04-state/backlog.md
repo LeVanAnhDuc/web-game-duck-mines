@@ -18,23 +18,21 @@ KHÔNG chứa: tính năng ngoài phạm vi (-> 01-product/overview.md §Non-Goa
 
 ## Đang làm
 
-**Đang chạy loạt bốn feature còn lại**, sau một lượt brainstorm mở rộng phạm vi
-(04.09.2026). Hai Non-Goal đã được **sửa có điều kiện**, không bị xoá:
+**`settings-records` xong** (gồm FR-18, tiếng nổ). Còn `touch` rồi `custom-board`.
 
-- bàn tuỳ chỉnh: cho phép, **nhưng không xếp hạng** ([ADR-0007](../decisions/0007-custom-boards-are-not-ranked.md))
-- âm thanh: **đúng một** tiếng nổ, sinh lúc chạy, **mặc định tắt** ([ADR-0008](../decisions/0008-one-sound-generated-at-runtime.md))
+Số đo ở phiên 04.09.2026: **247** unit/component test · **144** e2e ở bốn viewport ·
+lint và typecheck sạch · first-load JS **109.2 kB** / 200 kB.
 
-Thứ tự: `settings-records` (+FR-18) → `touch` → `custom-board`. `touch` chen trước
-`custom-board` vì bàn tuỳ chỉnh tới 40 cột, làm nó trước pan/zoom là tạo ra cấu hình
-không chơi được rồi mới đi sửa ([ADR-0009](../decisions/0009-small-screens-pan-zoom-not-shrink.md)).
-
-Người dùng đã miễn spec/plan per-feature cho loạt này.
+Hai module tách biệt (`game/storage` + `game/settings` + `game/score`, và
+`game/audio`) do subagent dựng theo hợp đồng viết sẵn; phần UI và tích hợp do phiên
+chính làm. Cả hai agent bị ngắt giữa chừng vì rate limit nhưng file đã kịp ghi và
+69 test của chúng xanh — đã soi lại tay chứ không tin báo cáo.
 
 ## Việc tiếp theo
 
 | Việc | Liên quan | Ưu tiên | Vì sao ưu tiên đó |
 | --- | --- | --- | --- |
-| Feature `settings-records` | FR-09, FR-10, FR-14, FR-18 | cao | Không có nó thì không đo được chỉ số thành công thứ nhất (kỷ lục theo độ khó), và nút ☾ / ⚙ trên header hiện đang `disabled` |
+| ~~Feature `settings-records`~~ **xong** | FR-09, FR-10, FR-14, FR-18 | — | Không có nó thì không đo được chỉ số thành công thứ nhất (kỷ lục theo độ khó), và nút ☾ / ⚙ trên header hiện đang `disabled` |
 | Feature `touch` | FR-12, FR-13, FR-17 | cao | Là lý do dự án tồn tại. Và phải xong trước `custom-board` |
 | Feature `custom-board` | FR-16 | trung bình | Cần pan/zoom có sẵn trước |
 | Đo `NFR-PERF-06` ngay khi bàn Khó mở được | FR-13 | trung bình | Ngưỡng duy nhất trong dự án đang ghi nợ chứ chưa có số |

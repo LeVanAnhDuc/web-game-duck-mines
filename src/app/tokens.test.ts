@@ -126,6 +126,49 @@ describe.each(["light", "dark"] as const)("%s theme tokens", (name) => {
   });
 });
 
+describe("globals.css parses at all", () => {
+  it("balances every brace", () => {
+    // A stray brace here is invisible to every other test in this file - they parse
+    // the tokens themselves and are more forgiving than PostCSS. It cost one red
+    // build to learn that, so it costs three lines to never learn it again.
+    let depth = 0;
+    let firstNegative: number | null = null;
+    let line = 1;
+    for (const ch of CSS) {
+      if (ch === "\n") line += 1;
+      else if (ch === "{") depth += 1;
+      else if (ch === "}") {
+        depth -= 1;
+        if (depth < 0 && firstNegative === null) firstNegative = line;
+      }
+    }
+    expect(firstNegative, "a closing brace with nothing open").toBeNull();
+    expect(depth, "unclosed block at end of file").toBe(0);
+  });
+});
+
+describe("the two dark blocks cannot drift apart", () => {
+  it("defines identical tokens under the media query and under data-theme=dark", () => {
+    // CSS has no way to share a declaration block, so the dark values exist twice:
+    // once for the system preference and once for an explicit choice. Editing one
+    // and not the other is invisible - it only shows up for whoever happens to be
+    // using the other route into dark mode.
+    const media = CSS.indexOf("@media (prefers-color-scheme: dark)");
+    const fromMedia = block(CSS, CSS.indexOf(":root", media));
+    const explicit = block(CSS, CSS.indexOf(':root[data-theme="dark"]'));
+
+    expect(Object.keys(explicit).length).toBeGreaterThan(15);
+    expect(explicit).toEqual(fromMedia);
+  });
+
+  it("leaves the light theme unstamped, so `system` really means system", () => {
+    // :root[data-theme="light"] must NOT exist: the light values live on bare :root,
+    // and the media query is written to stand down when that attribute is present.
+    expect(CSS).not.toContain(':root[data-theme="light"] {');
+    expect(CSS).toContain(':root:not([data-theme="light"])');
+  });
+});
+
 describe("motion", () => {
   it("switches the reveal cascade off entirely under reduced motion - NFR-A11Y-05", () => {
     const reduce = CSS.indexOf("@media (prefers-reduced-motion: reduce)");

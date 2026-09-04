@@ -169,3 +169,69 @@ test.describe("the result dialog", () => {
     await expect(openCells(page)).toHaveCount(0);
   });
 });
+
+test.describe("settings", () => {
+  test("changes the board, and remembers it across a reload", async ({ page }) => {
+    await page.goto("/?seed=20260903");
+    await page.getByTestId("open-settings").click();
+    await page.getByTestId("difficulty-expert").click();
+
+    await expect(page.locator("button.ms-cell")).toHaveCount(480);
+    await expect(page.getByTestId("mine-counter")).toHaveText("099");
+
+    await page.reload();
+    await expect(page.locator("button.ms-cell")).toHaveCount(480);
+  });
+
+  test("asks before throwing away a board that is under way", async ({ page }) => {
+    await page.goto("/?seed=20260903");
+    await expect(async () => {
+      await page.getByTestId("cell-40").click();
+      expect(await page.locator("button.ms-cell--open").count()).toBeGreaterThan(1);
+    }).toPass({ timeout: 10_000 });
+
+    await page.getByTestId("open-settings").click();
+    await page.getByTestId("difficulty-intermediate").click();
+    // still 81 cells: the question has not been answered
+    await expect(page.locator("button.ms-cell")).toHaveCount(81);
+
+    await page.getByTestId("abandon-confirm").click();
+    await expect(page.locator("button.ms-cell")).toHaveCount(256);
+  });
+
+  test("an explicit theme wins over the system preference, in both directions", async ({
+    page,
+  }) => {
+    await page.emulateMedia({ colorScheme: "light" });
+    await page.goto("/?seed=20260903");
+    const boardBg = () =>
+      page.locator(".ms-board").evaluate((el) => getComputedStyle(el).backgroundColor);
+    const light = await boardBg();
+
+    await page.getByTestId("theme-toggle").click();
+    const dark = await boardBg();
+    expect(dark).not.toBe(light);
+
+    // and it survives a reload rather than snapping back to the system choice
+    await page.reload();
+    expect(await boardBg()).toBe(dark);
+  });
+
+  test("sound is off until it is asked for - ADR-0008", async ({ page }) => {
+    await page.goto("/?seed=20260903");
+    await page.getByTestId("open-settings").click();
+    await expect(page.getByTestId("toggle-sound")).toHaveAttribute("aria-checked", "false");
+    await page.getByTestId("toggle-sound").click();
+    await expect(page.getByTestId("toggle-sound")).toHaveAttribute("aria-checked", "true");
+  });
+
+  test("ships no audio file at all - NFR-PERF-08", async ({ page }) => {
+    const media: string[] = [];
+    page.on("request", (r) => {
+      if (/\.(mp3|wav|ogg|m4a|aac)(\?|$)/i.test(r.url())) media.push(r.url());
+    });
+    await page.goto("/?seed=20260903");
+    await page.getByTestId("cell-40").click();
+    expect(media).toEqual([]);
+  });
+});

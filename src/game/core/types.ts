@@ -52,4 +52,4 @@ export type Action =
   | { type: "reveal"; index: number; at: number; seed: number }
   | { type: "mark"; index: number; allowUnsure: boolean }
   | { type: "chord"; index: number; at: number }
-  | { type: "reset" };
+  | { type: "reset"; difficulty: Difficulty };

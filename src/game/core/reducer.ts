@@ -25,7 +25,10 @@ export function initialState(difficulty: Difficulty): GameState {
  */
 export function reducer(state: GameState, action: Action): GameState {
   if (action.type === "reset") {
-    return initialState(state.difficulty);
+    // The difficulty rides on the action rather than being kept from the old state:
+    // "new board" and "new board at another size" are the same move, and having two
+    // ways to express it is how they drift apart.
+    return initialState(action.difficulty);
   }
 
   // Once the game is over it is over: no further move, and the clock stops because

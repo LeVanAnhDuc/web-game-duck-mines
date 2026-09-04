@@ -111,7 +111,7 @@ describe("reducer - winning", () => {
 describe("reducer - reset", () => {
   it("goes back to idle with an unplanted board", () => {
     const played = openFirst(7, 40);
-    const fresh = reducer(played, { type: "reset" });
+    const fresh = reducer(played, { type: "reset", difficulty: "beginner" });
     expect(fresh.status).toBe("idle");
     expect(fresh.board.mines).toBeNull();
     expect(fresh.startedAt).toBeNull();
@@ -120,12 +120,22 @@ describe("reducer - reset", () => {
     expect(fresh.difficulty).toBe("beginner");
   });
 
+  it("switches size when the reset asks for another difficulty", () => {
+    const played = openFirst(7, 40);
+    const bigger = reducer(played, { type: "reset", difficulty: "expert" });
+    expect(bigger.difficulty).toBe("expert");
+    expect(bigger.board.cols).toBe(30);
+    expect(bigger.board.rows).toBe(16);
+    expect(bigger.board.mineCount).toBe(99);
+    expect(bigger.board.marks).toHaveLength(480);
+  });
+
   it("works from a finished game", () => {
     let state = openFirst(3, 40);
     const mine = [...state.board.mines!].findIndex((m) => m === 1);
     state = reducer(state, { type: "reveal", index: mine, at: T0 + 1, seed: 1 });
     expect(state.status).toBe("lost");
-    expect(reducer(state, { type: "reset" }).status).toBe("idle");
+    expect(reducer(state, { type: "reset", difficulty: "beginner" }).status).toBe("idle");
   });
 });
 
