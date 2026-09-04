@@ -133,3 +133,34 @@ sửa được **trước khi** nó thành nước đi.
 - Thanh chế độ ở đáy che mất hàng ô cuối.
 
 **Chức năng liên quan:** FR-12 · FR-13
+
+---
+
+## US-05 · Tự đặt một bàn theo ý mình
+
+**Bối cảnh:** Người chơi thấy ba mức có sẵn không hợp — muốn một bàn rộng mà ít mìn để
+chơi thư giãn, hoặc một bàn nhỏ mà dày mìn để chơi nhanh.
+
+**Các bước:**
+1. Mở cài đặt, chọn "Tuỳ chỉnh".
+2. Đặt số cột, số hàng, số mìn.
+3. Thấy ngay mật độ mìn tương ứng, và thấy **trước khi bấm nước nào** rằng bàn này
+   không ghi kỷ lục.
+4. Bắt đầu chơi. Nếu bàn rộng hơn màn hình thì kéo/chụm như bàn Khó.
+5. Lần mở trang sau, cấu hình vừa đặt vẫn còn.
+
+**Kết quả mong đợi:** Chơi được đúng bàn mình muốn, và không bao giờ nhầm tưởng thời
+gian vừa lập là một kỷ lục.
+
+**Điều gì có thể sai:**
+- Đặt số mìn nhiều hơn số ô đặt được → phải chặn **ngay lúc nhập**, không phải lúc bấm
+  bắt đầu. Giới hạn thật là `cột × hàng − 9`, vì nước đầu luôn loại trừ vùng 3×3
+  ([ADR-0003](../decisions/0003-mines-planted-after-first-move.md)).
+- Đặt bàn 0 cột, hoặc 0 mìn, hoặc số âm.
+- Đặt bàn khổng lồ làm trình duyệt đứng khi vẽ.
+- Thắng một bàn tuỳ chỉnh rồi tưởng mình vừa phá kỷ lục.
+- Đổi cấu hình giữa lúc đang chơi mà không bị hỏi xác nhận.
+- Cấu hình lưu ở máy này mở ở máy khác có màn hình nhỏ hơn → phải chơi được, chỉ là
+  phải kéo.
+
+**Chức năng liên quan:** FR-16 · FR-13

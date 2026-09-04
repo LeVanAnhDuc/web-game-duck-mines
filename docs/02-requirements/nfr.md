@@ -37,6 +37,7 @@ vẫn có thể nhắc tới ID cũ.
 | ~~NFR-PERF-04~~ | ~~Mọi cột filter/sort đều có index~~ **(bỏ)** — không có bảng | — |
 | NFR-PERF-05 | Tính reveal cho vùng trống lớn nhất của bàn Khó (30×16) < 16ms | benchmark trong vitest, chạy trên bàn có seed cố định |
 | NFR-PERF-06 | Từ lúc chạm đến lúc bàn vẽ xong < 50ms trên bàn Khó | React Profiler, đo ở nước mở vùng lớn nhất |
+| NFR-PERF-08 | Âm thanh **không thêm một byte asset nào** — sinh lúc chạy, không file `.mp3`/`.wav`/`.ogg` trong `out/` | `scripts/check-bundle-size.mjs` + `git ls-files` |
 | NFR-PERF-07 | First-load JS < 200KB gzip | `scripts/check-bundle-size.mjs`, chạy trong CI. Đo từ **HTML đã xuất** chứ không đọc bảng `next build` — bảng đó đổi theo bản Next, HTML thì là thứ trình duyệt thật sự tải |
 
 ## Security
@@ -61,6 +62,7 @@ vẫn có thể nhắc tới ID cũ.
 | NFR-A11Y-05 | Tôn trọng `prefers-reduced-motion`: sóng mở ô tắt hoàn toàn, không giảm một nửa | review CSS + e2e |
 | NFR-A11Y-06 | Ô bàn cờ được miễn ngưỡng 44px, **với hai điều kiện**: cạnh ô ≥ 22px, và cơ chế chạm hai pha (đặt ngón để nhắm, nhấc ngón mới là hành động, nhấc ngoài ô thì huỷ) còn hoạt động | e2e ở 375px + thử tay trên máy thật |
 | NFR-A11Y-07 | Không dùng màu làm kênh duy nhất — chữ số phân biệt được khi bỏ hết màu; đã mở / chưa mở phân biệt bằng viền, không bằng độ sáng | screenshot ở chế độ grayscale |
+| NFR-A11Y-08 | Âm thanh **không bao giờ là kênh duy nhất**. Tắt tiếng thì không mất một mẩu thông tin nào — thua đã có ô đỏ, mìn hiện ra và dialog | chơi hết một ván với tiếng tắt |
 
 ## i18n
 

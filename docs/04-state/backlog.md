@@ -18,34 +18,26 @@ KHÔNG chứa: tính năng ngoài phạm vi (-> 01-product/overview.md §Non-Goa
 
 ## Đang làm
 
-**Không có việc nào đang dở.** `core-game` xong (PR #2, #3); CI + release + deploy
-xong (PR #5), mô phỏng theo `web-app-calculate-badminton` nhưng đổi cho khớp dự án
-này — Yarn thay npm, `out/` thay `dist/`, và thêm typecheck · lint · e2e · hai ngưỡng
-NFR vào CI.
+**Đang chạy loạt bốn feature còn lại**, sau một lượt brainstorm mở rộng phạm vi
+(04.09.2026). Hai Non-Goal đã được **sửa có điều kiện**, không bị xoá:
 
-**Đã chạy thật, không phải "đã cấu hình":**
+- bàn tuỳ chỉnh: cho phép, **nhưng không xếp hạng** ([ADR-0007](../decisions/0007-custom-boards-are-not-ranked.md))
+- âm thanh: **đúng một** tiếng nổ, sinh lúc chạy, **mặc định tắt** ([ADR-0008](../decisions/0008-one-sound-generated-at-runtime.md))
 
-- CI xanh lần đầu ở PR #5; số trên CI khớp số ở máy (first load **106.1 kB**, e2e
-  **124 pass**, audit **0**)
-- Deploy xanh → `https://levananhduc.github.io/web-game-minesweeper/` trả HTTP 200,
-  `basePath` áp đúng, và smoke test bằng Playwright trên **bản deploy thật**: 81 ô,
-  click đầu mở 50 ô, bộ đếm về `009` sau một lá cờ, **không lỗi console**
-- Release `v1.0.0` đã ra, note gom nhóm theo prefix commit
-- `NFR-SEC-05`: trước khi bật audit, dự án đang có **2 lỗ hổng mức HIGH** trong
-  `postcss` mà `next` ghim cứng ở 8.4.31 — vi phạm chính NFR của mình mà không ai
-  biết, vì chưa có gì chạy `yarn audit`. Vá bằng `resolutions`, giờ về 0
+Thứ tự: `settings-records` (+FR-18) → `touch` → `custom-board`. `touch` chen trước
+`custom-board` vì bàn tuỳ chỉnh tới 40 cột, làm nó trước pan/zoom là tạo ra cấu hình
+không chơi được rồi mới đi sửa ([ADR-0009](../decisions/0009-small-screens-pan-zoom-not-shrink.md)).
 
-Ba script kiểm được ở máy chứ không chỉ trong CI: `yarn release:next`,
-`yarn release:notes <tag>`, `yarn check:bundle`, `yarn check:audit`.
-
-Việc tiếp theo là feature `settings-records`.
+Người dùng đã miễn spec/plan per-feature cho loạt này.
 
 ## Việc tiếp theo
 
 | Việc | Liên quan | Ưu tiên | Vì sao ưu tiên đó |
 | --- | --- | --- | --- |
-| Feature `settings-records` | FR-09, FR-10, FR-14 | cao | Không có nó thì không đo được chỉ số thành công thứ nhất (kỷ lục theo độ khó), và nút ☾ / ⚙ trên header hiện đang `disabled` |
-| Feature `touch` | FR-12, FR-13 | trung bình | Là lý do dự án tồn tại, nhưng cần bàn chạy được trước mới thử được trên máy thật |
+| Feature `settings-records` | FR-09, FR-10, FR-14, FR-18 | cao | Không có nó thì không đo được chỉ số thành công thứ nhất (kỷ lục theo độ khó), và nút ☾ / ⚙ trên header hiện đang `disabled` |
+| Feature `touch` | FR-12, FR-13, FR-17 | cao | Là lý do dự án tồn tại. Và phải xong trước `custom-board` |
+| Feature `custom-board` | FR-16 | trung bình | Cần pan/zoom có sẵn trước |
+| Đo `NFR-PERF-06` ngay khi bàn Khó mở được | FR-13 | trung bình | Ngưỡng duy nhất trong dự án đang ghi nợ chứ chưa có số |
 
 ## Nợ kỹ thuật — cố ý làm tạm
 

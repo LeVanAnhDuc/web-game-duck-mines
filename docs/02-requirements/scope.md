@@ -35,9 +35,17 @@ KHÔNG chứa: cách hiện thực, ngưỡng phi chức năng (-> nfr.md), lý 
 | FR-12 | Chạm hai pha trên cảm ứng + thanh chế độ Mở/Cờ + giữ ngón để cắm cờ | US-04 | touch | chưa |
 | FR-13 | Pan/zoom bàn Khó trên màn hẹp; ẩn chữ số ở mức zoom nhìn tổng | US-04 | touch | chưa |
 | FR-15 | Xuất tĩnh + deploy GitHub Pages | — | deploy | xong |
+| FR-16 | Bàn tuỳ chỉnh: tự đặt cột × hàng × mìn. **Không ghi kỷ lục** | US-05 | custom-board | chưa |
+| FR-17 | Gợi ý xoay ngang khi bàn không vừa dọc mà vừa nếu xoay | US-04 | touch | chưa |
+| FR-18 | Tiếng nổ sinh bằng WebAudio + công tắc tắt tiếng, mặc định tắt | US-01 | settings-records | chưa |
 
-**Thứ tự làm:** `core-game` → `settings-records` → `touch` → `deploy`. Sau feature đầu
-đã có một game chơi được thật bằng chuột và bàn phím; ba feature sau mở rộng chứ không
-sửa lại nền.
+**Thứ tự làm:** `core-game` ✅ → `deploy` ✅ → `settings-records` → `touch` →
+`custom-board`.
 
-Bốn feature này là bốn `docs/specs/<feature>/`, bốn branch, bốn PR.
+`touch` chen **trước** `custom-board` là có chủ đích: bàn tuỳ chỉnh cho phép tới 40
+cột, và làm nó trước khi có pan/zoom là tạo ra một cấu hình **không chơi được** rồi
+mới đi sửa. Ngược lại thì bàn tuỳ chỉnh sinh ra đã nằm trong cơ chế xử lý sẵn.
+
+FR-18 (tiếng nổ) đi cùng `settings-records` chứ không thành feature riêng: công tắc
+của nó là **một dòng trong sheet cài đặt**, và tách ra thành một PR riêng nghĩa là
+sửa sheet hai lần.
