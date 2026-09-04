@@ -14,6 +14,7 @@ function view(overrides: Partial<Parameters<typeof Board>[0]> = {}) {
       status="playing"
       explodedIndex={null}
       cursor={0}
+      mode="reveal"
       onAct={noop}
       onKeyDown={noop}
       {...overrides}
@@ -52,6 +53,7 @@ describe("Board", () => {
         status="playing"
         explodedIndex={null}
         cursor={1}
+        mode="reveal"
         onAct={noop}
         onKeyDown={noop}
       />,
@@ -66,6 +68,7 @@ describe("Board", () => {
       status: "playing" as const,
       explodedIndex: null,
       cursor: 0,
+      mode: "reveal" as const,
       onAct: noop,
       onKeyDown: noop,
     };
@@ -83,6 +86,7 @@ describe("Board", () => {
         status="playing"
         explodedIndex={null}
         cursor={0}
+        mode="reveal"
         onAct={noop}
         onKeyDown={noop}
       />,
@@ -95,6 +99,7 @@ describe("Board", () => {
         status="lost"
         explodedIndex={1}
         cursor={0}
+        mode="reveal"
         onAct={noop}
         onKeyDown={noop}
       />,

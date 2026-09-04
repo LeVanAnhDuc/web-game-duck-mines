@@ -373,7 +373,10 @@ a:hover {
 }
 
 .ms-hud {
+  /* Follows the board's width so the two line up - but never past the screen: the
+   * board is what scrolls, the page is not (ADR-0009). */
   width: var(--board-width);
+  max-width: 100%;
   min-width: 240px;
 }
 
@@ -792,4 +795,127 @@ a:hover {
   font-size: 16px;
   font-weight: 500;
   font-variant-numeric: tabular-nums;
+}
+
+/* ── khung ban co: cuon trong chinh no, khong cuon ca trang ────────────────
+ * ADR-0009. The mine counter and the new-game button have to stay on screen
+ * exactly when the board is too big to fit, so the page never scrolls for it.
+ */
+.ms-viewport {
+  position: relative;
+  max-width: 100%;
+  overflow: auto;
+  overscroll-behavior: contain;
+  /* The browser owns the drag until the finger has settled - that is what makes a
+   * drag a pan and costs the player nothing. */
+  touch-action: pan-x pan-y pinch-zoom;
+}
+
+/* Once aiming starts, sliding retargets instead of panning. */
+.ms-viewport--aiming {
+  touch-action: none;
+}
+
+.ms-cell--aimed {
+  outline: 2px solid var(--ring-focus);
+  outline-offset: 1px;
+  z-index: 1;
+}
+
+/* Drawn above the finger, because the finger is on top of the cell it is choosing. */
+.ms-aim {
+  position: fixed;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--edge-cell-tile);
+  border-radius: 10px;
+  background: var(--bg-cell-open);
+  box-shadow: 0 4px 12px rgb(0 0 0 / 24%);
+  pointer-events: none;
+  transform: translate(-50%, calc(-100% - 28px));
+}
+
+.ms-aim-cell {
+  min-width: 22px;
+  height: 22px;
+  border: 1px solid var(--edge-cell-tile);
+  border-radius: var(--cell-radius);
+  background: var(--bg-cell-tile);
+  font-family: var(--font-num);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  text-align: center;
+}
+
+.ms-aim-kind {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ms-rotate {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: 10px;
+  background: var(--bg-board);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg-muted);
+}
+
+/* ── thanh che do ─────────────────────────────────────────────────────────── */
+.ms-modebar {
+  display: flex;
+  gap: var(--space-2);
+  width: var(--board-width);
+  max-width: 100%;
+  padding: var(--space-1);
+  border-radius: 12px;
+  background: var(--bg-board);
+}
+
+.ms-mode {
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 48px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  font: inherit;
+  font-weight: 600;
+  color: var(--fg-muted);
+  cursor: pointer;
+}
+
+.ms-mode svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ms-mode[aria-checked="true"] {
+  border-color: var(--edge-cell-tile);
+  background: var(--bg-cell-open);
+  color: var(--fg-default);
+}
+
+.ms-mode:focus-visible {
+  outline: 2px solid var(--ring-focus);
+  outline-offset: 2px;
+}
+
+/* A mouse already has three buttons for three actions. */
+@media (hover: hover) {
+  .ms-modebar {
+    display: none;
+  }
 }
