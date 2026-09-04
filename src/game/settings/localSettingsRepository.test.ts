@@ -63,9 +63,8 @@ describe("loadSettings", () => {
   it("fills in only the fields a partial object is missing", () => {
     store({ difficulty: "expert", sound: true });
     expect(loadSettings()).toEqual({
+      ...DEFAULT_SETTINGS,
       difficulty: "expert",
-      allowUnsure: DEFAULT_SETTINGS.allowUnsure,
-      theme: DEFAULT_SETTINGS.theme,
       sound: true,
     });
   });
@@ -73,6 +72,7 @@ describe("loadSettings", () => {
   it("defaults an unknown difficulty while keeping the other valid fields", () => {
     store({ difficulty: "impossible", allowUnsure: true, theme: "dark", sound: true });
     expect(loadSettings()).toEqual({
+      ...DEFAULT_SETTINGS,
       difficulty: "beginner",
       allowUnsure: true,
       theme: "dark",
@@ -83,6 +83,7 @@ describe("loadSettings", () => {
   it("defaults a theme of the wrong type while keeping the other valid fields", () => {
     store({ difficulty: "intermediate", allowUnsure: true, theme: 42, sound: true });
     expect(loadSettings()).toEqual({
+      ...DEFAULT_SETTINGS,
       difficulty: "intermediate",
       allowUnsure: true,
       theme: "system",
@@ -119,6 +120,8 @@ describe("saveSettings", () => {
       allowUnsure: true,
       theme: "dark",
       sound: true,
+      useCustom: false,
+      custom: { cols: 16, rows: 16, mineCount: 40 },
     };
     expect(saveSettings(settings)).toBe(true);
     expect(loadSettings()).toEqual(settings);
@@ -138,5 +141,23 @@ describe("saveSettings", () => {
       },
     });
     expect(saveSettings(DEFAULT_SETTINGS)).toBe(false);
+  });
+});
+
+describe("loadSettings - the custom board", () => {
+  it("brings a stored custom board back inside the limits rather than discarding it", () => {
+    // A board saved by a version with different bounds is still a board; the nearest
+    // legal one is a better answer than throwing the player back to 16x16.
+    store({ ...DEFAULT_SETTINGS, useCustom: true, custom: { cols: 999, rows: 1, mineCount: 0 } });
+    const loaded = loadSettings();
+    expect(loaded.useCustom).toBe(true);
+    expect(loaded.custom.cols).toBe(40);
+    expect(loaded.custom.rows).toBe(5);
+    expect(loaded.custom.mineCount).toBeGreaterThanOrEqual(1);
+  });
+
+  it("falls back to the default board when the stored one is not an object", () => {
+    store({ ...DEFAULT_SETTINGS, custom: "wide" });
+    expect(loadSettings().custom).toEqual(DEFAULT_SETTINGS.custom);
   });
 });

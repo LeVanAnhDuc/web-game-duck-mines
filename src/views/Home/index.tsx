@@ -3,15 +3,16 @@
 import {
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
   type CSSProperties,
   type KeyboardEvent,
 } from "react";
 import { Moon, Settings as SettingsIcon, Sun } from "lucide-react";
-import { DIFFICULTIES } from "@/game/core/constants";
+import { DIFFICULTIES, presetSpec } from "@/game/core/constants";
 import { hasWrongFlag } from "@/game/core/rules";
-import type { Difficulty, GameStatus } from "@/game/core/types";
+import type { BoardSpec, Difficulty, GameStatus } from "@/game/core/types";
 import { useBoardCursor } from "@/hooks/useBoardCursor";
 import { useGame } from "@/hooks/useGame";
 import { useRecords } from "@/hooks/useRecords";
@@ -58,10 +59,19 @@ const DIFFICULTY_NAMES: Record<Difficulty, string> = {
 export function Home() {
   const { settings, update } = useSettings();
   const { bestTimes, record, clear, storageAvailable } = useRecords();
-  const { state, act, reset } = useGame(settings.difficulty, settings.allowUnsure);
+  // The spec, not the difficulty: a custom board is a board like any other, it
+  // simply carries `ranked: null` (ADR-0007).
+  const spec: BoardSpec = useMemo(
+    () =>
+      settings.useCustom
+        ? { ...settings.custom, ranked: null }
+        : presetSpec(settings.difficulty),
+    [settings.useCustom, settings.custom, settings.difficulty],
+  );
+  const { state, act, reset } = useGame(spec, settings.allowUnsure);
   const playExplosion = useSound(settings.sound);
 
-  const { cols, rows, mineCount } = DIFFICULTIES[settings.difficulty];
+  const { cols, rows, mineCount } = spec;
   const { cursor, setCursor, move, moveToRowEdge } = useBoardCursor(cols, rows);
   const elapsed = useTimer(state.startedAt, state.endedAt, state.status);
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -84,11 +94,18 @@ export function Home() {
       return;
     }
     if (state.startedAt === null || state.endedAt === null) return;
+    // A board the player built is never recorded, however fast it was cleared. This
+    // is the one line ADR-0007 warned would be easy to get wrong in silence, so the
+    // decision reads off the board itself rather than off the settings.
+    if (state.ranked === null) {
+      setIsRecord(false);
+      return;
+    }
     // Seconds come from the two instants, never from what the clock happens to be
     // showing - ADR-0005.
     const seconds = Math.floor((state.endedAt - state.startedAt) / 1000);
-    setIsRecord(record(state.difficulty, seconds));
-  }, [state.status, state.startedAt, state.endedAt, state.difficulty, playExplosion, record]);
+    setIsRecord(record(state.ranked, seconds));
+  }, [state.status, state.startedAt, state.endedAt, state.ranked, playExplosion, record]);
 
   // The cursor is a position on THIS board; a different size has no such position.
   useEffect(() => setCursor(0), [cols, rows, setCursor]);
@@ -180,7 +197,18 @@ export function Home() {
       <Hud board={state.board} elapsed={elapsed} onReset={() => reset()} />
 
       <p className="ms-difficulty" data-testid="difficulty-label">
-        {strings.boardLabel(DIFFICULTY_NAMES[settings.difficulty], cols, rows, mineCount)}
+        {strings.boardLabel(
+          settings.useCustom ? strings.difficultyCustom : DIFFICULTY_NAMES[settings.difficulty],
+          cols,
+          rows,
+          mineCount,
+        )}
+        {settings.useCustom ? (
+          <span className="ms-unranked" data-testid="unranked-note">
+            {" · "}
+            {strings.customUnranked}
+          </span>
+        ) : null}
       </p>
 
       {rotateHint ? (
@@ -230,7 +258,8 @@ export function Home() {
         inProgress={state.status === "playing"}
         storageAvailable={storageAvailable}
         onUpdate={update}
-        onPickDifficulty={(difficulty) => update({ difficulty })}
+        onPickDifficulty={(difficulty) => update({ difficulty, useCustom: false })}
+        onPickCustom={(custom) => update({ custom, useCustom: true })}
         onClearRecords={clear}
         onClose={() => setSettingsOpen(false)}
       />

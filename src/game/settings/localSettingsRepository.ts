@@ -1,3 +1,4 @@
+import { clampCustom } from "@/game/core/custom";
 import { readJson, writeJson } from "@/game/storage/safeStorage";
 import type { Difficulty } from "@/game/core/types";
 import { DEFAULT_SETTINGS, type Settings, type ThemeChoice } from "./types";
@@ -53,6 +54,12 @@ export function loadSettings(): Settings {
         : DEFAULT_SETTINGS.allowUnsure,
     theme: isTheme(stored.theme) ? stored.theme : DEFAULT_SETTINGS.theme,
     sound: typeof stored.sound === "boolean" ? stored.sound : DEFAULT_SETTINGS.sound,
+    useCustom:
+      typeof stored.useCustom === "boolean" ? stored.useCustom : DEFAULT_SETTINGS.useCustom,
+    // Clamped rather than validated: a stored custom board from a version with
+    // different limits is still a board, and the nearest legal one is a better
+    // answer than throwing the player back to 16x16.
+    custom: clampCustom(isRecord(stored.custom) ? (stored.custom as never) : DEFAULT_SETTINGS.custom),
   };
 }
 

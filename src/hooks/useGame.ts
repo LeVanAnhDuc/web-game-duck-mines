@@ -2,14 +2,14 @@
 
 import { useCallback, useEffect, useReducer, useRef } from "react";
 import { initialState, reducer } from "@/game/core/reducer";
-import type { ActKind, Difficulty } from "@/game/core/types";
+import type { ActKind, BoardSpec } from "@/game/core/types";
 
 /**
  * The only place with side effects: it supplies Date.now and the seed, which the
  * reducer may not reach for itself (invariants #1, #5).
  */
-export function useGame(difficulty: Difficulty, allowUnsure: boolean) {
-  const [state, dispatch] = useReducer(reducer, difficulty, initialState);
+export function useGame(spec: BoardSpec, allowUnsure: boolean) {
+  const [state, dispatch] = useReducer(reducer, spec, initialState);
 
   // Bumped on every new board so two boards in a row are never the same one.
   const round = useRef(0);
@@ -42,20 +42,20 @@ export function useGame(difficulty: Difficulty, allowUnsure: boolean) {
     [allowUnsure, nextSeed],
   );
 
-  const reset = useCallback(
-    (next: Difficulty = difficulty) => {
-      round.current += 1;
-      dispatch({ type: "reset", difficulty: next });
-    },
-    [difficulty],
-  );
+  const reset = useCallback(() => {
+    round.current += 1;
+    dispatch({ type: "reset", spec });
+  }, [spec]);
 
-  // Changing difficulty IS starting a new board - there is no such thing as the same
-  // board at another size. It runs on mount too, which costs an untouched board.
+  // Changing the board IS starting a new one - there is no such thing as the same
+  // board at another size. The spec is compared by value, not by identity, so a
+  // re-render that rebuilds an equal object does not throw the board away.
+  const signature = `${spec.cols}x${spec.rows}x${spec.mineCount}:${spec.ranked ?? ""}`;
   useEffect(() => {
     round.current += 1;
-    dispatch({ type: "reset", difficulty });
-  }, [difficulty]);
+    dispatch({ type: "reset", spec });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signature]);
 
   return { state, act, reset };
 }

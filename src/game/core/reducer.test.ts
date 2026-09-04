@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { neighbours } from "./board";
+import { presetSpec } from "./constants";
 import { initialState, reducer } from "./reducer";
 import { isWon } from "./rules";
 import { FLAGGED, REVEALED, type GameState } from "./types";
@@ -7,7 +8,7 @@ import { FLAGGED, REVEALED, type GameState } from "./types";
 const T0 = 1_700_000_000_000;
 
 function openFirst(seed: number, index: number, at = T0): GameState {
-  return reducer(initialState("beginner"), { type: "reveal", index, at, seed });
+  return reducer(initialState(presetSpec("beginner")), { type: "reveal", index, at, seed });
 }
 
 describe("reducer - the first move", () => {
@@ -34,7 +35,7 @@ describe("reducer - the first move", () => {
   });
 
   it("does not start the clock on a flag", () => {
-    const state = reducer(initialState("beginner"), {
+    const state = reducer(initialState(presetSpec("beginner")), {
       type: "mark",
       index: 0,
       allowUnsure: false,
@@ -45,7 +46,7 @@ describe("reducer - the first move", () => {
   });
 
   it("ignores a chord before the first move - there is no number to chord against", () => {
-    const start = initialState("beginner");
+    const start = initialState(presetSpec("beginner"));
     expect(reducer(start, { type: "chord", index: 40, at: T0 })).toBe(start);
   });
 });
@@ -111,19 +112,19 @@ describe("reducer - winning", () => {
 describe("reducer - reset", () => {
   it("goes back to idle with an unplanted board", () => {
     const played = openFirst(7, 40);
-    const fresh = reducer(played, { type: "reset", difficulty: "beginner" });
+    const fresh = reducer(played, { type: "reset", spec: presetSpec("beginner") });
     expect(fresh.status).toBe("idle");
     expect(fresh.board.mines).toBeNull();
     expect(fresh.startedAt).toBeNull();
     expect(fresh.endedAt).toBeNull();
     expect(fresh.explodedIndex).toBeNull();
-    expect(fresh.difficulty).toBe("beginner");
+    expect(fresh.ranked).toBe("beginner");
   });
 
   it("switches size when the reset asks for another difficulty", () => {
     const played = openFirst(7, 40);
-    const bigger = reducer(played, { type: "reset", difficulty: "expert" });
-    expect(bigger.difficulty).toBe("expert");
+    const bigger = reducer(played, { type: "reset", spec: presetSpec("expert") });
+    expect(bigger.ranked).toBe("expert");
     expect(bigger.board.cols).toBe(30);
     expect(bigger.board.rows).toBe(16);
     expect(bigger.board.mineCount).toBe(99);
@@ -135,7 +136,7 @@ describe("reducer - reset", () => {
     const mine = [...state.board.mines!].findIndex((m) => m === 1);
     state = reducer(state, { type: "reveal", index: mine, at: T0 + 1, seed: 1 });
     expect(state.status).toBe("lost");
-    expect(reducer(state, { type: "reset", difficulty: "beginner" }).status).toBe("idle");
+    expect(reducer(state, { type: "reset", spec: presetSpec("beginner") }).status).toBe("idle");
   });
 });
 

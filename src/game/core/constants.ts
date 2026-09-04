@@ -1,4 +1,4 @@
-import type { Difficulty } from "./types";
+import type { BoardSpec, Difficulty } from "./types";
 
 export type DifficultySpec = {
   cols: number;
@@ -14,3 +14,8 @@ export const DIFFICULTIES: Record<Difficulty, DifficultySpec> = {
 };
 
 export const DIFFICULTY_ORDER: Difficulty[] = ["beginner", "intermediate", "expert"];
+
+/** The three presets as board specs: playing one of them counts towards its record. */
+export function presetSpec(difficulty: Difficulty): BoardSpec {
+  return { ...DIFFICULTIES[difficulty], ranked: difficulty };
+}

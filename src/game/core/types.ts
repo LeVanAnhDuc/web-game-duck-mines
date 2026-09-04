@@ -25,8 +25,24 @@ export type Board = {
   marks: Uint8Array;
 };
 
+/**
+ * A board to play, and whether a win on it counts.
+ *
+ * `ranked` is null for a board the player built (ADR-0007): custom boards are fully
+ * playable and never enter the record table. It travels WITH the board rather than
+ * being worked out later from its size, because "is this the expert board or a
+ * 30x16 someone typed in" is exactly the question that gets answered wrong once.
+ */
+export type BoardSpec = {
+  cols: number;
+  rows: number;
+  mineCount: number;
+  ranked: Difficulty | null;
+};
+
 export type GameState = {
-  difficulty: Difficulty;
+  /** null when this board is not ranked - see BoardSpec */
+  ranked: Difficulty | null;
   board: Board;
   status: GameStatus;
   /** when the first move happened. The clock itself is NOT here - ADR-0005. */
@@ -52,4 +68,4 @@ export type Action =
   | { type: "reveal"; index: number; at: number; seed: number }
   | { type: "mark"; index: number; allowUnsure: boolean }
   | { type: "chord"; index: number; at: number }
-  | { type: "reset"; difficulty: Difficulty };
+  | { type: "reset"; spec: BoardSpec };

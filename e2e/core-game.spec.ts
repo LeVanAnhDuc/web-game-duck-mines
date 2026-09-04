@@ -235,3 +235,44 @@ test.describe("settings", () => {
     expect(media).toEqual([]);
   });
 });
+
+test.describe("FR-16: a custom board", () => {
+  test("is built as asked, is playable, and says it is not ranked", async ({ page }) => {
+    await page.goto("/?seed=20260903");
+    await page.getByTestId("open-settings").click();
+    await page.getByTestId("difficulty-custom").click();
+    await page.getByTestId("custom-cols").fill("7");
+    await page.getByTestId("custom-rows").fill("6");
+    await page.getByTestId("custom-mines").fill("5");
+    await page.getByTestId("settings-scrim").click({ position: { x: 5, y: 5 } });
+
+    await expect(page.locator("button.ms-cell")).toHaveCount(42);
+    await expect(page.getByTestId("mine-counter")).toHaveText("005");
+    await expect(page.getByTestId("unranked-note")).toBeVisible();
+  });
+
+  test("refuses more mines than the opening 3x3 leaves room for", async ({ page }) => {
+    await page.goto("/?seed=20260903");
+    await page.getByTestId("open-settings").click();
+    await page.getByTestId("difficulty-custom").click();
+    await page.getByTestId("custom-cols").fill("5");
+    await page.getByTestId("custom-rows").fill("5");
+    await page.getByTestId("custom-mines").fill("900");
+    // clamped as it is typed, not when start is pressed
+    await expect(page.getByTestId("custom-mines")).toHaveValue("16");
+  });
+
+  test("survives a reload, board and all", async ({ page }) => {
+    await page.goto("/?seed=20260903");
+    await page.getByTestId("open-settings").click();
+    await page.getByTestId("difficulty-custom").click();
+    await page.getByTestId("custom-cols").fill("12");
+    await page.getByTestId("custom-rows").fill("8");
+    await page.getByTestId("settings-scrim").click({ position: { x: 5, y: 5 } });
+    await expect(page.locator("button.ms-cell")).toHaveCount(96);
+
+    await page.reload();
+    await expect(page.locator("button.ms-cell")).toHaveCount(96);
+    await expect(page.getByTestId("unranked-note")).toBeVisible();
+  });
+});

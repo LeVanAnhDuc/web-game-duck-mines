@@ -45,10 +45,19 @@ export const strings = {
   difficultyBeginner: "Dễ",
   difficultyIntermediate: "Trung bình",
   difficultyExpert: "Khó",
+  difficultyCustom: "Tuỳ chỉnh",
+  customUnranked: "không tính kỷ lục",
   difficultySpec: (cols: number, rows: number, mines: number) =>
     `${cols}×${rows} · ${mines} mìn`,
 
   abandonQuestion: (name: string) => `Bỏ bàn đang chơi để sang mức ${name}?`,
+  customCols: "Cột",
+  customRows: "Hàng",
+  customMines: "Mìn",
+  customDensity: (percent: number) => `Mật độ mìn ${percent}% (mức Khó là 21%)`,
+  customMaxMines: (max: number) =>
+    `Nhiều nhất ${max} mìn: nước đầu luôn chừa trống ô đã bấm và 8 ô quanh nó.`,
+  customNotRanked: "Bàn tự đặt không ghi kỷ lục. Ba mức có sẵn vẫn giữ bảng riêng.",
   abandonConfirm: "Bỏ bàn",
   abandonCancel: "Giữ lại",
 
