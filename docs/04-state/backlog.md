@@ -18,26 +18,24 @@ KHÔNG chứa: tính năng ngoài phạm vi (-> 01-product/overview.md §Non-Goa
 
 ## Đang làm
 
-**Không có việc nào đang dở.** Feature `core-game` xong, đã merge lên `main` qua PR
-#2 và #3. Số đo thật, chạy ra ở phiên 03.09.2026:
+**Không có việc nào đang dở.** `core-game` xong (PR #2, #3); CI + release + deploy vừa
+thêm ở nhánh `ci/actions-and-releases`, mô phỏng theo `web-app-calculate-badminton`
+nhưng đổi cho khớp dự án này (Yarn thay npm, `out/` thay `dist/`, thêm typecheck ·
+lint · e2e · hai ngưỡng NFR vào CI).
 
-- **150** unit + component test xanh · **124** e2e xanh ở 375 / 768 / 1024 / 1440
-- `yarn lint` và `yarn typecheck` sạch
-- First Load JS **108 kB** — ngưỡng `NFR-PERF-07` là 200 kB
-- `NFR-PERF-05`: **0.010ms** cho vùng trống lớn nhất bàn Khó (106 ô) — ngưỡng 16ms
-- `NFR-A11Y-01`: 8 màu số đo lại mỗi lần chạy test, ≥ 4.66:1 (sáng) và ≥ 6.19:1 (tối)
+Số đo thật, chạy ra ở phiên 04.09.2026:
 
-Hai thứ PR #3 sửa mà đáng nhớ: **dialog kết quả** có trong mockup đã duyệt nhưng PR #2
-bỏ sót (dựng bù, không phải hoãn); và e2e đổi từ `python -m http.server` sang
-`scripts/serve.mjs` — server Python đơn luồng làm 93/124 test fail y như bug ứng dụng
-khi 4 project chạy song song, mà chạy riêng thì xanh.
+- **150** unit + component test · **124** e2e ở 375 / 768 / 1024 / 1440
+- `NFR-PERF-07`: first-load JS **106.2 kB** gzip / 200 kB (thêm 38.7 kB polyfill chỉ
+  gửi cho browser cũ — 144.9 kB trường hợp xấu nhất)
+- `NFR-SEC-05`: **0** lỗ hổng. Trước đó có **2 mức HIGH** trong `postcss` mà `next`
+  ghim cứng ở 8.4.31 — tức dự án đang vi phạm chính NFR của mình mà không ai biết, vì
+  chưa có gì chạy `yarn audit`. Vá bằng `resolutions: { postcss: ^8.5.18 }`
+- `NFR-PERF-05`: **0.010ms** cho vùng trống lớn nhất bàn Khó (106 ô) / 16ms
 
-Canvas mockup của `core-game`:
-`https://claude.ai/code/artifact/6cf98b19-3c5b-41f7-8184-765ef4ea9cf9` — nguồn ở
-`.design/` (gitignored). Mockup **đi trước code đúng một chi tiết**: artboard 375 có
-thanh Mở/Cờ, đó là FR-12 của feature `touch`.
-
-Việc tiếp theo là `settings-records`.
+GitHub Pages đã bật ở chế độ `workflow`:
+`https://levananhduc.github.io/web-game-minesweeper/` — chưa có lần deploy nào chạy,
+nên FR-15 đang ở trạng thái `đang` chứ chưa `xong`.
 
 ## Việc tiếp theo
 
@@ -45,7 +43,7 @@ Việc tiếp theo là `settings-records`.
 | --- | --- | --- | --- |
 | Feature `settings-records` | FR-09, FR-10, FR-14 | cao | Không có nó thì không đo được chỉ số thành công thứ nhất (kỷ lục theo độ khó), và nút ☾ / ⚙ trên header hiện đang `disabled` |
 | Feature `touch` | FR-12, FR-13 | trung bình | Là lý do dự án tồn tại, nhưng cần bàn chạy được trước mới thử được trên máy thật |
-| Feature `deploy` | FR-15 | thấp | Làm cuối, nhưng `next.config.ts` phải có `output: "export"` **từ commit đầu** — thêm sau thì phát hiện ra một loạt thứ không xuất tĩnh được |
+| Xác nhận lần deploy đầu lên Pages xanh, rồi chuyển FR-15 sang `xong` | FR-15 | cao | Workflow đã viết và Pages đã bật, nhưng chưa lần nào chạy thật. Chưa chạy thì chưa biết |
 
 ## Nợ kỹ thuật — cố ý làm tạm
 

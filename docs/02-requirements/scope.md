@@ -34,7 +34,7 @@ KHÔNG chứa: cách hiện thực, ngưỡng phi chức năng (-> nfr.md), lý 
 | FR-14 | Sáng/tối theo hệ thống, có ghi đè, nhớ lựa chọn | US-03 | settings-records | chưa |
 | FR-12 | Chạm hai pha trên cảm ứng + thanh chế độ Mở/Cờ + giữ ngón để cắm cờ | US-04 | touch | chưa |
 | FR-13 | Pan/zoom bàn Khó trên màn hẹp; ẩn chữ số ở mức zoom nhìn tổng | US-04 | touch | chưa |
-| FR-15 | Xuất tĩnh + deploy GitHub Pages | — | deploy | chưa |
+| FR-15 | Xuất tĩnh + deploy GitHub Pages | — | deploy | đang |
 
 **Thứ tự làm:** `core-game` → `settings-records` → `touch` → `deploy`. Sau feature đầu
 đã có một game chơi được thật bằng chuột và bàn phím; ba feature sau mở rộng chứ không
