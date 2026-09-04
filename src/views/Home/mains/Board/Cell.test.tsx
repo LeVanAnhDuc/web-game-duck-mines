@@ -15,6 +15,7 @@ function draw(overrides: Partial<CellProps> = {}) {
     exploded: false,
     wrongFlag: false,
     focused: false,
+    aimed: false,
     onAct,
     ...overrides,
   };

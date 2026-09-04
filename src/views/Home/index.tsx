@@ -17,10 +17,13 @@ import { useGame } from "@/hooks/useGame";
 import { useRecords } from "@/hooks/useRecords";
 import { useSettings } from "@/hooks/useSettings";
 import { useSound } from "@/hooks/useSound";
+import { useRotateHint } from "@/hooks/useRotateHint";
 import { useTimer } from "@/hooks/useTimer";
+import type { TapMode } from "@/game/input/touchGesture";
 import { strings } from "@/lib/strings";
 import { Board } from "./mains/Board";
 import { Hud } from "./mains/Hud";
+import { ModeBar } from "./mains/ModeBar";
 import { ResultDialog } from "./mains/ResultDialog";
 import { SettingsSheet } from "./mains/SettingsSheet";
 
@@ -63,6 +66,9 @@ export function Home() {
   const elapsed = useTimer(state.startedAt, state.endedAt, state.status);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [isRecord, setIsRecord] = useState(false);
+  // Not a setting: it is where your thumb is right now, and it resets with the board.
+  const [mode, setMode] = useState<TapMode>("reveal");
+  const rotateHint = useRotateHint(cols);
 
   // Settle the end of a board exactly once. Watching `status` without remembering
   // what it was would fire again on any unrelated re-render, and record the same win
@@ -177,14 +183,23 @@ export function Home() {
         {strings.boardLabel(DIFFICULTY_NAMES[settings.difficulty], cols, rows, mineCount)}
       </p>
 
+      {rotateHint ? (
+        <p className="ms-rotate" role="status" data-testid="rotate-hint">
+          {strings.rotateHint}
+        </p>
+      ) : null}
+
       <Board
         board={state.board}
         status={state.status}
         explodedIndex={state.explodedIndex}
         cursor={cursor}
+        mode={mode}
         onAct={act}
         onKeyDown={onKeyDown}
       />
+
+      <ModeBar mode={mode} onChange={setMode} />
 
       <p className="ms-sr-only" role="status" data-testid="outcome">
         {state.status === "won"

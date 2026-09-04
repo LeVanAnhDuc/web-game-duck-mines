@@ -25,6 +25,9 @@ export default defineConfig({
     { name: "tablet-768", use: { ...devices["Desktop Chrome"], viewport: { width: 768, height: 900 } } },
     { name: "laptop-1024", use: { ...devices["Desktop Chrome"], viewport: { width: 1024, height: 768 } } },
     { name: "desktop-1440", use: { ...devices["Desktop Chrome"], viewport: { width: 1440, height: 900 } } },
+    // A real touch screen, because the two-phase gesture cannot be exercised with a
+    // mouse - the whole point of it is that it branches on pointerType (ADR-0004).
+    { name: "touch-phone", use: { ...devices["Pixel 5"] } },
   ],
   webServer: {
     command: `node scripts/serve.mjs ${PORT} out`,

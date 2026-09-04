@@ -66,6 +66,11 @@ export const strings = {
   clearRecords: "Xoá kỷ lục",
   recordsStorageOff: "Máy này không cho lưu, nên kỷ lục sẽ mất khi đóng tab.",
 
+  modeDig: "Mở",
+  modeFlag: "Cờ",
+  modeSwitch: "Chọn kiểu chạm",
+  rotateHint: "Xoay ngang để thấy cả bàn.",
+
   hintRightClick: "Chuột phải cắm cờ",
   hintMiddleClick: "Chuột giữa mở quanh",
   hintKeys: "Mũi tên di chuyển, Space mở, F cắm cờ, R bàn mới",

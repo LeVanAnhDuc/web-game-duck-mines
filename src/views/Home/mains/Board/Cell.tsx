@@ -14,6 +14,8 @@ export type CellProps = {
   exploded: boolean;
   wrongFlag: boolean;
   focused: boolean;
+  /** the cell the finger is currently pointing at, before it lifts */
+  aimed: boolean;
   onAct: (index: number, kind: ActKind) => void;
 };
 
@@ -39,6 +41,7 @@ function CellImpl({
   exploded,
   wrongFlag,
   focused,
+  aimed,
   onAct,
 }: CellProps) {
   cellRenderCount.value += 1;
@@ -56,6 +59,7 @@ function CellImpl({
         "ms-cell",
         open ? "ms-cell--open" : "ms-cell--tile",
         exploded ? "ms-cell--boom" : "",
+        aimed ? "ms-cell--aimed" : "",
         open && !isMine && adj > 0 ? `ms-num-${adj}` : "",
       ]
         .filter(Boolean)
