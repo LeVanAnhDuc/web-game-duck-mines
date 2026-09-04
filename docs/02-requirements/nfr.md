@@ -37,7 +37,7 @@ vẫn có thể nhắc tới ID cũ.
 | ~~NFR-PERF-04~~ | ~~Mọi cột filter/sort đều có index~~ **(bỏ)** — không có bảng | — |
 | NFR-PERF-05 | Tính reveal cho vùng trống lớn nhất của bàn Khó (30×16) < 16ms | benchmark trong vitest, chạy trên bàn có seed cố định |
 | NFR-PERF-06 | Từ lúc chạm đến lúc bàn vẽ xong < 50ms trên bàn Khó | React Profiler, đo ở nước mở vùng lớn nhất |
-| NFR-PERF-07 | First-load JS < 200KB gzip | số `next build` in ra, kiểm trong CI |
+| NFR-PERF-07 | First-load JS < 200KB gzip | `scripts/check-bundle-size.mjs`, chạy trong CI. Đo từ **HTML đã xuất** chứ không đọc bảng `next build` — bảng đó đổi theo bản Next, HTML thì là thứ trình duyệt thật sự tải |
 
 ## Security
 
@@ -47,7 +47,7 @@ vẫn có thể nhắc tới ID cũ.
 | NFR-SEC-02 | Không log gì ra console ở bản production | grep `console.` trong CI |
 | ~~NFR-SEC-03~~ | ~~Rate limit endpoint đăng nhập~~ **(bỏ)** — không có đăng nhập | — |
 | NFR-SEC-04 | Secret chỉ đọc từ biến môi trường. Không hardcode, không commit | grep + review |
-| NFR-SEC-05 | Dependency không có lỗ hổng mức high trở lên | `yarn audit` trong CI |
+| NFR-SEC-05 | Dependency không có lỗ hổng mức high trở lên | `yarn audit --json \| node scripts/check-audit.mjs`, chạy trong CI. `yarn audit` một mình không diễn đạt được "high trở lên": Yarn 1 trả bitmask gộp mọi mức, nên một lỗ hổng moderate cũng làm đỏ CI |
 | ~~NFR-SEC-06~~ | ~~Lỗi trả về client không chứa stack trace~~ **(bỏ)** — không có lỗi từ server | — |
 
 ## Accessibility

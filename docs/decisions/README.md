@@ -13,6 +13,7 @@
 | [ADR-0003](0003-mines-planted-after-first-move.md) | Sinh mìn sau nước đầu, loại trừ ô đã bấm và 8 ô kề | 2026-09-03 | accepted |
 | [ADR-0004](0004-input-branches-on-pointertype.md) | Phân nhánh input theo `pointerType`, không theo user-agent | 2026-09-03 | accepted |
 | [ADR-0005](0005-timer-outside-gamestate.md) | Đồng hồ nằm ngoài `GameState`, reducer chỉ giữ mốc bắt đầu | 2026-09-03 | accepted |
+| [ADR-0006](0006-releases-derived-from-commits.md) | Tự suy version và release note từ Conventional Commits, không dùng semantic-release | 2026-09-04 | accepted |
 <!-- END:auto -->
 
 Trạng thái: `accepted` · `superseded by ADR-00xx` · `deprecated`

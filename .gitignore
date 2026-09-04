@@ -18,6 +18,9 @@
 *.tsbuildinfo
 yarn-error.log
 
+# Sinh ra trong workflow release, khong commit
+/RELEASE_NOTES.md
+
 # Playwright
 /test-results/
 /playwright-report/
