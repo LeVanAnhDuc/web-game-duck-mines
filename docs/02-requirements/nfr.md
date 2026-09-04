@@ -36,7 +36,7 @@ vẫn có thể nhắc tới ID cũ.
 | ~~NFR-PERF-03~~ | ~~Không có truy vấn N+1~~ **(bỏ)** — không có datastore | — |
 | ~~NFR-PERF-04~~ | ~~Mọi cột filter/sort đều có index~~ **(bỏ)** — không có bảng | — |
 | NFR-PERF-05 | Tính reveal cho vùng trống lớn nhất của bàn Khó (30×16) < 16ms | benchmark trong vitest, chạy trên bàn có seed cố định |
-| NFR-PERF-06 | Từ lúc chạm đến lúc bàn vẽ xong < 50ms trên bàn Khó | React Profiler, đo ở nước mở vùng lớn nhất |
+| NFR-PERF-06 | Từ lúc chạm đến lúc bàn vẽ xong < 50ms trên bàn Khó | e2e `NFR-PERF-06` trong `e2e/touch.spec.ts`: click rồi chờ **hai** frame, tức là sau khi đã vẽ xong. **Đo 04.09.2026: 26.6ms và 35.5ms** |
 | NFR-PERF-08 | Âm thanh **không thêm một byte asset nào** — sinh lúc chạy, không file `.mp3`/`.wav`/`.ogg` trong `out/` | `scripts/check-bundle-size.mjs` + `git ls-files` |
 | NFR-PERF-07 | First-load JS < 200KB gzip | `scripts/check-bundle-size.mjs`, chạy trong CI. Đo từ **HTML đã xuất** chứ không đọc bảng `next build` — bảng đó đổi theo bản Next, HTML thì là thứ trình duyệt thật sự tải |
 
