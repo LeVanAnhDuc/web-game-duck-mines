@@ -18,24 +18,27 @@ KHÔNG chứa: tính năng ngoài phạm vi (-> 01-product/overview.md §Non-Goa
 
 ## Đang làm
 
-**Không có việc nào đang dở.** `core-game` xong (PR #2, #3); CI + release + deploy vừa
-thêm ở nhánh `ci/actions-and-releases`, mô phỏng theo `web-app-calculate-badminton`
-nhưng đổi cho khớp dự án này (Yarn thay npm, `out/` thay `dist/`, thêm typecheck ·
-lint · e2e · hai ngưỡng NFR vào CI).
+**Không có việc nào đang dở.** `core-game` xong (PR #2, #3); CI + release + deploy
+xong (PR #5), mô phỏng theo `web-app-calculate-badminton` nhưng đổi cho khớp dự án
+này — Yarn thay npm, `out/` thay `dist/`, và thêm typecheck · lint · e2e · hai ngưỡng
+NFR vào CI.
 
-Số đo thật, chạy ra ở phiên 04.09.2026:
+**Đã chạy thật, không phải "đã cấu hình":**
 
-- **150** unit + component test · **124** e2e ở 375 / 768 / 1024 / 1440
-- `NFR-PERF-07`: first-load JS **106.2 kB** gzip / 200 kB (thêm 38.7 kB polyfill chỉ
-  gửi cho browser cũ — 144.9 kB trường hợp xấu nhất)
-- `NFR-SEC-05`: **0** lỗ hổng. Trước đó có **2 mức HIGH** trong `postcss` mà `next`
-  ghim cứng ở 8.4.31 — tức dự án đang vi phạm chính NFR của mình mà không ai biết, vì
-  chưa có gì chạy `yarn audit`. Vá bằng `resolutions: { postcss: ^8.5.18 }`
-- `NFR-PERF-05`: **0.010ms** cho vùng trống lớn nhất bàn Khó (106 ô) / 16ms
+- CI xanh lần đầu ở PR #5; số trên CI khớp số ở máy (first load **106.1 kB**, e2e
+  **124 pass**, audit **0**)
+- Deploy xanh → `https://levananhduc.github.io/web-game-minesweeper/` trả HTTP 200,
+  `basePath` áp đúng, và smoke test bằng Playwright trên **bản deploy thật**: 81 ô,
+  click đầu mở 50 ô, bộ đếm về `009` sau một lá cờ, **không lỗi console**
+- Release `v1.0.0` đã ra, note gom nhóm theo prefix commit
+- `NFR-SEC-05`: trước khi bật audit, dự án đang có **2 lỗ hổng mức HIGH** trong
+  `postcss` mà `next` ghim cứng ở 8.4.31 — vi phạm chính NFR của mình mà không ai
+  biết, vì chưa có gì chạy `yarn audit`. Vá bằng `resolutions`, giờ về 0
 
-GitHub Pages đã bật ở chế độ `workflow`:
-`https://levananhduc.github.io/web-game-minesweeper/` — chưa có lần deploy nào chạy,
-nên FR-15 đang ở trạng thái `đang` chứ chưa `xong`.
+Ba script kiểm được ở máy chứ không chỉ trong CI: `yarn release:next`,
+`yarn release:notes <tag>`, `yarn check:bundle`, `yarn check:audit`.
+
+Việc tiếp theo là feature `settings-records`.
 
 ## Việc tiếp theo
 
@@ -43,7 +46,6 @@ nên FR-15 đang ở trạng thái `đang` chứ chưa `xong`.
 | --- | --- | --- | --- |
 | Feature `settings-records` | FR-09, FR-10, FR-14 | cao | Không có nó thì không đo được chỉ số thành công thứ nhất (kỷ lục theo độ khó), và nút ☾ / ⚙ trên header hiện đang `disabled` |
 | Feature `touch` | FR-12, FR-13 | trung bình | Là lý do dự án tồn tại, nhưng cần bàn chạy được trước mới thử được trên máy thật |
-| Xác nhận lần deploy đầu lên Pages xanh, rồi chuyển FR-15 sang `xong` | FR-15 | cao | Workflow đã viết và Pages đã bật, nhưng chưa lần nào chạy thật. Chưa chạy thì chưa biết |
 
 ## Nợ kỹ thuật — cố ý làm tạm
 

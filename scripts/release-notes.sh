@@ -58,8 +58,11 @@ printf '%s\n' "$sections" | while IFS=: read -r type heading; do
     grep -E "^${type}(\([^)]*\))?:" || true)
   [ -z "$lines" ] && continue
 
-  # build/ci/chore share one heading; print it once
+  # build/ci/chore share one heading. The blank line goes BEFORE a new heading
+  # rather than after every type, or those three leave a gap in the middle of
+  # their own list.
   if [ "$heading" != "$seen_heading" ]; then
+    [ -n "$seen_heading" ] && printf '\n'
     printf '### %s\n\n' "$heading"
     seen_heading=$heading
   fi
@@ -74,8 +77,8 @@ printf '%s\n' "$sections" | while IFS=: read -r type heading; do
       printf -- '- %s (%s)\n' "$text" "$hash"
     fi
   done
-  printf '\n'
 done
+printf '\n'
 
 # Anything that is not a Conventional Commit at all. Listed rather than dropped:
 # silently swallowing commits is how a release note starts lying.
