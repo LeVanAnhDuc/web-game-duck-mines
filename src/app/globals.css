@@ -919,3 +919,60 @@ a:hover {
     display: none;
   }
 }
+
+/* ── ban tuy chinh ────────────────────────────────────────────────────────── */
+.ms-custom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--edge-cell-tile);
+  border-radius: 10px;
+  background: var(--bg-board);
+}
+
+.ms-fields {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.ms-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.ms-field-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--fg-muted);
+}
+
+.ms-field-input {
+  min-height: var(--tap-min);
+  padding: 0 var(--space-2);
+  border: 1px solid var(--edge-cell-tile);
+  border-radius: 8px;
+  background: var(--bg-cell-open);
+  font-family: var(--font-num);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--fg-default);
+}
+
+.ms-field-input:focus-visible {
+  outline: 2px solid var(--ring-focus);
+  outline-offset: 1px;
+}
+
+/* Said before the first move, not after a win - ADR-0007. */
+.ms-help--warn {
+  font-weight: 600;
+  color: var(--fg-flag-wrong);
+}
+
+.ms-unranked {
+  font-weight: 600;
+  color: var(--fg-flag-wrong);
+}

@@ -15,6 +15,7 @@ function open(overrides: Partial<SettingsSheetProps> = {}) {
     storageAvailable: true,
     onUpdate: vi.fn(),
     onPickDifficulty: vi.fn(),
+    onPickCustom: vi.fn(),
     onClearRecords: vi.fn(),
     onClose: vi.fn(),
     ...overrides,
@@ -148,5 +149,60 @@ describe("SettingsSheet - getting out", () => {
   it("takes focus when it opens, so the keyboard is inside it", () => {
     open();
     expect(document.activeElement).toBe(screen.getByTestId("settings-sheet"));
+  });
+});
+
+describe("SettingsSheet - the custom board", () => {
+  it("offers it as a fourth choice, showing the board it would build", () => {
+    open();
+    const custom = screen.getByTestId("difficulty-custom");
+    expect(custom.getAttribute("aria-checked")).toBe("false");
+    expect(custom.textContent).toContain("16×16");
+    expect(screen.queryByTestId("custom-fields")).toBeNull();
+  });
+
+  it("shows the fields only once custom is the selected board", () => {
+    open({ settings: { ...DEFAULT_SETTINGS, useCustom: true } });
+    expect(screen.getByTestId("custom-fields")).toBeTruthy();
+    expect(screen.getByTestId("difficulty-custom").getAttribute("aria-checked")).toBe("true");
+    // and no preset is checked at the same time
+    for (const preset of ["beginner", "intermediate", "expert"]) {
+      expect(screen.getByTestId(`difficulty-${preset}`).getAttribute("aria-checked")).toBe("false");
+    }
+  });
+
+  it("says it will not be ranked BEFORE the first move, not after a win", () => {
+    open({ settings: { ...DEFAULT_SETTINGS, useCustom: true } });
+    expect(screen.getByTestId("custom-unranked").textContent).toContain("không ghi kỷ lục");
+  });
+
+  it("clamps a value as it is typed, rather than at the moment start is pressed", () => {
+    const props = open({ settings: { ...DEFAULT_SETTINGS, useCustom: true } });
+    fireEvent.change(screen.getByTestId("custom-cols"), { target: { value: "999" } });
+    expect(props.onPickCustom).toHaveBeenCalledWith(expect.objectContaining({ cols: 40 }));
+  });
+
+  it("caps the mines against the board actually asked for", () => {
+    const props = open({
+      settings: { ...DEFAULT_SETTINGS, useCustom: true, custom: { cols: 5, rows: 5, mineCount: 4 } },
+    });
+    fireEvent.change(screen.getByTestId("custom-mines"), { target: { value: "900" } });
+    // 25 cells minus the nine the first move reserves
+    expect(props.onPickCustom).toHaveBeenCalledWith(expect.objectContaining({ mineCount: 16 }));
+  });
+
+  it("reports the density, which is the number a player compares against expert", () => {
+    open({
+      settings: { ...DEFAULT_SETTINGS, useCustom: true, custom: { cols: 10, rows: 10, mineCount: 21 } },
+    });
+    expect(screen.getByTestId("custom-density").textContent).toContain("21%");
+  });
+
+  it("asks before abandoning a board in progress, same as a preset does", () => {
+    const props = open({ inProgress: true });
+    fireEvent.click(screen.getByTestId("difficulty-custom"));
+    expect(props.onPickCustom).not.toHaveBeenCalled();
+    fireEvent.click(screen.getByTestId("abandon-confirm"));
+    expect(props.onPickCustom).toHaveBeenCalled();
   });
 });

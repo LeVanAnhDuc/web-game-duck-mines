@@ -1,6 +1,5 @@
-import { DIFFICULTIES } from "./constants";
 import { mulberry32 } from "./rng";
-import type { Board, Difficulty } from "./types";
+import type { Board, BoardSpec } from "./types";
 
 /**
  * The eight cells around `index`, already clipped to the board. Everything else
@@ -23,8 +22,8 @@ export function neighbours(index: number, cols: number, rows: number): number[] 
 }
 
 /** An empty board: no mines yet, nothing revealed. */
-export function createBoard(difficulty: Difficulty): Board {
-  const { cols, rows, mineCount } = DIFFICULTIES[difficulty];
+export function createBoard(spec: BoardSpec): Board {
+  const { cols, rows, mineCount } = spec;
   const size = cols * rows;
   return {
     cols,

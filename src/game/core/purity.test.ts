@@ -2,6 +2,7 @@ import { readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { presetSpec } from "./constants";
 import { initialState } from "./reducer";
 
 /**
@@ -54,13 +55,13 @@ describe("the clock is not in GameState - invariant #3", () => {
   it("has no elapsed/seconds/now/tick field", () => {
     // one per second would make a new GameState every second and re-render 480 cells
     // with nothing turning red
-    const keys = Object.keys(initialState("beginner"));
+    const keys = Object.keys(initialState(presetSpec("beginner")));
     const offenders = keys.filter((k) => /elapsed|seconds|now|tick/i.test(k));
     expect(offenders).toEqual([]);
   });
 
   it("keeps only the two timestamps it needs", () => {
-    const state = initialState("beginner");
+    const state = initialState(presetSpec("beginner"));
     expect(state.startedAt).toBeNull();
     expect(state.endedAt).toBeNull();
   });

@@ -2,12 +2,12 @@ import { createBoard, plantMines } from "./board";
 import { cycleMark } from "./mark";
 import { chord, reveal } from "./reveal";
 import { isWon, revealAllMines } from "./rules";
-import type { Action, Difficulty, GameState } from "./types";
+import type { Action, BoardSpec, GameState } from "./types";
 
-export function initialState(difficulty: Difficulty): GameState {
+export function initialState(spec: BoardSpec): GameState {
   return {
-    difficulty,
-    board: createBoard(difficulty),
+    ranked: spec.ranked,
+    board: createBoard(spec),
     status: "idle",
     startedAt: null,
     endedAt: null,
@@ -25,10 +25,10 @@ export function initialState(difficulty: Difficulty): GameState {
  */
 export function reducer(state: GameState, action: Action): GameState {
   if (action.type === "reset") {
-    // The difficulty rides on the action rather than being kept from the old state:
+    // The whole spec rides on the action rather than being kept from the old state:
     // "new board" and "new board at another size" are the same move, and having two
     // ways to express it is how they drift apart.
-    return initialState(action.difficulty);
+    return initialState(action.spec);
   }
 
   // Once the game is over it is over: no further move, and the clock stops because

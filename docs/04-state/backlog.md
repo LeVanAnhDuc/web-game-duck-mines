@@ -18,15 +18,13 @@ KHÔNG chứa: tính năng ngoài phạm vi (-> 01-product/overview.md §Non-Goa
 
 ## Đang làm
 
-**`touch` xong.** Còn đúng `custom-board` (FR-16).
+**Không có việc nào đang dở. Toàn bộ FR-01..FR-18 đã `xong`.**
 
-Số đo phiên 04.09.2026: **263** unit/component test · **187** e2e trên năm project
-(375 · 768 · 1024 · 1440 · một máy có màn cảm ứng thật) · lint và typecheck sạch ·
-first-load JS **111.1 kB** / 200 kB.
+Số đo phiên 04.09.2026: **287** unit/component test · **202** e2e trên năm project ·
+lint và typecheck sạch · first-load JS **112.0 kB** / 200 kB · `NFR-PERF-06`
+**17.3ms** trên bàn Khó (ngưỡng 50ms) · `NFR-SEC-05` 0 lỗ hổng.
 
-**`NFR-PERF-06` hết nợ:** bàn Khó mở khoá được nên đo được thật — **26.6ms** và
-**35.5ms** từ click tới lúc vẽ xong, ngưỡng 50ms. Không còn ngưỡng nào trong dự án ở
-trạng thái đã ghi mà chưa đo.
+Không còn ngưỡng nào trong `nfr.md` ở trạng thái đã ghi mà chưa đo.
 
 ## Việc tiếp theo
 
@@ -34,7 +32,7 @@ trạng thái đã ghi mà chưa đo.
 | --- | --- | --- | --- |
 | ~~Feature `settings-records`~~ **xong** | FR-09, FR-10, FR-14, FR-18 | — | Không có nó thì không đo được chỉ số thành công thứ nhất (kỷ lục theo độ khó), và nút ☾ / ⚙ trên header hiện đang `disabled` |
 | ~~Feature `touch`~~ **xong** | FR-12, FR-13, FR-17 | — | — |
-| Feature `custom-board` | FR-16 | trung bình | Cần pan/zoom có sẵn trước |
+| ~~Feature `custom-board`~~ **xong** | FR-16 | — | — |
 
 ## Nợ kỹ thuật — cố ý làm tạm
 

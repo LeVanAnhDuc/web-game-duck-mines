@@ -246,3 +246,49 @@ describe("Home - settings", () => {
     expect(cell(0).textContent).toBe("?");
   });
 });
+
+describe("Home - a custom board is played but never ranked", () => {
+  function pickCustom(cols: number, rows: number, mines: number) {
+    fireEvent.click(screen.getByTestId("open-settings"));
+    fireEvent.click(screen.getByTestId("difficulty-custom"));
+    fireEvent.change(screen.getByTestId("custom-cols"), { target: { value: String(cols) } });
+    fireEvent.change(screen.getByTestId("custom-rows"), { target: { value: String(rows) } });
+    fireEvent.change(screen.getByTestId("custom-mines"), { target: { value: String(mines) } });
+    fireEvent.click(screen.getByTestId("settings-scrim"));
+  }
+
+  it("builds the board that was asked for, and says it is not ranked", () => {
+    render(<Home />);
+    pickCustom(7, 6, 5);
+    expect(screen.getAllByRole("button").filter((el) => el.className.includes("ms-cell"))).toHaveLength(42);
+    expect(screen.getByTestId("mine-counter").textContent).toBe("005");
+    expect(screen.getByTestId("unranked-note")).toBeTruthy();
+  });
+
+  it("writes NO record when a custom board is cleared - ADR-0007", () => {
+    // The one thing ADR-0007 said would be easy to get wrong in silence: a fast win
+    // on a board the player built must not touch the beginner row.
+    render(<Home />);
+    pickCustom(5, 5, 1);
+    for (let i = 0; i < 25; i += 1) {
+      if (screen.queryByTestId("result-dialog")) break;
+      fireEvent.click(cell(i));
+    }
+    expect(screen.getByTestId("result-dialog")).toBeTruthy();
+    expect(screen.queryByTestId("result-record")).toBeNull();
+
+    fireEvent.click(screen.getByTestId("open-settings"));
+    for (const difficulty of ["beginner", "intermediate", "expert"]) {
+      expect(screen.getByTestId(`record-${difficulty}`).textContent).toBe("—");
+    }
+  });
+
+  it("goes back to a ranked board when a preset is chosen again", () => {
+    render(<Home />);
+    pickCustom(7, 6, 5);
+    fireEvent.click(screen.getByTestId("open-settings"));
+    fireEvent.click(screen.getByTestId("difficulty-beginner"));
+    expect(screen.queryByTestId("unranked-note")).toBeNull();
+    expect(screen.getByTestId("difficulty-label").textContent).toBe("Dễ: 9×9, 10 mìn");
+  });
+});

@@ -38,6 +38,40 @@ analytics: it exports to static HTML and everything happens in your browser.
     tile, an open one is flat — because lightness alone cannot carry that difference
     and keep the numerals legible
 
+- **Three boards, or one you build yourself**
+
+  - Beginner 9×9, Intermediate 16×16, Expert 30×16 — the original presets, each with
+    its own best time
+  - Or set your own columns, rows and mines. The mine field is capped as you type, not
+    when you press start: the opening move always clears its own cell and the eight
+    around it, so nine cells can never hold a mine
+  - A board you built is fully playable and **never ranked** — the record table stays
+    three rows, and the screen says so before your first move rather than after a win
+  - Changing board mid-game asks first, and only once the clock is actually running
+
+- **Dark mode that follows you, or does not**
+
+  - Light, dark, or whatever the system is doing — and "system" really means system,
+    so changing your OS theme with the tab open changes the page
+  - The choice is remembered
+
+- **One sound, and it is off**
+
+  - The mine going off, generated in code — the game ships no audio file at all
+  - Off by default, on from settings. A game played on a bus should not make noise
+    nobody asked for
+
+- **Built for a thumb**
+
+  - Tap to open. Hold to aim: the target lifts above your finger, sliding moves it,
+    and lifting off the board cancels — so a mis-tap is corrected before it becomes a
+    move
+  - Keep holding to flag, without lifting
+  - Or switch the bottom bar to Flag and tap
+  - A board bigger than the screen pans inside its own frame; the page itself never
+    scrolls sideways, so the mine counter and the new-game button stay put
+  - If turning the phone would fit the whole board, it says so once
+
 - **Playable without a mouse**
 
   - Arrow keys move, `Space` opens, `F` flags, `Enter` chords, `R` starts over
