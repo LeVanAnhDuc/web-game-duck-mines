@@ -14,6 +14,9 @@
 | [ADR-0004](0004-input-branches-on-pointertype.md) | Phân nhánh input theo `pointerType`, không theo user-agent | 2026-09-03 | accepted |
 | [ADR-0005](0005-timer-outside-gamestate.md) | Đồng hồ nằm ngoài `GameState`, reducer chỉ giữ mốc bắt đầu | 2026-09-03 | accepted |
 | [ADR-0006](0006-releases-derived-from-commits.md) | Tự suy version và release note từ Conventional Commits, không dùng semantic-release | 2026-09-04 | accepted |
+| [ADR-0007](0007-custom-boards-are-not-ranked.md) | Bàn tuỳ chỉnh chơi được nhưng không xếp hạng | 2026-09-04 | accepted |
+| [ADR-0008](0008-one-sound-generated-at-runtime.md) | Đúng một âm thanh, sinh lúc chạy, mặc định tắt | 2026-09-04 | accepted |
+| [ADR-0009](0009-small-screens-pan-zoom-not-shrink.md) | Màn nhỏ hơn bàn thì kéo và chụm, không co bàn cho vừa | 2026-09-04 | accepted |
 <!-- END:auto -->
 
 Trạng thái: `accepted` · `superseded by ADR-00xx` · `deprecated`

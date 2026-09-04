@@ -52,15 +52,20 @@ chord, bàn phím đầy đủ).
   toàn bộ sức căng của game.
 - **Không bảng xếp hạng online, không đăng nhập, không tài khoản, không server.** Kỷ
   lục nằm trong `localStorage` của máy người chơi, và mất được — xem `NFR-DATA-04`.
-- **Không bàn tuỳ chỉnh kích thước.** Ba mức Dễ / Trung bình / Khó đúng thông số bản
-  gốc. Bàn tuỳ chỉnh làm bảng kỷ lục vô nghĩa (kỷ lục của bàn 5×5 hai mìn so với cái
-  gì?).
+- **Bàn tuỳ chỉnh KHÔNG ghi kỷ lục.** *(sửa 04.09.2026 — trước đó là "không có bàn
+  tuỳ chỉnh")* Người chơi tự đặt được cột × hàng × mìn, nhưng chỉ ba mức gốc Dễ /
+  Trung bình / Khó được xếp hạng. Câu hỏi mà Non-Goal cũ nêu — "kỷ lục của bàn 5×5
+  hai mìn so với cái gì?" — do đó không còn tồn tại, thay vì được trả lời qua loa.
+  UI phải nói điều này **trước khi** người chơi bấm nước đầu, không phải sau khi thắng.
 - **Không pause.** Bản gốc không có, và game theo lượt nên pause chỉ để dừng đồng hồ —
   tức là để gian lận kỷ lục.
 - **Không lưu bàn đang chơi khi đóng tab.** Đóng tab là bỏ bàn. Nằm ở backlog nếu hoá
   ra tab bị hệ điều hành kill quá thường xuyên trên mobile.
-- **Không âm thanh.** Không phải vì khó — vì một game chơi lúc đợi xe thì mở tiếng là
-  thứ người ta tắt ngay.
+- **Đúng MỘT âm thanh: tiếng mìn nổ, và mặc định TẮT.** *(sửa 04.09.2026 — trước đó
+  là "không âm thanh")* Sinh lúc chạy bằng WebAudio, **không ship file audio nào**.
+  Lý do cũ ("mở tiếng nơi công cộng là thứ người ta tắt ngay") được giữ nguyên hiệu
+  lực bằng chính mặc định tắt, chứ không bị bác bỏ. Không có âm cho mở ô, cắm cờ hay
+  thắng — thứ kêu mỗi nước đi là thứ bị tắt sau mười phút.
 - **Không dạy luật, không tutorial, không màn hình onboarding.** Vào là chơi.
 - **Không daily puzzle, không chia sẻ kết quả, không thành tích.** Đây là một trò
   suy luận, không phải một vòng lặp giữ chân.
