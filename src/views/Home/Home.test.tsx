@@ -20,6 +20,8 @@ function openCount(): number {
 beforeEach(() => {
   // a fixed seed so the board is the same board every run - see design.md section 8
   window.history.replaceState({}, "", "/?seed=20260903");
+  localStorage.clear();
+  document.documentElement.removeAttribute("data-theme");
 });
 
 describe("Home - playing with the mouse", () => {
@@ -173,5 +175,74 @@ describe("Home - the game ends", () => {
   it("puts focus on the new-game button so the keyboard is not stranded", () => {
     playUntilOver();
     expect(document.activeElement?.textContent).toContain("Bàn mới");
+  });
+});
+
+describe("Home - settings", () => {
+  it("starts on beginner, and says which board it is", () => {
+    render(<Home />);
+    expect(screen.getByTestId("difficulty-label").textContent).toBe("Dễ: 9×9, 10 mìn");
+  });
+
+  it("resizes the board when another difficulty is chosen", () => {
+    render(<Home />);
+    fireEvent.click(screen.getByTestId("open-settings"));
+    fireEvent.click(screen.getByTestId("difficulty-expert"));
+
+    expect(screen.getAllByRole("button").filter((el) => el.className.includes("ms-cell"))).toHaveLength(480);
+    expect(screen.getByTestId("difficulty-label").textContent).toBe("Khó: 30×16, 99 mìn");
+    expect(screen.getByTestId("mine-counter").textContent).toBe("099");
+  });
+
+  it("remembers the difficulty across a reload", () => {
+    const first = render(<Home />);
+    fireEvent.click(screen.getByTestId("open-settings"));
+    fireEvent.click(screen.getByTestId("difficulty-intermediate"));
+    first.unmount();
+
+    render(<Home />);
+    expect(screen.getByTestId("difficulty-label").textContent).toBe("Trung bình: 16×16, 40 mìn");
+  });
+
+  it("asks before throwing away a board that is under way", () => {
+    render(<Home />);
+    fireEvent.click(cell(40));
+    fireEvent.click(screen.getByTestId("open-settings"));
+    fireEvent.click(screen.getByTestId("difficulty-expert"));
+
+    // still the beginner board until the question is answered
+    expect(screen.getByTestId("difficulty-label").textContent).toBe("Dễ: 9×9, 10 mìn");
+    fireEvent.click(screen.getByTestId("abandon-confirm"));
+    expect(screen.getByTestId("difficulty-label").textContent).toBe("Khó: 30×16, 99 mìn");
+  });
+
+  it("puts an explicit theme on the document and keeps it across a reload", () => {
+    const first = render(<Home />);
+    // nothing stamped while the choice is "system": the media query answers
+    expect(document.documentElement.hasAttribute("data-theme")).toBe(false);
+
+    fireEvent.click(screen.getByTestId("theme-toggle"));
+    expect(document.documentElement.getAttribute("data-theme")).toBe("dark");
+    first.unmount();
+
+    render(<Home />);
+    expect(document.documentElement.getAttribute("data-theme")).toBe("dark");
+  });
+
+  it("keeps question marks out of the flag cycle until they are switched on", () => {
+    render(<Home />);
+    fireEvent.contextMenu(cell(0));
+    fireEvent.contextMenu(cell(0));
+    // flag -> hidden, not flag -> question mark
+    expect(screen.getByTestId("mine-counter").textContent).toBe("010");
+    expect(cell(0).textContent).toBe("");
+
+    fireEvent.click(screen.getByTestId("open-settings"));
+    fireEvent.click(screen.getByTestId("toggle-unsure"));
+    fireEvent.click(screen.getByTestId("settings-scrim"));
+
+    fireEvent.contextMenu(cell(0));
+    fireEvent.contextMenu(cell(0));
+    expect(cell(0).textContent).toBe("?");
   });
 });

@@ -65,6 +65,7 @@ graph TD
 | `game/score/` | Đọc/ghi kỷ lục theo độ khó, sau một interface | `game/storage/` | `game/core/` · React |
 | `game/settings/` | Đọc/ghi độ khó, theme, bật/tắt dấu hỏi | `game/storage/` | `game/core/` · React |
 | `game/storage/safeStorage.ts` | Bọc `localStorage`, trả `null` thay vì ném | `localStorage` | mọi thứ khác |
+| `game/audio/` | Sinh tiếng nổ bằng WebAudio. Nhận `AudioContext` từ ngoài, **không tự tạo ở thân module** | `game/core/rng` | React · `localStorage` · `window` ở thân module |
 | `hooks/` | Nối reducer với thời gian thật và với tầng bền vững — nơi **duy nhất** có side effect | `game/**` · React | `views/` |
 | `views/` | Vẽ `GameState`, phát `action`. Không chứa luật chơi | `hooks/` · `game/core/types` | `game/score` · `game/settings` · `game/storage` trực tiếp |
 | `app/` | Vỏ Next.js: layout, `globals.css` (token), một route | `views/` | `game/**` |

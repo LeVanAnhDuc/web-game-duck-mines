@@ -59,8 +59,16 @@
   --motion-ui: 160ms;
 }
 
+/*
+ * Dark mode has three states, not two: an explicit choice stamps data-theme on
+ * <html>, and the default "system" stamps nothing. The token values below are
+ * duplicated between the two selectors on purpose - CSS has no way to share a
+ * declaration block - and src/app/tokens.test.ts asserts the two copies stay
+ * identical, because drifting them is silent and only shows up for whoever
+ * happens to be using the other one.
+ */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --bg-page: #0e141a;
     --bg-board: #141d24;
     --bg-cell-open: #18222a;
@@ -86,6 +94,33 @@
     --fg-mine-boom: #1b0806;
     --fg-flag-wrong: #ff7195;
   }
+}
+
+:root[data-theme="dark"] {
+    --bg-page: #0e141a;
+    --bg-board: #141d24;
+    --bg-cell-open: #18222a;
+    --bg-cell-tile: #26333e;
+    --edge-cell-tile: #6b8898; /* 4.30:1 vs --bg-cell-open */
+    --fg-default: #e6edf3;
+    --fg-muted: #94a3b0;
+    --ring-focus: #7da8ff;
+
+    --num-1: #7da8ff; /* 6.85:1 */
+    --num-2: #3fc7de; /* 8.02:1 */
+    --num-3: #57d07a; /* 8.23:1 */
+    --num-4: #a6ce58; /* 8.91:1 */
+    --num-5: #e4b443; /* 8.38:1 */
+    --num-6: #ff8b57; /* 6.98:1 */
+    --num-7: #ff7195; /* 6.19:1 */
+    --num-8: #e08ae8; /* 6.89:1 */
+
+    --fg-flag: #ff8b57;
+    --fg-qmark: #aebecb;
+    --fg-mine: #e6edf3;
+    --bg-mine-boom: #d4574a;
+    --fg-mine-boom: #1b0806;
+    --fg-flag-wrong: #ff7195;
 }
 
 /* NFR-A11Y-05: the reveal cascade is off entirely, not halved. */
@@ -482,4 +517,279 @@ a:hover {
   clip-path: inset(50%);
   white-space: nowrap;
   border: 0;
+}
+
+/* ── sheet cai dat ─────────────────────────────────────────────────────────
+ * Bottom sheet on a phone, centred dialog from 768px up (MASTER.md section 6).
+ */
+.ms-scrim--sheet {
+  align-items: flex-end;
+  padding: 0;
+}
+
+.ms-sheet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  width: 100%;
+  max-height: 88dvh;
+  padding: var(--space-4) var(--space-4) var(--space-6);
+  overflow-y: auto;
+  border-radius: 16px 16px 0 0;
+  background: var(--bg-page);
+  box-shadow: 0 -8px 28px rgb(0 0 0 / 24%);
+}
+
+.ms-sheet:focus-visible {
+  outline: 2px solid var(--ring-focus);
+  outline-offset: -4px;
+}
+
+@media (min-width: 768px) {
+  .ms-scrim--sheet {
+    align-items: center;
+    padding: var(--space-5);
+  }
+
+  .ms-sheet {
+    max-width: 440px;
+    max-height: 84dvh;
+    border-radius: 16px;
+  }
+}
+
+.ms-sheet-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.ms-sheet-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.ms-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* The only rule in the sheet: records are data, everything above is a control. */
+.ms-section--divided {
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--edge-cell-tile);
+}
+
+/* Sentence case. A tracked-out all-caps label is the clearest tell of a page
+ * nobody wrote on purpose - MASTER.md section 7. */
+.ms-section-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.ms-help {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  color: var(--fg-muted);
+}
+
+.ms-radios {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.ms-radio {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-height: var(--tap-min);
+  padding: 0 var(--space-3);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  font: inherit;
+  color: var(--fg-default);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ms-radio[aria-checked="true"] {
+  border-color: var(--edge-cell-tile);
+  background: var(--bg-cell-open);
+}
+
+.ms-radio:focus-visible,
+.ms-segment:focus-visible,
+.ms-toggle:focus-visible,
+.ms-btn:focus-visible {
+  outline: 2px solid var(--ring-focus);
+  outline-offset: 2px;
+}
+
+.ms-radio-dot {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--fg-muted);
+  border-radius: 50%;
+}
+
+.ms-radio[aria-checked="true"] .ms-radio-dot {
+  border-color: var(--ring-focus);
+  border-width: 5px;
+}
+
+.ms-radio-name {
+  flex-grow: 1;
+  font-weight: 500;
+}
+
+.ms-radio-spec {
+  font-family: var(--font-num);
+  font-size: 12px;
+  color: var(--fg-muted);
+}
+
+.ms-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border: 1px solid var(--edge-cell-tile);
+  border-radius: 10px;
+  background: var(--bg-board);
+  font-size: 14px;
+}
+
+.ms-confirm-actions {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.ms-btn {
+  min-height: var(--tap-min);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--edge-cell-tile);
+  border-radius: 10px;
+  background: var(--bg-cell-open);
+  font: inherit;
+  font-weight: 600;
+  color: var(--fg-default);
+  cursor: pointer;
+}
+
+.ms-btn--danger {
+  color: var(--fg-flag-wrong);
+}
+
+.ms-btn--wide {
+  align-self: stretch;
+}
+
+.ms-segmented {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border-radius: 12px;
+  background: var(--bg-board);
+}
+
+.ms-segment {
+  min-height: 40px;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  font: inherit;
+  font-weight: 500;
+  color: var(--fg-muted);
+  cursor: pointer;
+}
+
+.ms-segment[aria-checked="true"] {
+  border-color: var(--edge-cell-tile);
+  background: var(--bg-cell-open);
+  color: var(--fg-default);
+}
+
+.ms-toggle-row {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.ms-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  min-height: var(--tap-min);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font: inherit;
+  color: var(--fg-default);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ms-toggle-track {
+  flex-shrink: 0;
+  width: 44px;
+  height: 26px;
+  padding: 3px;
+  border: 1px solid var(--edge-cell-tile);
+  border-radius: 999px;
+  background: var(--bg-board);
+  transition: background var(--motion-ui) ease-out;
+}
+
+.ms-toggle-knob {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--fg-muted);
+  transition: transform var(--motion-ui) ease-out, background var(--motion-ui) ease-out;
+}
+
+.ms-toggle[aria-checked="true"] .ms-toggle-track {
+  background: var(--ring-focus);
+  border-color: var(--ring-focus);
+}
+
+.ms-toggle[aria-checked="true"] .ms-toggle-knob {
+  background: var(--bg-cell-open);
+  transform: translateX(18px);
+}
+
+.ms-records {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  margin: 0;
+}
+
+.ms-record {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.ms-record dt {
+  color: var(--fg-muted);
+}
+
+.ms-record dd {
+  margin: 0;
+  font-family: var(--font-num);
+  font-size: 16px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
 }

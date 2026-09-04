@@ -1,20 +1,14 @@
 "use client";
 
-import { useCallback, useReducer, useRef } from "react";
+import { useCallback, useEffect, useReducer, useRef } from "react";
 import { initialState, reducer } from "@/game/core/reducer";
 import type { ActKind, Difficulty } from "@/game/core/types";
 
 /**
  * The only place with side effects: it supplies Date.now and the seed, which the
  * reducer may not reach for itself (invariants #1, #5).
- *
- * Question marks are off in this feature - the setting belongs to
- * settings-records. Passing `false` per action means the reducer needs no edit when
- * that feature lands.
  */
-const ALLOW_UNSURE = false;
-
-export function useGame(difficulty: Difficulty) {
+export function useGame(difficulty: Difficulty, allowUnsure: boolean) {
   const [state, dispatch] = useReducer(reducer, difficulty, initialState);
 
   // Bumped on every new board so two boards in a row are never the same one.
@@ -36,7 +30,7 @@ export function useGame(difficulty: Difficulty) {
   const act = useCallback(
     (index: number, kind: ActKind) => {
       if (kind === "mark") {
-        dispatch({ type: "mark", index, allowUnsure: ALLOW_UNSURE });
+        dispatch({ type: "mark", index, allowUnsure });
         return;
       }
       if (kind === "chord") {
@@ -45,13 +39,23 @@ export function useGame(difficulty: Difficulty) {
       }
       dispatch({ type: "reveal", index, at: Date.now(), seed: nextSeed() });
     },
-    [nextSeed],
+    [allowUnsure, nextSeed],
   );
 
-  const reset = useCallback(() => {
+  const reset = useCallback(
+    (next: Difficulty = difficulty) => {
+      round.current += 1;
+      dispatch({ type: "reset", difficulty: next });
+    },
+    [difficulty],
+  );
+
+  // Changing difficulty IS starting a new board - there is no such thing as the same
+  // board at another size. It runs on mount too, which costs an untouched board.
+  useEffect(() => {
     round.current += 1;
-    dispatch({ type: "reset" });
-  }, []);
+    dispatch({ type: "reset", difficulty });
+  }, [difficulty]);
 
   return { state, act, reset };
 }

@@ -1,23 +1,28 @@
 "use client";
 
-import { useCallback, useEffect, type CSSProperties, type KeyboardEvent } from "react";
-import { Moon, Settings } from "lucide-react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type KeyboardEvent,
+} from "react";
+import { Moon, Settings as SettingsIcon, Sun } from "lucide-react";
 import { DIFFICULTIES } from "@/game/core/constants";
 import { hasWrongFlag } from "@/game/core/rules";
+import type { Difficulty, GameStatus } from "@/game/core/types";
 import { useBoardCursor } from "@/hooks/useBoardCursor";
 import { useGame } from "@/hooks/useGame";
+import { useRecords } from "@/hooks/useRecords";
+import { useSettings } from "@/hooks/useSettings";
+import { useSound } from "@/hooks/useSound";
+import { useTimer } from "@/hooks/useTimer";
 import { strings } from "@/lib/strings";
 import { Board } from "./mains/Board";
 import { Hud } from "./mains/Hud";
 import { ResultDialog } from "./mains/ResultDialog";
-import { formatElapsed, useTimer } from "@/hooks/useTimer";
-
-/**
- * Difficulty is locked to beginner in this feature; the picker belongs to
- * settings-records. core/ still takes it as a parameter, so nothing here hardcodes
- * 9x9.
- */
-const DIFFICULTY = "beginner" as const;
+import { SettingsSheet } from "./mains/SettingsSheet";
 
 /** Page gutters the board has to fit inside at the narrowest width. */
 const GUTTER = 32;
@@ -41,13 +46,46 @@ function boardVars(cols: number): CSSProperties {
   } as CSSProperties;
 }
 
+const DIFFICULTY_NAMES: Record<Difficulty, string> = {
+  beginner: strings.difficultyBeginner,
+  intermediate: strings.difficultyIntermediate,
+  expert: strings.difficultyExpert,
+};
+
 export function Home() {
-  const { state, act, reset } = useGame(DIFFICULTY);
-  const { cols, rows, mineCount } = DIFFICULTIES[DIFFICULTY];
-  const { cursor, move, moveToRowEdge } = useBoardCursor(cols, rows);
-  // One clock for the whole screen: the HUD readout and the result dialog must not
-  // be able to disagree about how long the board took.
+  const { settings, update } = useSettings();
+  const { bestTimes, record, clear, storageAvailable } = useRecords();
+  const { state, act, reset } = useGame(settings.difficulty, settings.allowUnsure);
+  const playExplosion = useSound(settings.sound);
+
+  const { cols, rows, mineCount } = DIFFICULTIES[settings.difficulty];
+  const { cursor, setCursor, move, moveToRowEdge } = useBoardCursor(cols, rows);
   const elapsed = useTimer(state.startedAt, state.endedAt, state.status);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [isRecord, setIsRecord] = useState(false);
+
+  // Settle the end of a board exactly once. Watching `status` without remembering
+  // what it was would fire again on any unrelated re-render, and record the same win
+  // twice.
+  const settled = useRef<GameStatus>("idle");
+  useEffect(() => {
+    if (state.status === settled.current) return;
+    settled.current = state.status;
+
+    if (state.status !== "won") {
+      if (state.status === "lost") playExplosion();
+      setIsRecord(false);
+      return;
+    }
+    if (state.startedAt === null || state.endedAt === null) return;
+    // Seconds come from the two instants, never from what the clock happens to be
+    // showing - ADR-0005.
+    const seconds = Math.floor((state.endedAt - state.startedAt) / 1000);
+    setIsRecord(record(state.difficulty, seconds));
+  }, [state.status, state.startedAt, state.endedAt, state.difficulty, playExplosion, record]);
+
+  // The cursor is a position on THIS board; a different size has no such position.
+  useEffect(() => setCursor(0), [cols, rows, setCursor]);
 
   const onKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
@@ -109,18 +147,35 @@ export function Home() {
       <header className="ms-header">
         <span className="ms-wordmark">{strings.appName}</span>
         <div className="ms-header-actions">
-          <button type="button" className="ms-iconbtn" aria-label={strings.theme} disabled>
-            <Moon aria-hidden="true" />
+          <button
+            type="button"
+            className="ms-iconbtn"
+            aria-label={strings.theme}
+            data-testid="theme-toggle"
+            // A shortcut, not the setting: it flips between the two explicit
+            // choices. "System" stays reachable only in the sheet, because a
+            // three-way cycle hidden behind one icon is a guessing game.
+            onClick={() => update({ theme: settings.theme === "dark" ? "light" : "dark" })}
+          >
+            {settings.theme === "dark" ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
           </button>
-          <button type="button" className="ms-iconbtn" aria-label={strings.settings} disabled>
-            <Settings aria-hidden="true" />
+          <button
+            type="button"
+            className="ms-iconbtn"
+            aria-label={strings.settings}
+            data-testid="open-settings"
+            onClick={() => setSettingsOpen(true)}
+          >
+            <SettingsIcon aria-hidden="true" />
           </button>
         </div>
       </header>
 
-      <Hud board={state.board} elapsed={elapsed} onReset={reset} />
+      <Hud board={state.board} elapsed={elapsed} onReset={() => reset()} />
 
-      <p className="ms-difficulty">{strings.boardLabel(cols, rows, mineCount)}</p>
+      <p className="ms-difficulty" data-testid="difficulty-label">
+        {strings.boardLabel(DIFFICULTY_NAMES[settings.difficulty], cols, rows, mineCount)}
+      </p>
 
       <Board
         board={state.board}
@@ -132,7 +187,11 @@ export function Home() {
       />
 
       <p className="ms-sr-only" role="status" data-testid="outcome">
-        {state.status === "won" ? strings.wonTitle : state.status === "lost" ? strings.lostTitle : ""}
+        {state.status === "won"
+          ? strings.wonTitle
+          : state.status === "lost"
+            ? strings.lostTitle
+            : ""}
       </p>
 
       <p className="ms-hints">
@@ -144,8 +203,21 @@ export function Home() {
       <ResultDialog
         status={state.status}
         seconds={elapsed}
+        isRecord={isRecord}
         wrongFlags={hasWrongFlag(state.board)}
-        onReset={reset}
+        onReset={() => reset()}
+      />
+
+      <SettingsSheet
+        open={settingsOpen}
+        settings={settings}
+        bestTimes={bestTimes}
+        inProgress={state.status === "playing"}
+        storageAvailable={storageAvailable}
+        onUpdate={update}
+        onPickDifficulty={(difficulty) => update({ difficulty })}
+        onClearRecords={clear}
+        onClose={() => setSettingsOpen(false)}
       />
     </main>
   );
