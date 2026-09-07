@@ -1,5 +1,10 @@
 # Design System — Minesweeper
 
+> **Trả lời:** Màu nào, chữ nào, khoảng cách nào — và ở đâu là nguồn đúng?
+> **Trạng thái:** 🟢 đủ
+> **Cập nhật:** 2026-09-04 · commit —
+> **Cập nhật khi:** một ADR mới thay quyết định trong ADR-0001 · một feature cần token chưa có ở đây
+
 > **Đây là nguồn đúng duy nhất cho màu, chữ, khoảng cách.** Mọi mockup và mọi
 > dòng CSS lấy giá trị từ file này. Không phát minh token mới trong mockup.
 >
