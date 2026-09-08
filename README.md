@@ -1,4 +1,4 @@
-💣 Minesweeper — the original rules, readable in the dark, playable from the keyboard
+# 💣 Minesweeper — the original rules, readable in the dark, playable from the keyboard
 
 [![CI](https://github.com/LeVanAnhDuc/web-game-minesweeper/actions/workflows/ci.yml/badge.svg)](https://github.com/LeVanAnhDuc/web-game-minesweeper/actions/workflows/ci.yml)
 [![Deploy](https://github.com/LeVanAnhDuc/web-game-minesweeper/actions/workflows/deploy.yml/badge.svg)](https://github.com/LeVanAnhDuc/web-game-minesweeper/actions/workflows/deploy.yml)
@@ -8,6 +8,8 @@ A Minesweeper clone built with Next.js and plain DOM. No server, no sign-in, no
 analytics: it exports to static HTML and everything happens in your browser.
 
 **Play**: https://levananhduc.github.io/web-game-minesweeper/
+
+![Minesweeper gameplay](docs/assets/screenshot.png)
 
 ## Features
 
@@ -85,6 +87,21 @@ analytics: it exports to static HTML and everything happens in your browser.
   - `?seed=` gives you a specific board, so two people can play the same one
   - No account, no analytics, no cookie: nothing about you leaves your device
 
+## Controls
+
+Mouse and keyboard are both complete: the whole board is playable without a pointer,
+which is the point of the labelled cells and the visible focus ring.
+
+| Action | Mouse | Keyboard |
+| ------ | ----- | -------- |
+| Open a cell | Left click | `Space` |
+| Flag a cell | Right click | `F` |
+| Chord — open every neighbour of a satisfied number | Middle click | — |
+| Move | — | `↑` `↓` `←` `→` |
+| New board | The reset button | `R` |
+
+The first click is always safe: mines are laid **after** it, never under it.
+
 ## Commands
 
 ```bash
@@ -107,6 +124,28 @@ yarn check:bundle   # NFR-PERF-07: first-load JS, measured from the exported HTM
 yarn check:audit    # NFR-SEC-05: fails on high/critical advisories only
 ```
 
+## How it is put together
+
+```
+src/
+  game/core/      the rules as pure functions — board, reveal, mark, custom, reducer
+  game/input/     keyboard and pointer, both producing the same actions
+  game/score/     records per difficulty, behind a repository interface
+  game/settings/  persisted preferences
+  game/storage/   a localStorage wrapper that survives private mode
+  game/audio/     WebAudio, synthesised, no files
+  views/Home/     the DOM board and the surrounding UI
+```
+
+`src/game/` never imports React — `purity.test.ts` asserts it. That is why the rules
+can be tested by calling them, with no board rendered and no browser started, and it
+is why the same rules could later drive a different renderer without being rewritten.
+
+The board is **plain DOM, not canvas**, unlike the other games here. A minefield is a
+grid of labelled buttons, and the browser already knows how to focus, announce and
+tab through those. Drawing it on a canvas would have meant rebuilding all of that by
+hand and getting it slightly wrong.
+
 ## What runs on GitHub
 
 | Workflow | When | What it does |
@@ -115,7 +154,7 @@ yarn check:audit    # NFR-SEC-05: fails on high/critical advisories only
 | `deploy.yml` | push to `main` | Rebuilds with `GITHUB_PAGES=true` and publishes `out/` to GitHub Pages. It re-runs the tests rather than trusting a green run it cannot see |
 | `release.yml` | push to `main` | Works out the next version, composes the notes, and publishes a GitHub release |
 
-## Releases
+## Releases and versioning
 
 Version numbers and release notes are **derived from the commit history**, so neither
 depends on anyone remembering to do something. Both live in scripts you can run
@@ -165,7 +204,7 @@ code that changes behaviour — never in a catch-up pass afterwards:
   belong in `## Features`
 - a README-only change is a `docs:` commit and, on its own, releases a patch
 
-## Where the documentation lives
+## Documentation
 
 `docs/README.md` is the map. In short:
 
