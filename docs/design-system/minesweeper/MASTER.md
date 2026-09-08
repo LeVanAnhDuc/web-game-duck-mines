@@ -1,4 +1,4 @@
-# Design System — Minesweeper
+# Design System — Duck Mines
 
 > **Trả lời:** Màu nào, chữ nào, khoảng cách nào — và ở đâu là nguồn đúng?
 > **Trạng thái:** 🟢 đủ
@@ -12,7 +12,7 @@
 > brief, nên tái sinh file này là làm token trôi âm thầm — đúng thứ file này ra đời
 > để chặn. Quyết định trong đây đổi thì viết ADR mới, sửa tay file này.
 
-**Dự án:** Minesweeper · **Chốt:** 2026-09-03 · **Quyết định:** [ADR-0001](../../decisions/0001-design-tokens.md)
+**Dự án:** Duck Mines · **Chốt:** 2026-09-03 · **Quyết định:** [ADR-0001](../../decisions/0001-design-tokens.md)
 
 ---
 

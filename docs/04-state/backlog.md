@@ -18,6 +18,14 @@ KHÔNG chứa: tính năng ngoài phạm vi (-> 01-product/overview.md §Non-Goa
 
 ## Đang làm
 
+**Đổi thương hiệu sang `Duck Mines`** (08.09.2026). Repo GitHub đổi từ
+`web-game-minesweeper` thành `web-game-duck-mines`; GitHub redirect URL *repo* cũ
+nhưng **không** redirect đường dẫn Pages cũ — địa chỉ chơi giờ là
+<https://levananhduc.github.io/web-game-duck-mines/>. **Thư mục local vẫn là**
+`web-game-minesweeper` — thương hiệu đổi, đường dẫn không. Khoá `localStorage`
+(`minesweeper.records.v1`, `minesweeper.settings.v1`) **không** đổi: đổi là xoá sạch
+kỷ lục của người đang chơi. Từ "Minesweeper" ở chỗ nói về *thể loại và luật* được giữ.
+
 **Không có việc nào đang dở. Toàn bộ FR-01..FR-18 đã `xong`.**
 
 Số đo phiên 04.09.2026: **287** unit/component test · **202** e2e trên năm project ·

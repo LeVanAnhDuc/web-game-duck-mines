@@ -23,7 +23,7 @@ schema chi tiết (-> file schema của ORM), danh sách chức năng (-> 02-req
 
 ```mermaid
 graph LR
-  User[Người chơi] --> App[Minesweeper<br/>trang tĩnh, chạy hết ở trình duyệt]
+  User[Người chơi] --> App[Duck Mines<br/>trang tĩnh, chạy hết ở trình duyệt]
   App --> LS[(localStorage<br/>trên máy người chơi)]
   Pages[GitHub Pages] -. phục vụ file tĩnh .-> App
 ```

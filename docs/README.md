@@ -1,4 +1,4 @@
-# Tài liệu dự án `web-game-minesweeper`
+# Tài liệu dự án `web-game-duck-mines`
 
 ## Bản đồ
 

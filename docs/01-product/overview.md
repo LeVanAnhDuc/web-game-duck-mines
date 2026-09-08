@@ -19,7 +19,8 @@ KHÔNG chứa: danh sách tính năng (-> 02-requirements/scope.md), ngưỡng k
 
 ## 1. Một câu định vị
 
-Minesweeper đúng luật bản gốc, chơi được thật sự bằng ngón tay trên điện thoại — thứ
+Duck Mines là bản dò mìn đúng luật gốc Minesweeper, chơi được thật sự bằng ngón tay
+trên điện thoại — thứ
 mà các bản clone web hoặc bỏ qua (chỉ làm cho chuột), hoặc đổi luật để dễ hơn.
 
 ## 2. Vấn đề đang giải

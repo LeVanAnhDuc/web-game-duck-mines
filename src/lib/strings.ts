@@ -4,9 +4,9 @@
  * touching a single component.
  */
 export const strings = {
-  appName: "Minesweeper",
+  appName: "Duck Mines",
   appDescription:
-    "Minesweeper đúng luật bản gốc, chơi được bằng ngón tay trên điện thoại.",
+    "Dò mìn đúng luật bản gốc Minesweeper, chơi được bằng ngón tay trên điện thoại.",
 
   boardLabel: (name: string, cols: number, rows: number, mines: number) =>
     `${name}: ${cols}×${rows}, ${mines} mìn`,
