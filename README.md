@@ -1,15 +1,15 @@
-# 💣 Minesweeper — the original rules, readable in the dark, playable from the keyboard
+# 💣 Duck Mines — the original rules, readable in the dark, playable from the keyboard
 
-[![CI](https://github.com/LeVanAnhDuc/web-game-minesweeper/actions/workflows/ci.yml/badge.svg)](https://github.com/LeVanAnhDuc/web-game-minesweeper/actions/workflows/ci.yml)
-[![Deploy](https://github.com/LeVanAnhDuc/web-game-minesweeper/actions/workflows/deploy.yml/badge.svg)](https://github.com/LeVanAnhDuc/web-game-minesweeper/actions/workflows/deploy.yml)
-[![Release](https://img.shields.io/github/v/release/LeVanAnhDuc/web-game-minesweeper?sort=semver)](https://github.com/LeVanAnhDuc/web-game-minesweeper/releases)
+[![CI](https://github.com/LeVanAnhDuc/web-game-duck-mines/actions/workflows/ci.yml/badge.svg)](https://github.com/LeVanAnhDuc/web-game-duck-mines/actions/workflows/ci.yml)
+[![Deploy](https://github.com/LeVanAnhDuc/web-game-duck-mines/actions/workflows/deploy.yml/badge.svg)](https://github.com/LeVanAnhDuc/web-game-duck-mines/actions/workflows/deploy.yml)
+[![Release](https://img.shields.io/github/v/release/LeVanAnhDuc/web-game-duck-mines?sort=semver)](https://github.com/LeVanAnhDuc/web-game-duck-mines/releases)
 
 A Minesweeper clone built with Next.js and plain DOM. No server, no sign-in, no
 analytics: it exports to static HTML and everything happens in your browser.
 
-**Play**: https://levananhduc.github.io/web-game-minesweeper/
+**Play**: https://levananhduc.github.io/web-game-duck-mines/
 
-![Minesweeper gameplay](docs/assets/screenshot.png)
+![Duck Mines gameplay](docs/assets/screenshot.png)
 
 ## Features
 
