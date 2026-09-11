@@ -21,6 +21,7 @@ yarn-error.log
 /RELEASE_NOTES.md
 
 # Playwright
+/.playwright-mcp/
 /test-results/
 /playwright-report/
 /blob-report/
@@ -32,3 +33,11 @@ yarn-error.log
 !/.claude/settings.local.json
 !/.claude/skills/
 !/.claude/scripts/
+
+# Hai agent cua ux-persona-review (ux-persona, ux-expert) co y giu LOCAL: chung do
+# `ux-persona-lab` sinh ra va nhung duong dan tuyet doi cua may nay, nen commit vao
+# repo la commit mot thu chi dung tren mot may. Clone moi lay lai bang:
+#   bash <workspace>/.claude/skills/ux-persona-lab/scripts/install.sh <project>
+# Dong nay nam SAU cac dong `!` phia tren de mot whitelist ve sau khong keo nham no
+# vao (dong `/.claude/*` o tren da bo qua roi, day la de noi ro chu dinh).
+/.claude/agents/
