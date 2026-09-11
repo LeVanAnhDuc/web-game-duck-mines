@@ -168,7 +168,9 @@ export function Home() {
 
       <p className="ms-difficulty" data-testid="difficulty-label">
         {strings.boardLabel(
-          settings.useCustom ? strings.difficultyCustom : DIFFICULTY_NAMES[settings.difficulty],
+          settings.useCustom
+            ? strings.difficultyCustom
+            : DIFFICULTY_NAMES[settings.difficulty],
           cols,
           rows,
           mineCount,
@@ -208,10 +210,24 @@ export function Home() {
       </p>
 
       <p className="ms-hints">
-        <span>{strings.hintRightClick}</span>
-        <span>{strings.hintMiddleClick}</span>
         <span>{strings.hintKeys}</span>
+        <span>{strings.hintRightClick}</span>
+        <span>{strings.hintChord}</span>
       </p>
+
+      {/*
+       * Four of six players in the 2026-09-12 review, asked whether they would trust
+       * the page with an email, gave the same reason for no - nobody is named. It
+       * never asks for an email, so the risk was zero and the cost was credibility:
+       * two of them sized the product down before touching it. Text, not
+       * infrastructure - the 0 VND ceiling in overview.md section 5 stands.
+       */}
+      <footer className="ms-footer" data-testid="footer">
+        <span>{strings.madeBy}</span>
+        <a href={strings.sourceUrl} target="_blank" rel="noreferrer noopener">
+          {strings.sourceCode}
+        </a>
+      </footer>
 
       <ResultDialog
         status={state.status}

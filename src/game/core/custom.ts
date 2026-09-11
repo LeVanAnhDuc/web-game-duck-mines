@@ -33,13 +33,27 @@ function clampInt(value: number, min: number, max: number, fallback: number): nu
 }
 
 /**
- * Brings any input inside the bounds. Used on every keystroke rather than on submit:
- * a field that refuses the value as you type is the only way the player learns the
- * limit at the moment it matters, instead of at the moment they press start.
+ * Brings any input inside the bounds.
+ *
+ * Called when a value is COMMITTED, never on every keystroke - clamping mid-typing
+ * made most of the range unreachable and answered with numbers nobody typed
+ * (ADR-0011). The field keeps the half-typed string to itself and only sends a value
+ * up once it is inside the bounds, or on blur. The limit still reaches the player
+ * while typing, through `min`/`max` on the input and the help lines beneath it.
  */
 export function clampCustom(input: Partial<DifficultySpec>): DifficultySpec {
-  const cols = clampInt(input.cols ?? 16, CUSTOM_LIMITS.cols.min, CUSTOM_LIMITS.cols.max, 16);
-  const rows = clampInt(input.rows ?? 16, CUSTOM_LIMITS.rows.min, CUSTOM_LIMITS.rows.max, 16);
+  const cols = clampInt(
+    input.cols ?? 16,
+    CUSTOM_LIMITS.cols.min,
+    CUSTOM_LIMITS.cols.max,
+    16,
+  );
+  const rows = clampInt(
+    input.rows ?? 16,
+    CUSTOM_LIMITS.rows.min,
+    CUSTOM_LIMITS.rows.max,
+    16,
+  );
   const mineCount = clampInt(
     input.mineCount ?? 40,
     CUSTOM_LIMITS.minMines,

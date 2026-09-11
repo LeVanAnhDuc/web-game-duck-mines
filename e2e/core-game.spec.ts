@@ -88,7 +88,9 @@ test.describe("FR-11: the board is playable from the keyboard", () => {
     await expect(page.getByTestId("mine-counter")).toHaveText("010");
   });
 
-  test("arrow keys do not scroll the page out from under the player", async ({ page }) => {
+  test("arrow keys do not scroll the page out from under the player", async ({
+    page,
+  }) => {
     await page.goto("/?seed=20260903");
     await cell(page, 0).focus();
     const before = await page.evaluate(() => window.scrollY);
@@ -121,7 +123,9 @@ test.describe("NFR-A11Y-07: the digit carries the information, colour only helps
 
     const numerals = await page
       .locator("button.ms-cell--open")
-      .evaluateAll((els) => els.map((el) => el.textContent ?? "").filter((t) => t !== ""));
+      .evaluateAll((els) =>
+        els.map((el) => el.textContent ?? "").filter((t) => t !== ""),
+      );
 
     // the digits are text nodes, so they survive grayscale by construction - this
     // asserts the board is not drawing its numbers as colour-only marks
@@ -144,7 +148,9 @@ test.describe("the same seed gives the same board", () => {
 });
 
 test.describe("the result dialog", () => {
-  test("covers the board without replacing it, and starts the next one", async ({ page }) => {
+  test("covers the board without replacing it, and starts the next one", async ({
+    page,
+  }) => {
     await page.goto("/?seed=20260903");
     await expect(async () => {
       await cell(page, 40).click();
@@ -220,9 +226,15 @@ test.describe("settings", () => {
   test("sound is off until it is asked for - ADR-0008", async ({ page }) => {
     await page.goto("/?seed=20260903");
     await page.getByTestId("open-settings").click();
-    await expect(page.getByTestId("toggle-sound")).toHaveAttribute("aria-checked", "false");
+    await expect(page.getByTestId("toggle-sound")).toHaveAttribute(
+      "aria-checked",
+      "false",
+    );
     await page.getByTestId("toggle-sound").click();
-    await expect(page.getByTestId("toggle-sound")).toHaveAttribute("aria-checked", "true");
+    await expect(page.getByTestId("toggle-sound")).toHaveAttribute(
+      "aria-checked",
+      "true",
+    );
   });
 
   test("ships no audio file at all - NFR-PERF-08", async ({ page }) => {
@@ -258,8 +270,26 @@ test.describe("FR-16: a custom board", () => {
     await page.getByTestId("custom-cols").fill("5");
     await page.getByTestId("custom-rows").fill("5");
     await page.getByTestId("custom-mines").fill("900");
-    // clamped as it is typed, not when start is pressed
+    // Clamped when the field is left, not mid-typing - ADR-0011. Clamping on every
+    // keystroke made most of the range impossible to type.
+    await page.getByTestId("custom-mines").blur();
     await expect(page.getByTestId("custom-mines")).toHaveValue("16");
+  });
+
+  test("lets a two-digit size be typed one digit at a time - ADR-0011", async ({
+    page,
+  }) => {
+    await page.goto("/?seed=20260903");
+    await page.getByTestId("open-settings").click();
+    await page.getByTestId("difficulty-custom").click();
+    const cols = page.getByTestId("custom-cols");
+    // "2" alone is below the floor of 5. Clamping here is what used to turn the next
+    // keystroke into "54", and then into 40.
+    await cols.fill("2");
+    await expect(cols).toHaveValue("2");
+    await cols.fill("24");
+    await cols.blur();
+    await expect(cols).toHaveValue("24");
   });
 
   test("survives a reload, board and all", async ({ page }) => {

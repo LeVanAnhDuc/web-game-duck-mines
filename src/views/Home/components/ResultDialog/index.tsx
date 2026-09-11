@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useRef } from "react";
-import { Bomb, RotateCcw, Trophy } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Bomb, RotateCcw, Trophy, X } from "lucide-react";
 import { formatElapsed } from "@/hooks/useTimer";
 import { strings } from "@/lib/strings";
 import type { GameStatus } from "@/game/core/types";
@@ -21,7 +21,15 @@ export type ResultDialogProps = {
  * which matters most on a loss, where the revealed mines are the point.
  *
  * No confetti and no shake. Winning says the time, and says so plainly when that
- * time is the new best; losing says where to look.
+ * time is the new best; losing says where to look - and how long it took, because
+ * that number is the only thing a player carries out of a board they lost.
+ *
+ * Closing and starting over are two different things. They used to be one: the only
+ * control was "Bàn mới" and Esc reset the board too, so there was no way to sit and
+ * look at the board you had just finished. "Ủa, cái 5:08 của tôi đâu?" (p02-RR-01)
+ * and "không có chỗ nào để quay lui" (p06-blind). Dismissing now leaves the finished
+ * board on screen; invariant #7 keeps it frozen, so there is nothing to protect it
+ * from.
  */
 export function ResultDialog({
   status,
@@ -31,26 +39,31 @@ export function ResultDialog({
   onReset,
 }: ResultDialogProps) {
   const button = useRef<HTMLButtonElement>(null);
-  const open = status === "won" || status === "lost";
+  const settled = status === "won" || status === "lost";
+  /** Dismissed by the player. Cleared whenever a new result arrives. */
+  const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    if (open) button.current?.focus();
-  }, [open]);
+    if (settled) {
+      setDismissed(false);
+      button.current?.focus();
+    }
+  }, [settled, status, seconds]);
 
-  if (!open) return null;
+  if (!settled || dismissed) return null;
   const won = status === "won";
 
   return (
     <div
-      className="ms-scrim"
+      className="ms-scrim ms-scrim--result"
       role="dialog"
       aria-modal="false"
       aria-label={won ? strings.wonTitle : strings.lostTitle}
       data-testid="result-dialog"
       onKeyDown={(event) => {
-        // Esc is the new board here: there is nothing to go back to, and a dialog
-        // that traps you behind a dead board is worse than no dialog.
-        if (event.key === "Escape") onReset();
+        // Esc dismisses, the way Esc dismisses everywhere else. It used to start a
+        // new board, which threw away the result the player had just earned.
+        if (event.key === "Escape") setDismissed(true);
       }}
     >
       <div className="ms-dialog">
@@ -60,14 +73,23 @@ export function ResultDialog({
           ) : (
             <Bomb className="ms-dialog-icon ms-dialog-icon--boom" aria-hidden="true" />
           )}
-          <span className="ms-dialog-title">{won ? strings.wonTitle : strings.lostTitle}</span>
+          <span className="ms-dialog-title">
+            {won ? strings.wonTitle : strings.lostTitle}
+          </span>
+          <button
+            type="button"
+            className="ms-iconbtn ms-dialog-close"
+            data-testid="result-close"
+            aria-label={strings.close}
+            onClick={() => setDismissed(true)}
+          >
+            <X aria-hidden="true" />
+          </button>
         </div>
 
-        {won ? (
-          <span className="ms-dialog-time" data-testid="result-time">
-            {formatElapsed(seconds)}
-          </span>
-        ) : null}
+        <span className="ms-dialog-time" data-testid="result-time">
+          {formatElapsed(seconds)}
+        </span>
         {won && isRecord ? (
           <span className="ms-dialog-note" data-testid="result-record">
             {strings.wonRecord}

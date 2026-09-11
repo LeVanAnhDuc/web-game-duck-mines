@@ -27,6 +27,9 @@ analytics: it exports to static HTML and everything happens in your browser.
     put in the wrong places
   - The clock starts on your first move, not when the page loads, and does not stop
     at 999 — that was a three-digit LED, not a rule
+  - Finishing a board tells you how long it took, win or lose, and closing that panel
+    leaves the finished board on screen: dismissing and starting over are two
+    different things
 
 - **Readable in the dark, and without colour**
 
@@ -44,12 +47,14 @@ analytics: it exports to static HTML and everything happens in your browser.
 
   - Beginner 9×9, Intermediate 16×16, Expert 30×16 — the original presets, each with
     its own best time
-  - Or set your own columns, rows and mines. The mine field is capped as you type, not
-    when you press start: the opening move always clears its own cell and the eight
-    around it, so nine cells can never hold a mine
+  - Or set your own columns, rows and mines. You get to finish typing the number
+    before anything corrects it; the ceiling is spelled out beside the fields, because
+    the opening move always clears its own cell and the eight around it, so nine cells
+    can never hold a mine
   - A board you built is fully playable and **never ranked** — the record table stays
     three rows, and the screen says so before your first move rather than after a win
-  - Changing board mid-game asks first, and only once the clock is actually running
+  - Changing board mid-game asks first, and only once the clock is actually running —
+    and the question takes focus, so the choice never vanishes unanswered
 
 - **Dark mode that follows you, or does not**
 
@@ -69,9 +74,11 @@ analytics: it exports to static HTML and everything happens in your browser.
     and lifting off the board cancels — so a mis-tap is corrected before it becomes a
     move
   - Keep holding to flag, without lifting
-  - Or switch the bottom bar to Flag and tap
-  - A board bigger than the screen pans inside its own frame; the page itself never
-    scrolls sideways, so the mine counter and the new-game button stay put
+  - Or switch the bottom bar to Flag and tap — and tapping a number still opens
+    around it, so switching to Flag never costs you chording
+  - A board bigger than the screen pans inside its own frame, in both directions; the
+    page itself never scrolls for the board, so the mine counter, the clock and the
+    mode bar stay put
   - If turning the phone would fit the whole board, it says so once
 
 - **Playable without a mouse**

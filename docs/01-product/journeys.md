@@ -2,7 +2,7 @@
 
 > **Trả lời:** Người dùng đi qua những luồng nào từ đầu đến cuối?
 > **Trạng thái:** 🟢 đủ
-> **Cập nhật:** 2026-09-03 · commit —
+> **Cập nhật:** 2026-09-12 · commit —
 > **Cập nhật khi:** có luồng người dùng mới · một luồng cũ đổi bản chất
 
 <!-- CÁCH ĐIỀN
@@ -153,9 +153,13 @@ chơi thư giãn, hoặc một bàn nhỏ mà dày mìn để chơi nhanh.
 gian vừa lập là một kỷ lục.
 
 **Điều gì có thể sai:**
-- Đặt số mìn nhiều hơn số ô đặt được → phải chặn **ngay lúc nhập**, không phải lúc bấm
-  bắt đầu. Giới hạn thật là `cột × hàng − 9`, vì nước đầu luôn loại trừ vùng 3×3
-  ([ADR-0003](../decisions/0003-mines-planted-after-first-move.md)).
+- Đặt số mìn nhiều hơn số ô đặt được → phải **cho biết ngay lúc nhập**, không phải lúc
+  bấm bắt đầu. Giới hạn thật là `cột × hàng − 9`, vì nước đầu luôn loại trừ vùng 3×3
+  ([ADR-0003](../decisions/0003-mines-planted-after-first-move.md)). *(làm rõ 12.09.2026
+  — "cho biết" chứ không phải "sửa tay người dùng": kẹp từng phím gõ làm phần lớn khoảng
+  giá trị không gõ vào được, xem
+  [ADR-0011](../decisions/0011-clamp-custom-fields-on-commit.md). Trần vẫn hiện ngay lúc
+  nhập, bằng chữ và bằng `min`/`max` trên ô.)*
 - Đặt bàn 0 cột, hoặc 0 mìn, hoặc số âm.
 - Đặt bàn khổng lồ làm trình duyệt đứng khi vẽ.
 - Thắng một bàn tuỳ chỉnh rồi tưởng mình vừa phá kỷ lục.

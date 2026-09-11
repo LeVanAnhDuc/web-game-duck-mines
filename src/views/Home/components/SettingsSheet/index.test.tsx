@@ -32,8 +32,12 @@ describe("SettingsSheet - what it shows", () => {
 
   it("lists the three preset difficulties with their shape, and checks the current one", () => {
     open({ settings: { ...DEFAULT_SETTINGS, difficulty: "intermediate" } });
-    expect(screen.getByTestId("difficulty-beginner").getAttribute("aria-checked")).toBe("false");
-    expect(screen.getByTestId("difficulty-intermediate").getAttribute("aria-checked")).toBe("true");
+    expect(screen.getByTestId("difficulty-beginner").getAttribute("aria-checked")).toBe(
+      "false",
+    );
+    expect(
+      screen.getByTestId("difficulty-intermediate").getAttribute("aria-checked"),
+    ).toBe("true");
     expect(screen.getByTestId("difficulty-expert").textContent).toContain("30×16");
     expect(screen.getByTestId("difficulty-expert").textContent).toContain("99");
   });
@@ -107,7 +111,9 @@ describe("SettingsSheet - the switches", () => {
   });
 
   it("turns question marks on and off", () => {
-    const props = open({ settings: { ...DEFAULT_SETTINGS, allowUnsure: true } as Settings });
+    const props = open({
+      settings: { ...DEFAULT_SETTINGS, allowUnsure: true } as Settings,
+    });
     expect(screen.getByTestId("toggle-unsure").getAttribute("aria-checked")).toBe("true");
     fireEvent.click(screen.getByTestId("toggle-unsure"));
     expect(props.onUpdate).toHaveBeenCalledWith({ allowUnsure: false });
@@ -164,36 +170,90 @@ describe("SettingsSheet - the custom board", () => {
   it("shows the fields only once custom is the selected board", () => {
     open({ settings: { ...DEFAULT_SETTINGS, useCustom: true } });
     expect(screen.getByTestId("custom-fields")).toBeTruthy();
-    expect(screen.getByTestId("difficulty-custom").getAttribute("aria-checked")).toBe("true");
+    expect(screen.getByTestId("difficulty-custom").getAttribute("aria-checked")).toBe(
+      "true",
+    );
     // and no preset is checked at the same time
     for (const preset of ["beginner", "intermediate", "expert"]) {
-      expect(screen.getByTestId(`difficulty-${preset}`).getAttribute("aria-checked")).toBe("false");
+      expect(
+        screen.getByTestId(`difficulty-${preset}`).getAttribute("aria-checked"),
+      ).toBe("false");
     }
   });
 
   it("says it will not be ranked BEFORE the first move, not after a win", () => {
     open({ settings: { ...DEFAULT_SETTINGS, useCustom: true } });
-    expect(screen.getByTestId("custom-unranked").textContent).toContain("không ghi kỷ lục");
+    expect(screen.getByTestId("custom-unranked").textContent).toContain(
+      "không ghi kỷ lục",
+    );
   });
 
-  it("clamps a value as it is typed, rather than at the moment start is pressed", () => {
+  it("clamps an out-of-range value when the field is left, not while it is typed", () => {
     const props = open({ settings: { ...DEFAULT_SETTINGS, useCustom: true } });
-    fireEvent.change(screen.getByTestId("custom-cols"), { target: { value: "999" } });
-    expect(props.onPickCustom).toHaveBeenCalledWith(expect.objectContaining({ cols: 40 }));
+    const cols = screen.getByTestId("custom-cols");
+    fireEvent.change(cols, { target: { value: "999" } });
+    expect(props.onPickCustom).not.toHaveBeenCalled();
+    fireEvent.blur(cols);
+    expect(props.onPickCustom).toHaveBeenCalledWith(
+      expect.objectContaining({ cols: 40 }),
+    );
+  });
+
+  it("lets a two-digit number be typed one digit at a time - ADR-0011", () => {
+    // The bug this replaces: a floor of 5 turned "2" into "5", so "24" arrived as
+    // "54" and was then capped to 40. Every value starting 1-4 was unreachable, and
+    // the field answered with a number nobody typed.
+    const props = open({ settings: { ...DEFAULT_SETTINGS, useCustom: true } });
+    const cols = screen.getByTestId("custom-cols");
+    fireEvent.change(cols, { target: { value: "2" } });
+    fireEvent.change(cols, { target: { value: "24" } });
+    fireEvent.blur(cols);
+    expect(props.onPickCustom).toHaveBeenLastCalledWith(
+      expect.objectContaining({ cols: 24 }),
+    );
+  });
+
+  it("keeps a half-typed value to itself instead of sending a 2-wide board upward", () => {
+    const props = open({ settings: { ...DEFAULT_SETTINGS, useCustom: true } });
+    fireEvent.change(screen.getByTestId("custom-cols"), { target: { value: "2" } });
+    expect(props.onPickCustom).not.toHaveBeenCalled();
+    expect((screen.getByTestId("custom-cols") as HTMLInputElement).value).toBe("2");
   });
 
   it("caps the mines against the board actually asked for", () => {
     const props = open({
-      settings: { ...DEFAULT_SETTINGS, useCustom: true, custom: { cols: 5, rows: 5, mineCount: 4 } },
+      settings: {
+        ...DEFAULT_SETTINGS,
+        useCustom: true,
+        custom: { cols: 5, rows: 5, mineCount: 4 },
+      },
     });
-    fireEvent.change(screen.getByTestId("custom-mines"), { target: { value: "900" } });
+    const mines = screen.getByTestId("custom-mines");
+    fireEvent.change(mines, { target: { value: "900" } });
+    fireEvent.blur(mines);
     // 25 cells minus the nine the first move reserves
-    expect(props.onPickCustom).toHaveBeenCalledWith(expect.objectContaining({ mineCount: 16 }));
+    expect(props.onPickCustom).toHaveBeenCalledWith(
+      expect.objectContaining({ mineCount: 16 }),
+    );
+  });
+
+  it("gives every number field a label tied to it by id", () => {
+    open({ settings: { ...DEFAULT_SETTINGS, useCustom: true } });
+    for (const testId of ["custom-cols", "custom-rows", "custom-mines"]) {
+      const input = screen.getByTestId(testId) as HTMLInputElement;
+      expect(input.id).toBe(testId);
+      expect(input.name).toBe(testId);
+      expect(document.querySelector(`label[for="${testId}"]`)).not.toBeNull();
+    }
   });
 
   it("reports the density, which is the number a player compares against expert", () => {
     open({
-      settings: { ...DEFAULT_SETTINGS, useCustom: true, custom: { cols: 10, rows: 10, mineCount: 21 } },
+      settings: {
+        ...DEFAULT_SETTINGS,
+        useCustom: true,
+        custom: { cols: 10, rows: 10, mineCount: 21 },
+      },
     });
     expect(screen.getByTestId("custom-density").textContent).toContain("21%");
   });
