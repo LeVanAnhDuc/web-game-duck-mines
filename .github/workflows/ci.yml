@@ -39,11 +39,20 @@ jobs:
       - name: Unit and component tests
         run: yarn test
 
-      # NFR-SEC-05. `yarn audit` alone cannot express "high or above": yarn 1
-      # returns a bitmask covering every severity, so a moderate would fail the
-      # build too. The script gates on exactly what the threshold says.
-      - name: Dependency audit
-        run: yarn audit --json | node scripts/check-audit.mjs
+  # NFR-SEC-05 duoc gate o day chu khong bang mot buoc `yarn audit`. Endpoint
+  # audit cua yarn 1 tra ve summary RONG kem exit 0, nen check-audit.mjs khong
+  # thay advisory nao va di qua - cong nay da xanh suot ma chua tung do lan nao.
+  # dependency-review chi xet dependency ma PR THEM VAO, khong thay lo hong da
+  # co san; phan do do Dependabot lo. Doi lay mot cong that thay vi mot cong gia.
+  dependencies:
+    name: New dependencies
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
 
   e2e:
     name: Build and end-to-end
