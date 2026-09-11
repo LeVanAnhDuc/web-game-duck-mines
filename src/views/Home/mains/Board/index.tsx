@@ -12,7 +12,7 @@ import {
   type GameStatus,
   type Mark,
 } from "@/game/core/types";
-import { Cell } from "./Cell";
+import { Cell } from "../../components/Cell";
 
 export type BoardProps = {
   board: BoardModel;

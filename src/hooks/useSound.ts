@@ -12,12 +12,10 @@ import { createAudioContext, playExplosion } from "@/game/audio/explosion";
 export function useSound(enabled: boolean) {
   const context = useRef<AudioContext | null>(null);
 
-  useEffect(() => {
-    return () => {
+  useEffect(() => () => {
       void context.current?.close();
       context.current = null;
-    };
-  }, []);
+    }, []);
 
   return useCallback(() => {
     if (!enabled) return;

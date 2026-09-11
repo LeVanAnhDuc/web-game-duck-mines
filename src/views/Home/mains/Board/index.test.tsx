@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { boardFrom } from "@/game/core/testBoard";
 import { Board } from "./index";
-import { cellRenderCount } from "./Cell";
+import { cellRenderCount } from "../../components/Cell";
 
 const noop = () => undefined;
 

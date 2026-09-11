@@ -1,7 +1,7 @@
 import { fireEvent, render } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { FLAGGED, HIDDEN, REVEALED, UNSURE, type Mark } from "@/game/core/types";
-import { Cell, type CellProps } from "./Cell";
+import { Cell, type CellProps } from "./index";
 
 function draw(overrides: Partial<CellProps> = {}) {
   const onAct = vi.fn();

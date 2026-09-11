@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { DEFAULT_SETTINGS, type Settings } from "@/game/settings/types";
 import type { BestTimes } from "@/game/score/ScoreRepository";
-import { SettingsSheet, type SettingsSheetProps } from "./SettingsSheet";
+import { SettingsSheet, type SettingsSheetProps } from "./index";
 
 const NO_RECORDS: BestTimes = { beginner: null, intermediate: null, expert: null };
 

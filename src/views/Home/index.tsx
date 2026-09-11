@@ -1,32 +1,43 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type CSSProperties,
-  type KeyboardEvent,
-} from "react";
-import { Moon, Settings as SettingsIcon, Sun } from "lucide-react";
-import { DIFFICULTIES, presetSpec } from "@/game/core/constants";
-import { hasWrongFlag } from "@/game/core/rules";
-import type { BoardSpec, Difficulty, GameStatus } from "@/game/core/types";
-import { useBoardCursor } from "@/hooks/useBoardCursor";
-import { useGame } from "@/hooks/useGame";
-import { useRecords } from "@/hooks/useRecords";
-import { useSettings } from "@/hooks/useSettings";
-import { useSound } from "@/hooks/useSound";
-import { useRotateHint } from "@/hooks/useRotateHint";
-import { useTimer } from "@/hooks/useTimer";
+// libs
+import { useCallback, useMemo, useState } from "react";
+
+// types
+import type { CSSProperties, KeyboardEvent } from "react";
+import type { BoardSpec, Difficulty } from "@/game/core/types";
 import type { TapMode } from "@/game/input/touchGesture";
-import { strings } from "@/lib/strings";
+
+// game
+import { presetSpec } from "@/game/core/constants";
+import { hasWrongFlag } from "@/game/core/rules";
+
+// hooks
+import {
+  useBoardCursor,
+  useGame,
+  useRecords,
+  useRotateHint,
+  useSettings,
+  useSound,
+  useTimer,
+} from "@/hooks";
+
+// components
 import { Board } from "./mains/Board";
+import { Header } from "./mains/Header";
 import { Hud } from "./mains/Hud";
-import { ModeBar } from "./mains/ModeBar";
-import { ResultDialog } from "./mains/ResultDialog";
-import { SettingsSheet } from "./mains/SettingsSheet";
+import { ModeBar } from "./components/ModeBar";
+import { ResultDialog } from "./components/ResultDialog";
+import { SettingsSheet } from "./components/SettingsSheet";
+
+// ghosts
+import { ResetCursorOnResize } from "./ghosts/ResetCursorOnResize";
+import { SettleResult } from "./ghosts/SettleResult";
+import { SyncFocusToCursor } from "./ghosts/SyncFocusToCursor";
+
+// others
+import { strings } from "@/lib/strings";
 
 /** Page gutters the board has to fit inside at the narrowest width. */
 const GUTTER = 32;
@@ -80,36 +91,6 @@ export function Home() {
   const [mode, setMode] = useState<TapMode>("reveal");
   const rotateHint = useRotateHint(cols);
 
-  // Settle the end of a board exactly once. Watching `status` without remembering
-  // what it was would fire again on any unrelated re-render, and record the same win
-  // twice.
-  const settled = useRef<GameStatus>("idle");
-  useEffect(() => {
-    if (state.status === settled.current) return;
-    settled.current = state.status;
-
-    if (state.status !== "won") {
-      if (state.status === "lost") playExplosion();
-      setIsRecord(false);
-      return;
-    }
-    if (state.startedAt === null || state.endedAt === null) return;
-    // A board the player built is never recorded, however fast it was cleared. This
-    // is the one line ADR-0007 warned would be easy to get wrong in silence, so the
-    // decision reads off the board itself rather than off the settings.
-    if (state.ranked === null) {
-      setIsRecord(false);
-      return;
-    }
-    // Seconds come from the two instants, never from what the clock happens to be
-    // showing - ADR-0005.
-    const seconds = Math.floor((state.endedAt - state.startedAt) / 1000);
-    setIsRecord(record(state.ranked, seconds));
-  }, [state.status, state.startedAt, state.endedAt, state.ranked, playExplosion, record]);
-
-  // The cursor is a position on THIS board; a different size has no such position.
-  useEffect(() => setCursor(0), [cols, rows, setCursor]);
-
   const onKeyDown = useCallback(
     (event: KeyboardEvent<HTMLDivElement>) => {
       const handled = () => {
@@ -156,43 +137,32 @@ export function Home() {
     [act, cursor, move, moveToRowEdge, reset],
   );
 
-  // Keep the DOM focus on the cell the cursor points at, so the ring the player sees
-  // is the cell the keys will act on. Without this the two drift apart after a click.
-  useEffect(() => {
-    const active = document.activeElement;
-    if (!(active instanceof HTMLElement) || !active.classList.contains("ms-cell")) return;
-    const target = document.querySelector<HTMLElement>(`[data-index="${cursor}"]`);
-    target?.focus();
-  }, [cursor]);
-
   return (
     <main className="ms-page" style={boardVars(cols)}>
-      <header className="ms-header">
-        <span className="ms-wordmark">{strings.appName}</span>
-        <div className="ms-header-actions">
-          <button
-            type="button"
-            className="ms-iconbtn"
-            aria-label={strings.theme}
-            data-testid="theme-toggle"
-            // A shortcut, not the setting: it flips between the two explicit
-            // choices. "System" stays reachable only in the sheet, because a
-            // three-way cycle hidden behind one icon is a guessing game.
-            onClick={() => update({ theme: settings.theme === "dark" ? "light" : "dark" })}
-          >
-            {settings.theme === "dark" ? <Sun aria-hidden="true" /> : <Moon aria-hidden="true" />}
-          </button>
-          <button
-            type="button"
-            className="ms-iconbtn"
-            aria-label={strings.settings}
-            data-testid="open-settings"
-            onClick={() => setSettingsOpen(true)}
-          >
-            <SettingsIcon aria-hidden="true" />
-          </button>
-        </div>
-      </header>
+      {/*
+        Ghosts: they render nothing and only run side-effects (R-04). They mount
+        unconditionally and keep the order the effects had when they lived in this
+        file - a child's effects run before the parent's, in child order.
+      */}
+      <SettleResult
+        status={state.status}
+        startedAt={state.startedAt}
+        endedAt={state.endedAt}
+        ranked={state.ranked}
+        onLost={playExplosion}
+        onRecord={record}
+        onSettled={setIsRecord}
+      />
+      <ResetCursorOnResize cols={cols} rows={rows} onReset={setCursor} />
+      <SyncFocusToCursor cursor={cursor} />
+
+      <Header
+        theme={settings.theme}
+        onToggleTheme={() =>
+          update({ theme: settings.theme === "dark" ? "light" : "dark" })
+        }
+        onOpenSettings={() => setSettingsOpen(true)}
+      />
 
       <Hud board={state.board} elapsed={elapsed} onReset={() => reset()} />
 
