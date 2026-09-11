@@ -61,8 +61,8 @@ export const strings = {
   abandonConfirm: "Bỏ bàn",
   abandonCancel: "Giữ lại",
 
-  unsureLabel: "Dấu hỏi ❓ trong chu kỳ cờ",
-  unsureHelp: "Chạm lần nữa sau lá cờ để đánh dấu ô chưa chắc.",
+  unsureLabel: "Dấu hỏi trong chu kỳ cờ",
+  unsureHelp: "Chạm lần nữa sau lá cờ để đánh dấu ô chưa chắc bằng dấu hỏi.",
 
   soundLabel: "Tiếng khi mìn nổ",
   soundHelp: "Mặc định tắt. Không có âm nào khác — mở ô và cắm cờ luôn im lặng.",
@@ -80,7 +80,25 @@ export const strings = {
   modeSwitch: "Chọn kiểu chạm",
   rotateHint: "Xoay ngang để thấy cả bàn.",
 
+  // Keyboard first, on purpose. It used to be last, behind two clauses opening with
+  // the word "Chuột", and a player who cannot hold a mouse read the first five
+  // seconds as a door closing: "nam giay dau toi da kip nghi 'lai mot trang nua
+  // khong danh cho minh'" (p03-RR-06).
+  // The product already states a Non-Goal in place twice - under the sound switch,
+  // and in red above the custom board. This is the third and biggest one, and it was
+  // the one left unsaid: a "no-guess" player hunted for it in the first ten seconds,
+  // did not find it, and only learned the truth by losing a board five minutes later.
+  playRulesNote:
+    "Bàn sinh theo luật gốc Minesweeper. Không đảm bảo lúc nào cũng suy ra được — nước cuối có thể phải đoán.",
+
+  madeBy: "Dự án học tập của LeVanAnhDuc",
+  sourceCode: "Mã nguồn",
+  sourceUrl: "https://github.com/LeVanAnhDuc/web-game-duck-mines",
+
+  hintKeys: "Bàn phím: mũi tên di chuyển, Space mở, F cắm cờ, R bàn mới",
   hintRightClick: "Chuột phải cắm cờ",
-  hintMiddleClick: "Chuột giữa mở quanh",
-  hintKeys: "Mũi tên di chuyển, Space mở, F cắm cờ, R bàn mới",
+  // Chord has two ways in and the UI only ever named the one a trackpad does not
+  // have: "Toi khong co chuot giua... Vay la co mot chuc nang o day toi vinh vien
+  // khong dung duoc a?" (p04-RR-05). Clicking the number itself always worked.
+  hintChord: "Bấm thẳng lên ô số đã đủ cờ để mở quanh, hoặc chuột giữa",
 } as const;

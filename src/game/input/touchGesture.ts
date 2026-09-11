@@ -80,14 +80,20 @@ export type GestureConfig = {
 };
 
 function moved(state: GestureState, at: Point): boolean {
-  return Math.abs(at.x - state.startX) > SLOP_PX || Math.abs(at.y - state.startY) > SLOP_PX;
+  return (
+    Math.abs(at.x - state.startX) > SLOP_PX || Math.abs(at.y - state.startY) > SLOP_PX
+  );
 }
 
 function tapKind(index: number, config: GestureConfig): ActKind {
-  if (config.mode === "flag") return "mark";
   // An open number under the finger means chord - the same gesture the mouse uses on
-  // an open cell, so the two input paths agree on what a tap there means.
-  return config.isOpen(index) ? "chord" : "reveal";
+  // an open cell, so the two input paths agree on what a tap there means. This is
+  // checked BEFORE the sticky mode on purpose: a flag can never land on an open cell,
+  // so routing one there produced a committed action that the reducer then dropped,
+  // and the tap died in complete silence. Chording costs nothing there and is the
+  // only thing a tap on a number could sensibly mean - ADR-0012.
+  if (config.isOpen(index)) return "chord";
+  return config.mode === "flag" ? "mark" : "reveal";
 }
 
 export function gestureReducer(
@@ -134,7 +140,10 @@ export function gestureReducer(
         if (state.index === null) return { state: IDLE, actions: [] };
         return {
           state: { ...state, phase: "spent" },
-          actions: [{ type: "commit", index: state.index, kind: "mark" }, { type: "haptic" }],
+          actions: [
+            { type: "commit", index: state.index, kind: "mark" },
+            { type: "haptic" },
+          ],
         };
       }
       return none;
@@ -149,16 +158,21 @@ export function gestureReducer(
       if (state.phase === "pending") {
         // Never engaged: a quick tap. It acts on where it started, not on where it
         // ended, so a shaky finger does not change the target.
-        if (state.index === null || moved(state, event.at)) return { state: IDLE, actions: [] };
+        if (state.index === null || moved(state, event.at))
+          return { state: IDLE, actions: [] };
         return {
           state: IDLE,
-          actions: [{ type: "commit", index: state.index, kind: tapKind(state.index, config) }],
+          actions: [
+            { type: "commit", index: state.index, kind: tapKind(state.index, config) },
+          ],
         };
       }
       if (state.phase === "aiming" && state.index !== null) {
         return {
           state: IDLE,
-          actions: [{ type: "commit", index: state.index, kind: tapKind(state.index, config) }],
+          actions: [
+            { type: "commit", index: state.index, kind: tapKind(state.index, config) },
+          ],
         };
       }
       return { state: IDLE, actions: [] };

@@ -13,8 +13,9 @@ function cell(index: number): HTMLElement {
 }
 
 function openCount(): number {
-  return screen.getAllByRole("button").filter((el) => el.className.includes("ms-cell--open"))
-    .length;
+  return screen
+    .getAllByRole("button")
+    .filter((el) => el.className.includes("ms-cell--open")).length;
 }
 
 beforeEach(() => {
@@ -27,7 +28,9 @@ beforeEach(() => {
 describe("Home - playing with the mouse", () => {
   it("shows a beginner board, a stopped clock and all ten mines to find", () => {
     render(<Home />);
-    expect(screen.getAllByRole("button").filter((el) => el.className.includes("ms-cell"))).toHaveLength(81);
+    expect(
+      screen.getAllByRole("button").filter((el) => el.className.includes("ms-cell")),
+    ).toHaveLength(81);
     expect(screen.getByTestId("timer").textContent).toBe("0:00");
     expect(screen.getByTestId("mine-counter").textContent).toBe("010");
     expect(screen.getByText("Dễ: 9×9, 10 mìn")).toBeTruthy();
@@ -116,7 +119,9 @@ describe("Home - playing with the keyboard, FR-11", () => {
     fireEvent.keyDown(grid, { key: "ArrowRight" });
     const stops = screen
       .getAllByRole("button")
-      .filter((el) => el.getAttribute("tabindex") === "0" && el.className.includes("ms-cell"));
+      .filter(
+        (el) => el.getAttribute("tabindex") === "0" && el.className.includes("ms-cell"),
+      );
     expect(stops).toHaveLength(1);
     expect(stops[0]!.getAttribute("data-index")).toBe("1");
   });
@@ -141,14 +146,18 @@ describe("Home - the game ends", () => {
     );
     // the board is still there behind the dialog - on a loss the revealed mines are
     // the whole point of the screen
-    expect(screen.getAllByRole("button").filter((el) => el.className.includes("ms-cell"))).toHaveLength(81);
+    expect(
+      screen.getAllByRole("button").filter((el) => el.className.includes("ms-cell")),
+    ).toHaveLength(81);
     expect(screen.getByTestId("outcome").textContent).not.toBe("");
   });
 
   it("shows every mine when the board goes off", () => {
     const dialog = playUntilOver();
     if (dialog.querySelector(".ms-dialog-title")!.textContent !== "Nổ rồi") return;
-    expect(screen.getAllByRole("button").some((el) => el.className.includes("ms-cell--boom"))).toBe(true);
+    expect(
+      screen.getAllByRole("button").some((el) => el.className.includes("ms-cell--boom")),
+    ).toBe(true);
   });
 
   it("refuses every further move once it is over", () => {
@@ -165,11 +174,29 @@ describe("Home - the game ends", () => {
     expect(openCount()).toBe(0);
   });
 
-  it("starts a new board on Esc - there is nothing behind a dead board to go back to", () => {
+  it("dismisses on Esc and LEAVES the finished board standing", () => {
+    // Esc used to start a new board, which swept away the result the player had just
+    // earned - "Ủa, cái 5:08 của tôi đâu?" (p02-RR-01). Invariant #7 freezes the
+    // board after a result, so leaving it on screen costs nothing.
     const dialog = playUntilOver();
+    const openedBefore = openCount();
     fireEvent.keyDown(dialog, { key: "Escape" });
     expect(screen.queryByTestId("result-dialog")).toBeNull();
-    expect(openCount()).toBe(0);
+    expect(openCount()).toBe(openedBefore);
+    expect(openedBefore).toBeGreaterThan(0);
+  });
+
+  it("dismisses from the close button too, without touching the board", () => {
+    playUntilOver();
+    const openedBefore = openCount();
+    fireEvent.click(screen.getByTestId("result-close"));
+    expect(screen.queryByTestId("result-dialog")).toBeNull();
+    expect(openCount()).toBe(openedBefore);
+  });
+
+  it("says how long the board took even when it was lost", () => {
+    playUntilOver();
+    expect(screen.getByTestId("result-time").textContent).toMatch(/\d/);
   });
 
   it("puts focus on the new-game button so the keyboard is not stranded", () => {
@@ -189,7 +216,9 @@ describe("Home - settings", () => {
     fireEvent.click(screen.getByTestId("open-settings"));
     fireEvent.click(screen.getByTestId("difficulty-expert"));
 
-    expect(screen.getAllByRole("button").filter((el) => el.className.includes("ms-cell"))).toHaveLength(480);
+    expect(
+      screen.getAllByRole("button").filter((el) => el.className.includes("ms-cell")),
+    ).toHaveLength(480);
     expect(screen.getByTestId("difficulty-label").textContent).toBe("Khó: 30×16, 99 mìn");
     expect(screen.getByTestId("mine-counter").textContent).toBe("099");
   });
@@ -201,7 +230,9 @@ describe("Home - settings", () => {
     first.unmount();
 
     render(<Home />);
-    expect(screen.getByTestId("difficulty-label").textContent).toBe("Trung bình: 16×16, 40 mìn");
+    expect(screen.getByTestId("difficulty-label").textContent).toBe(
+      "Trung bình: 16×16, 40 mìn",
+    );
   });
 
   it("asks before throwing away a board that is under way", () => {
@@ -251,16 +282,24 @@ describe("Home - a custom board is played but never ranked", () => {
   function pickCustom(cols: number, rows: number, mines: number) {
     fireEvent.click(screen.getByTestId("open-settings"));
     fireEvent.click(screen.getByTestId("difficulty-custom"));
-    fireEvent.change(screen.getByTestId("custom-cols"), { target: { value: String(cols) } });
-    fireEvent.change(screen.getByTestId("custom-rows"), { target: { value: String(rows) } });
-    fireEvent.change(screen.getByTestId("custom-mines"), { target: { value: String(mines) } });
+    fireEvent.change(screen.getByTestId("custom-cols"), {
+      target: { value: String(cols) },
+    });
+    fireEvent.change(screen.getByTestId("custom-rows"), {
+      target: { value: String(rows) },
+    });
+    fireEvent.change(screen.getByTestId("custom-mines"), {
+      target: { value: String(mines) },
+    });
     fireEvent.click(screen.getByTestId("settings-scrim"));
   }
 
   it("builds the board that was asked for, and says it is not ranked", () => {
     render(<Home />);
     pickCustom(7, 6, 5);
-    expect(screen.getAllByRole("button").filter((el) => el.className.includes("ms-cell"))).toHaveLength(42);
+    expect(
+      screen.getAllByRole("button").filter((el) => el.className.includes("ms-cell")),
+    ).toHaveLength(42);
     expect(screen.getByTestId("mine-counter").textContent).toBe("005");
     expect(screen.getByTestId("unranked-note")).toBeTruthy();
   });

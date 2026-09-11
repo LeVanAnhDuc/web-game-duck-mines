@@ -2,7 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
-import { DIFFICULTIES, DIFFICULTY_ORDER, type DifficultySpec } from "@/game/core/constants";
+import {
+  DIFFICULTIES,
+  DIFFICULTY_ORDER,
+  type DifficultySpec,
+} from "@/game/core/constants";
 import { CUSTOM_LIMITS, clampCustom, maxMines, mineDensity } from "@/game/core/custom";
 import type { Difficulty } from "@/game/core/types";
 import type { BestTimes } from "@/game/score/ScoreRepository";
@@ -48,12 +52,27 @@ export function SettingsSheet({
   onClose,
 }: SettingsSheetProps) {
   const panel = useRef<HTMLDivElement>(null);
+  const confirmButton = useRef<HTMLButtonElement>(null);
   const [pending, setPending] = useState<Difficulty | "custom" | null>(null);
 
   useEffect(() => {
     if (open) panel.current?.focus();
     else setPending(null);
   }, [open]);
+
+  /**
+   * Move to the question the moment it is asked.
+   *
+   * The question already existed; it just never reached anyone. It renders below the
+   * whole radio list, and the radio dot does NOT move while a choice is pending - so
+   * from the player's side, tapping a difficulty mid-game looked like nothing at all,
+   * and closing the sheet threw the choice away in silence: "cú bấm 'Dễ' của tôi lúc
+   * đang chơi dở không được ghi nhận gì hết... Nó im lặng nuốt mất" (p02-RR-03).
+   * Taking focus is what makes it arrive, on every input path at once.
+   */
+  useEffect(() => {
+    if (pending) confirmButton.current?.focus();
+  }, [pending]);
 
   if (!open) return null;
 
@@ -78,7 +97,11 @@ export function SettingsSheet({
   }
 
   return (
-    <div className="ms-scrim ms-scrim--sheet" onClick={onClose} data-testid="settings-scrim">
+    <div
+      className="ms-scrim ms-scrim--sheet"
+      onClick={onClose}
+      data-testid="settings-scrim"
+    >
       <div
         ref={panel}
         role="dialog"
@@ -94,14 +117,23 @@ export function SettingsSheet({
       >
         <div className="ms-sheet-head">
           <h2 className="ms-sheet-title">{strings.settingsTitle}</h2>
-          <button type="button" className="ms-iconbtn" aria-label={strings.close} onClick={onClose}>
+          <button
+            type="button"
+            className="ms-iconbtn"
+            aria-label={strings.close}
+            onClick={onClose}
+          >
             <X aria-hidden="true" />
           </button>
         </div>
 
         <section className="ms-section">
           <h3 className="ms-section-title">{strings.sectionDifficulty}</h3>
-          <div role="radiogroup" aria-label={strings.sectionDifficulty} className="ms-radios">
+          <div
+            role="radiogroup"
+            aria-label={strings.sectionDifficulty}
+            className="ms-radios"
+          >
             {DIFFICULTY_ORDER.map((difficulty) => {
               const spec = DIFFICULTIES[difficulty];
               return (
@@ -111,6 +143,7 @@ export function SettingsSheet({
                   role="radio"
                   aria-checked={!settings.useCustom && settings.difficulty === difficulty}
                   className="ms-radio"
+                  data-pending={pending === difficulty ? "true" : undefined}
                   data-testid={`difficulty-${difficulty}`}
                   onClick={() => choose(difficulty)}
                 >
@@ -127,6 +160,7 @@ export function SettingsSheet({
               role="radio"
               aria-checked={settings.useCustom}
               className="ms-radio"
+              data-pending={pending === "custom" ? "true" : undefined}
               data-testid="difficulty-custom"
               onClick={chooseCustom}
             >
@@ -153,14 +187,21 @@ export function SettingsSheet({
           ) : null}
 
           {pending ? (
-            <div className="ms-confirm" role="alertdialog" aria-label={strings.abandonConfirm}>
+            <div
+              className="ms-confirm"
+              role="alertdialog"
+              aria-label={strings.abandonConfirm}
+            >
               <span>
                 {strings.abandonQuestion(
-                  pending === "custom" ? strings.difficultyCustom : DIFFICULTY_NAMES[pending],
+                  pending === "custom"
+                    ? strings.difficultyCustom
+                    : DIFFICULTY_NAMES[pending],
                 )}
               </span>
               <div className="ms-confirm-actions">
                 <button
+                  ref={confirmButton}
                   type="button"
                   className="ms-btn ms-btn--danger"
                   data-testid="abandon-confirm"
@@ -189,6 +230,9 @@ export function SettingsSheet({
             testId="toggle-unsure"
             onChange={(allowUnsure) => onUpdate({ allowUnsure })}
           />
+          <p className="ms-help" data-testid="play-rules-note">
+            {strings.playRulesNote}
+          </p>
         </section>
 
         <section className="ms-section">
@@ -204,7 +248,11 @@ export function SettingsSheet({
 
         <section className="ms-section">
           <h3 className="ms-section-title">{strings.sectionTheme}</h3>
-          <div role="radiogroup" aria-label={strings.sectionTheme} className="ms-segmented">
+          <div
+            role="radiogroup"
+            aria-label={strings.sectionTheme}
+            className="ms-segmented"
+          >
             {(
               [
                 ["system", strings.themeSystem],
@@ -301,6 +349,76 @@ function Toggle({
  * "Not ranked" is stated HERE, before the first move - not after a win, when it reads
  * as the game taking something away (ADR-0007).
  */
+/**
+ * One number field that lets the player finish typing.
+ *
+ * The old field clamped on every keystroke, and that made most of the range
+ * unreachable: typing `24` into a field whose floor is 5 went `2` -> clamped up to
+ * `5` -> `54` -> clamped down to `40`. Every two-digit number starting with 1-4 was
+ * impossible to enter, and the field answered with a number nobody typed - which is
+ * worse than refusing, because the player doubts themselves first (ADR-0011).
+ *
+ * So a half-typed value lives here as a string and is NOT sent upward: `2` on its way
+ * to `24` is not a request for a 2-wide board. The value is committed as soon as it
+ * is inside the bounds, and on blur whatever is left is clamped by the parent. The
+ * limits are still visible while typing - `min`/`max` are on the input, and the two
+ * help lines under the fields state the ceiling and the density in words.
+ */
+function NumberField({
+  id,
+  label,
+  min,
+  max,
+  value,
+  testId,
+  onCommit,
+}: {
+  id: string;
+  label: string;
+  min: number;
+  max: number;
+  value: number;
+  testId: string;
+  onCommit: (next: number) => void;
+}) {
+  /** null means "show the committed value"; a string means the player is mid-edit. */
+  const [draft, setDraft] = useState<string | null>(null);
+
+  return (
+    <div className="ms-field">
+      <label className="ms-field-label" htmlFor={id}>
+        {label}
+      </label>
+      <input
+        id={id}
+        name={id}
+        type="number"
+        inputMode="numeric"
+        className="ms-field-input"
+        data-testid={testId}
+        min={min}
+        max={max}
+        value={draft ?? String(value)}
+        onChange={(event) => {
+          const raw = event.target.value;
+          setDraft(raw);
+          const next = Number(raw);
+          if (raw !== "" && Number.isFinite(next) && next >= min && next <= max) {
+            onCommit(Math.round(next));
+          }
+        }}
+        onBlur={() => {
+          const raw = draft;
+          setDraft(null);
+          // Out of range, or left empty: the parent clamps, and clearing the draft
+          // makes the field show what was actually accepted.
+          if (raw !== null) onCommit(Number(raw));
+        }}
+      />
+    </div>
+  );
+}
+
 function CustomFields({
   custom,
   onChange,
@@ -318,31 +436,42 @@ function CustomFields({
     max: number,
     testId: string,
   ) => (
-    <label className="ms-field">
-      <span className="ms-field-label">{label}</span>
-      <input
-        type="number"
-        inputMode="numeric"
-        className="ms-field-input"
-        data-testid={testId}
-        min={min}
-        max={max}
-        value={custom[key]}
-        onChange={(event) =>
-          // Clamped on every keystroke, not on submit: a field that refuses the
-          // value as you type is the only way the limit is learned when it matters.
-          onChange(clampCustom({ ...custom, [key]: Number(event.target.value) }))
-        }
-      />
-    </label>
+    <NumberField
+      key={key}
+      id={testId}
+      label={label}
+      min={min}
+      max={max}
+      value={custom[key]}
+      testId={testId}
+      onCommit={(next) => onChange(clampCustom({ ...custom, [key]: next }))}
+    />
   );
 
   return (
     <div className="ms-custom" data-testid="custom-fields">
       <div className="ms-fields">
-        {field("cols", strings.customCols, CUSTOM_LIMITS.cols.min, CUSTOM_LIMITS.cols.max, "custom-cols")}
-        {field("rows", strings.customRows, CUSTOM_LIMITS.rows.min, CUSTOM_LIMITS.rows.max, "custom-rows")}
-        {field("mineCount", strings.customMines, CUSTOM_LIMITS.minMines, ceiling, "custom-mines")}
+        {field(
+          "cols",
+          strings.customCols,
+          CUSTOM_LIMITS.cols.min,
+          CUSTOM_LIMITS.cols.max,
+          "custom-cols",
+        )}
+        {field(
+          "rows",
+          strings.customRows,
+          CUSTOM_LIMITS.rows.min,
+          CUSTOM_LIMITS.rows.max,
+          "custom-rows",
+        )}
+        {field(
+          "mineCount",
+          strings.customMines,
+          CUSTOM_LIMITS.minMines,
+          ceiling,
+          "custom-mines",
+        )}
       </div>
       <p className="ms-help" data-testid="custom-density">
         {strings.customDensity(density)}

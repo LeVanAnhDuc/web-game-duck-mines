@@ -34,7 +34,12 @@ const down = (index: number | null, x = 0, y = 0, time = T0): GestureEvent => ({
   type: "down",
   at: { x, y, index, time },
 });
-const move = (index: number | null, x: number, y: number, time: number): GestureEvent => ({
+const move = (
+  index: number | null,
+  x: number,
+  y: number,
+  time: number,
+): GestureEvent => ({
   type: "move",
   at: { x, y, index, time },
 });
@@ -51,13 +56,24 @@ describe("a quick tap", () => {
   });
 
   it("chords when the cell under the finger is already open", () => {
-    const { actions } = run([down(12), up(12, 0, 0, T0 + 40)], config({ isOpen: () => true }));
+    const { actions } = run(
+      [down(12), up(12, 0, 0, T0 + 40)],
+      config({ isOpen: () => true }),
+    );
     expect(actions).toEqual([{ type: "commit", index: 12, kind: "chord" }]);
   });
 
   it("flags instead when the sticky mode says flag", () => {
     const { actions } = run([down(12), up(12, 0, 0, T0 + 40)], config({ mode: "flag" }));
     expect(actions).toEqual([{ type: "commit", index: 12, kind: "mark" }]);
+  });
+
+  it("still chords an OPEN cell in flag mode - a flag there could never land anyway", () => {
+    const { actions } = run(
+      [down(12), up(12, 0, 0, T0 + 40)],
+      config({ mode: "flag", isOpen: () => true }),
+    );
+    expect(actions).toEqual([{ type: "commit", index: 12, kind: "chord" }]);
   });
 
   it("acts on where it STARTED, so a shaky finger cannot change the target", () => {
