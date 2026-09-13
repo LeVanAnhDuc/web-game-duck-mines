@@ -63,7 +63,7 @@ không ai kiểm.
   merge dày thì sẽ ồn, và lúc đó phải chuyển sang release theo mốc.
 - Hai script là **shell**, và shell thì không có test. Chúng được kiểm bằng cách chạy
   tay trên lịch sử thật, không phải bằng CI.
-- `deploy.yml` chạy lại `yarn test` thay vì tin `ci.yml` — chậm hơn khoảng một phút,
+- `deploy.yml` chạy lại `pnpm test` thay vì tin `ci.yml` — chậm hơn khoảng một phút,
   đổi lấy việc deploy không bao giờ dựa trên một kết quả xanh mà nó không tự thấy.
 
 **Điều kiện xem lại quyết định này:** có người thứ hai vào dự án và nhịp merge làm
