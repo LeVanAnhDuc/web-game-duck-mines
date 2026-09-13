@@ -112,23 +112,23 @@ The first click is always safe: mines are laid **after** it, never under it.
 ## Commands
 
 ```bash
-yarn install
-yarn dev          # http://localhost:3000
-yarn test         # unit + component tests
-yarn test:e2e     # Playwright, against the static export in out/
-yarn typecheck
-yarn lint
-yarn build        # writes out/
+pnpm install
+pnpm dev          # http://localhost:3000
+pnpm test         # unit + component tests
+pnpm test:e2e     # Playwright, against the static export in out/
+pnpm typecheck
+pnpm lint
+pnpm build        # writes out/
 ```
 
-`yarn test:e2e` needs a build first (`yarn build`) and a Chromium install
-(`npx playwright install chromium`).
+`pnpm test:e2e` needs a build first (`pnpm build`) and a Chromium install
+(`pnpm exec playwright install chromium`).
 
 Two checks enforce thresholds that would otherwise only be written down:
 
 ```bash
-yarn check:bundle   # NFR-PERF-07: first-load JS, measured from the exported HTML
-yarn check:audit    # NFR-SEC-05: fails on high/critical advisories only
+pnpm check:bundle   # NFR-PERF-07: first-load JS, measured from the exported HTML
+pnpm check:audit    # NFR-SEC-05: fails on high/critical advisories only
 ```
 
 ## How it is put together
@@ -169,8 +169,8 @@ locally — a release process you can only exercise by pushing to `main` is one 
 exercises:
 
 ```bash
-yarn release:next            # which tag the next release would get, and why
-yarn release:notes v1.1.0    # what its notes would say
+pnpm release:next            # which tag the next release would get, and why
+pnpm release:notes v1.1.0    # what its notes would say
 ```
 
 **How the version is decided**, against the previous `v*` tag:

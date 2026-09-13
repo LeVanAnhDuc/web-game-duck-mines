@@ -8,11 +8,11 @@ description: Use when you want to know how a real stranger experiences Duck Mine
 ## Sản phẩm này
 
 - Thư mục: `D:/Learn/web-app-ecosystem/web-game/web-game-minesweeper`
-- Port: `:3000` (`yarn dev`). ⚠️ **Trùng port với client của Ducker ID** — luôn kiểm dấu
+- Port: `:3000` (`pnpm dev`). ⚠️ **Trùng port với client của Ducker ID** — luôn kiểm dấu
   hiệu nhận biết bên dưới trước khi cho persona bắt đầu. Suite e2e dùng `:4173` (bản
   xuất tĩnh trong `out/`), không phải port này.
-- Bật app: `yarn dev` — hoặc, nếu muốn đúng thứ người chơi thật gặp (basePath GitHub
-  Pages, không có HMR): `yarn build && node scripts/serve.mjs 4173 out`
+- Bật app: `pnpm dev` — hoặc, nếu muốn đúng thứ người chơi thật gặp (basePath GitHub
+  Pages, không có HMR): `pnpm build && node scripts/serve.mjs 4173 out`
 - Dấu hiệu nhận biết đúng app: tiêu đề tab là **Duck Mines**, và ngay khi mở đã thấy một
   **lưới ô vuông chưa mở** kèm hai số đếm ở đầu trang (số mìn còn lại và đồng hồ đang
   đứng ở 0). Toàn bộ chữ trên màn hình là **tiếng Việt**. Nếu thấy màn hình đăng nhập

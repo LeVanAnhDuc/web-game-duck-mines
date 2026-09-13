@@ -35,7 +35,9 @@
         "src/hooks/**/*.ts",
         "src/app/**/*.ts",
         "src/lib/**/*.ts",
-        "src/game/core/**/*.test.ts"
+        "src/game/core/**/*.test.ts",
+        "*.config.ts",
+        "*.config.mjs"
       ],
       "rules": { "no-restricted-imports": "off" }
     }

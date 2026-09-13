@@ -48,7 +48,7 @@ vẫn có thể nhắc tới ID cũ.
 | NFR-SEC-02 | Không log gì ra console ở bản production | grep `console.` trong CI |
 | ~~NFR-SEC-03~~ | ~~Rate limit endpoint đăng nhập~~ **(bỏ)** — không có đăng nhập | — |
 | NFR-SEC-04 | Secret chỉ đọc từ biến môi trường. Không hardcode, không commit | grep + review |
-| NFR-SEC-05 | Dependency không có lỗ hổng mức high trở lên | `yarn audit --json \| node scripts/check-audit.mjs`, chạy trong CI. `yarn audit` một mình không diễn đạt được "high trở lên": Yarn 1 trả bitmask gộp mọi mức, nên một lỗ hổng moderate cũng làm đỏ CI |
+| NFR-SEC-05 | Dependency không có lỗ hổng mức high trở lên | `pnpm audit --json \| node scripts/check-audit.mjs`, chạy ở máy. Script cần thiết vì nó vừa lọc đúng ngưỡng "high trở lên", vừa TỪ CHỐI báo pass khi bản audit không thật sự quét được cây dependency. Cổng chặn trong CI là job `dependency-review` chứ không phải lệnh này |
 | ~~NFR-SEC-06~~ | ~~Lỗi trả về client không chứa stack trace~~ **(bỏ)** — không có lỗi từ server | — |
 
 ## Accessibility

@@ -23,25 +23,31 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
+          cache: pnpm
 
-      - run: yarn install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
       - name: Lint
-        run: yarn lint
+        run: pnpm lint
 
       - name: Typecheck
-        run: yarn typecheck
+        run: pnpm typecheck
 
       - name: Unit and component tests
-        run: yarn test
+        run: pnpm test
 
-  # NFR-SEC-05 duoc gate o day chu khong bang mot buoc `yarn audit`. Endpoint
-  # audit cua yarn 1 tra ve summary RONG kem exit 0, nen check-audit.mjs khong
-  # thay advisory nao va di qua - cong nay da xanh suot ma chua tung do lan nao.
+  # NFR-SEC-05 duoc gate o day chu khong bang mot buoc audit trong workflow.
+  # Ly do goc: endpoint audit cua yarn 1 tra ve summary RONG kem exit 0, nen
+  # check-audit.mjs khong thay advisory nao va di qua - cong nay da xanh suot ma
+  # chua tung do lan nao. Chuyen sang pnpm thi `pnpm audit` doc dung advisory
+  # database va CO THE do that (xem scripts/check-audit.mjs, chay bang
+  # `pnpm check:audit` o may), nhung cong trong CI van giu la dependency-review:
+  # no doc advisory cua GitHub, khong phu thuoc endpoint cua registry nao.
   # dependency-review chi xet dependency ma PR THEM VAO, khong thay lo hong da
   # co san; phan do do Dependabot lo. Doi lay mot cong that thay vi mot cong gia.
   dependencies:
@@ -60,15 +66,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: pnpm/action-setup@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: yarn
+          cache: pnpm
 
-      - run: yarn install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile
 
       - name: Build the static export
-        run: yarn build
+        run: pnpm build
 
       # NFR-PERF-07, measured from the exported HTML rather than from the build
       # table, so it breaks on a regression and not on a Next.js release.
@@ -76,12 +84,12 @@ jobs:
         run: node scripts/check-bundle-size.mjs out
 
       - name: Install Chromium
-        run: npx playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps chromium
 
       # Runs against out/ through scripts/serve.mjs - the thing GitHub Pages will
       # serve, at 375 / 768 / 1024 / 1440.
       - name: End-to-end tests
-        run: yarn test:e2e
+        run: pnpm test:e2e
 
       - if: failure()
         uses: actions/upload-artifact@v4
