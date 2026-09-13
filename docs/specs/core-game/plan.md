@@ -28,7 +28,7 @@ DOM), test bằng vitest không cần jsdom. React nhận một `GameState` bấ
 - Chuỗi hiển thị đi qua `src/lib/strings.ts`, không hardcode trong JSX.
 - `next.config.ts` có `output: "export"` **từ commit đầu**.
 - Conventional Commits, subject tiếng Anh. Không commit vào `main`.
-- Sau **mỗi** task: `yarn test` xanh và `yarn typecheck` sạch trước khi commit.
+- Sau **mỗi** task: `pnpm test` xanh và `pnpm typecheck` sạch trước khi commit.
 
 ---
 
@@ -40,11 +40,11 @@ DOM), test bằng vitest không cần jsdom. React nhận một `GameState` bấ
 `src/app/page.tsx` · `src/app/globals.css` · `src/game/core/smoke.test.ts`.
 Modify: `.gitignore`.
 
-**Produces:** một cây dự án mà `yarn test`, `yarn typecheck`, `yarn build` đều chạy.
+**Produces:** một cây dự án mà `pnpm test`, `pnpm typecheck`, `pnpm build` đều chạy.
 
-- [ ] **1.1** `yarn init -y`, rồi cài với dải major (để yarn tự chốt bản, đừng ghim tay):
-  `yarn add next@^15 react@^19 react-dom@^19 lucide-react@^0.4` và
-  `yarn add -D typescript@^5 @types/node@^22 @types/react@^19 @types/react-dom@^19 eslint@^8 eslint-config-next@^15 eslint-config-prettier@^9 prettier@^3 prettier-plugin-tailwindcss@^0.6 tailwindcss@^3 postcss@^8 autoprefixer@^10 vitest@^4 happy-dom@^20 @vitejs/plugin-react@^4 @testing-library/react@^16 @playwright/test@^1`
+- [ ] **1.1** `pnpm init`, rồi cài với dải major (để pnpm tự chốt bản, đừng ghim tay):
+  `pnpm add next@^15 react@^19 react-dom@^19 lucide-react@^0.4` và
+  `pnpm add -D typescript@^5 @types/node@^22 @types/react@^19 @types/react-dom@^19 eslint@^8 eslint-config-next@^15 eslint-config-prettier@^9 prettier@^3 prettier-plugin-tailwindcss@^0.6 tailwindcss@^3 postcss@^8 autoprefixer@^10 vitest@^4 happy-dom@^20 @vitejs/plugin-react@^4 @testing-library/react@^16 @playwright/test@^1`
 - [ ] **1.2** Viết `scripts`: `dev` `build` `start` `lint` `test` `test:watch`
   `test:e2e` `typecheck`.
 - [ ] **1.3** `next.config.ts`: `output: "export"`, `trailingSlash: true`,
@@ -55,10 +55,10 @@ Modify: `.gitignore`.
 - [ ] **1.5** `vitest.config.ts`: `environment: "happy-dom"`, plugin react,
   alias `@` → `src`, `include: ["src/**/*.test.ts?(x)"]`.
 - [ ] **1.6** `src/game/core/smoke.test.ts` — một test `expect(1 + 1).toBe(2)`. Chạy
-  `yarn test`, phải PASS. Đây là bước chứng minh hạ tầng test chạy, không phải test thật.
+  `pnpm test`, phải PASS. Đây là bước chứng minh hạ tầng test chạy, không phải test thật.
 - [ ] **1.7** `layout.tsx` nạp Archivo + IBM Plex Mono qua `next/font/google`,
   `globals.css` để rỗng (token vào ở task 8), `page.tsx` render một `<main>` trống.
-- [ ] **1.8** `yarn typecheck` sạch, `yarn build` ra `out/`. Thêm `/out/`, `/.next/`,
+- [ ] **1.8** `pnpm typecheck` sạch, `pnpm build` ra `out/`. Thêm `/out/`, `/.next/`,
   `/node_modules/`, `/test-results/`, `/playwright-report/` vào `.gitignore`.
 - [ ] **1.9** Commit: `chore: scaffold next.js with static export and vitest`
 
@@ -90,7 +90,7 @@ export function mulberry32(seed: number): () => number {
 }
 ```
 
-- [ ] **2.4** `yarn test` PASS, xoá `smoke.test.ts`.
+- [ ] **2.4** `pnpm test` PASS, xoá `smoke.test.ts`.
 - [ ] **2.5** Commit: `feat(core): add seeded rng, difficulty table and board types`
 
 ---
@@ -131,7 +131,7 @@ export function plantMines(board: Board, seed: number, safeIndex: number): Board
 }
 ```
 
-- [ ] **3.6** `yarn test` PASS (817 lượt phải chạy dưới 2s — nếu chậm hơn là
+- [ ] **3.6** `pnpm test` PASS (817 lượt phải chạy dưới 2s — nếu chậm hơn là
   `neighbours` đang cấp phát quá nhiều).
 - [ ] **3.7** Commit: `feat(core): plant mines after the first move, never in its 3x3`
 
@@ -302,7 +302,7 @@ Modify: `src/app/page.tsx`.
   hydration); không có `?seed=` thì sinh seed sau khi mount.
 - [ ] **11.3** Test phím trên bàn cờ: `Space` mở · `F` cắm cờ · `Enter` chord ·
   `R` bàn mới · mũi tên không cuộn trang (`preventDefault`).
-- [ ] **11.4** FAIL → hiện thực → PASS. `yarn build` phải vẫn ra `out/`.
+- [ ] **11.4** FAIL → hiện thực → PASS. `pnpm build` phải vẫn ra `out/`.
 - [ ] **11.5** Commit: `feat(core-game): play a full board with mouse and keyboard`
 
 ---
@@ -311,7 +311,7 @@ Modify: `src/app/page.tsx`.
 
 **Files** — Create: `e2e/core-game.spec.ts`. Modify: `playwright.config.ts`.
 
-- [ ] **12.1** `playwright.config.ts`: `webServer` chạy `yarn build && npx serve out`
+- [ ] **12.1** `playwright.config.ts`: `webServer` chạy `pnpm build && pnpm dlx serve out`
   (hoặc `next start`), bốn viewport 375 · 768 · 1024 · 1440.
 - [ ] **12.2** Test: nước đầu **không bao giờ nổ** — 20 lần, mỗi lần `?seed=` khác,
   bấm ô giữa, khẳng định không thấy trạng thái thua.

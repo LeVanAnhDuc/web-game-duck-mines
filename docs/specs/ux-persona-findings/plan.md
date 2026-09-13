@@ -39,7 +39,7 @@ Thiết kế: [`design.md`](design.md) · Dẫn chứng: [`ux-feedback-2026-09-1
 
 ## Ngoài phạm vi phát hiện, nhưng chặn việc
 
-- [x] `.eslintrc.json` thêm `"root": true` — không có nó thì `yarn lint` **hỏng trong mọi
+- [x] `.eslintrc.json` thêm `"root": true` — không có nó thì `pnpm lint` **hỏng trong mọi
       worktree**, vì worktree nằm dưới `<repo>/.worktrees/` và ESLint đi ngược lên gặp
       config của repo cha. Lint hỏng đúng ở nơi nó cần chạy nhất
 
