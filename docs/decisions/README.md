@@ -18,6 +18,8 @@
 | [ADR-0008](0008-one-sound-generated-at-runtime.md) | Đúng một âm thanh, sinh lúc chạy, mặc định tắt | 2026-09-04 | accepted |
 | [ADR-0009](0009-small-screens-pan-zoom-not-shrink.md) | Màn nhỏ hơn bàn thì kéo và chụm, không co bàn cho vừa | 2026-09-04 | accepted |
 | [ADR-0010](0010-adopt-the-shared-view-conventions.md) | Nhận bộ quy ước view dùng chung của workspace `web-game` | 2026-09-11 | accepted |
+| [ADR-0011](0011-clamp-custom-fields-on-commit.md) | Kẹp giá trị bàn tuỳ chỉnh lúc chốt, không kẹp từng phím gõ | 2026-09-12 | accepted |
+| [ADR-0012](0012-open-cell-always-chords.md) | Chạm lên ô đã mở luôn là chord, kể cả khi thanh chế độ đang ở Cờ | 2026-09-12 | accepted |
 <!-- END:auto -->
 
 Trạng thái: `accepted` · `superseded by ADR-00xx` · `deprecated`
