@@ -51,8 +51,10 @@ chord, bàn phím đầy đủ).
   phải đoán ở nước cuối *là* Minesweeper kinh điển. Bỏ chỗ đó là làm game khác.
 - **Không undo, không gợi ý ô an toàn, không tự mở ô hiển nhiên.** Nổ là hết. Đó là
   toàn bộ sức căng của game.
-- **Không bảng xếp hạng online, không đăng nhập, không tài khoản, không server.** Kỷ
-  lục nằm trong `localStorage` của máy người chơi, và mất được — xem `NFR-DATA-04`.
+- **Không bảng xếp hạng online, không tài khoản do game sở hữu, không backend, không
+  đồng bộ.** Chỉ có đăng nhập Ducker ID **tuỳ chọn**, chỉ để biết người chơi là ai (tên,
+  email, ảnh) — không lưu, không gắn với kỷ lục ([ADR-0013](../decisions/0013-ducker-id-sign-in.md)).
+  Kỷ lục nằm trong `localStorage` của máy người chơi, và mất được — xem `NFR-DATA-04`.
 - **Bàn tuỳ chỉnh KHÔNG ghi kỷ lục.** *(sửa 04.09.2026 — trước đó là "không có bàn
   tuỳ chỉnh")* Người chơi tự đặt được cột × hàng × mìn, nhưng chỉ ba mức gốc Dễ /
   Trung bình / Khó được xếp hạng. Câu hỏi mà Non-Goal cũ nêu — "kỷ lục của bàn 5×5

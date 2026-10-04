@@ -30,7 +30,8 @@ graph LR
 
 **Không có gì khác.** Không server ứng dụng, không database, không API, không dịch vụ
 ngoài, không analytics. Sau khi tải xong trang, hệ thống **không gọi mạng lần nào nữa**
-(`NFR-REL-04`). Mọi ràng buộc kiến trúc trong file này đều xuất phát từ trần chi phí 0₫
+(`NFR-REL-04`) — ngoại lệ có giới hạn: đăng nhập Ducker ID tuỳ chọn, tắt mặc định, mã nằm trọn trong
+`src/auth/` ([ADR-0013](../decisions/0013-ducker-id-sign-in.md)). Mọi ràng buộc kiến trúc trong file này đều xuất phát từ trần chi phí 0₫
 ở [`overview.md`](../01-product/overview.md) §5.
 
 ## 2. Container — hệ thống gồm những khối chạy được nào

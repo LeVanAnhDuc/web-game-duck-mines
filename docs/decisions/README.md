@@ -20,6 +20,7 @@
 | [ADR-0010](0010-adopt-the-shared-view-conventions.md) | Nhận bộ quy ước view dùng chung của workspace `web-game` | 2026-09-11 | accepted |
 | [ADR-0011](0011-clamp-custom-fields-on-commit.md) | Kẹp giá trị bàn tuỳ chỉnh lúc chốt, không kẹp từng phím gõ | 2026-09-12 | accepted |
 | [ADR-0012](0012-open-cell-always-chords.md) | Chạm lên ô đã mở luôn là chord, kể cả khi thanh chế độ đang ở Cờ | 2026-09-12 | accepted |
+| [ADR-0013](0013-ducker-id-sign-in.md) | Đăng nhập Ducker ID tuỳ chọn, sau cờ tính năng, chỉ danh tính | 2026-10-04 | accepted |
 <!-- END:auto -->
 
 Trạng thái: `accepted` · `superseded by ADR-00xx` · `deprecated`
