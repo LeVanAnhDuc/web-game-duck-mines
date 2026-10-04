@@ -11,3 +11,5 @@ export * from "./useSettings";
 export * from "./useSound";
 export * from "./useTimer";
 export * from "./useTouchGesture";
+export * from "./useAccountMenu";
+export * from "./useDuckerAuth";
