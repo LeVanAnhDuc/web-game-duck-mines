@@ -53,6 +53,12 @@ describe("consumeCallback", () => {
     expect(window.location.search).toBe("");
   });
 
+  it("drops a returnTo containing a backslash", () => {
+    sessionStorage.setItem("ducker.pkce", PENDING(String.raw`/\evil`));
+    window.history.replaceState(null, "", "/?code=c1&state=s1");
+    expect(consumeCallback()).toEqual({ code: "c1", verifier: "v1", returnTo: undefined });
+  });
+
   it("drops an unsafe returnTo", () => {
     sessionStorage.setItem("ducker.pkce", PENDING("//evil.example/x"));
     window.history.replaceState(null, "", "/?code=c1&state=s1");

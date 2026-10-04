@@ -84,7 +84,12 @@ export async function startLogin(config: DuckerConfig): Promise<void> {
 
 /** Only a same-origin path may be fed to replaceState ("//evil" would throw at load). */
 function isSafeReturnTo(value: unknown): value is string {
-  return typeof value === "string" && value.startsWith("/") && !value.startsWith("//");
+  return (
+    typeof value === "string" &&
+    value.startsWith("/") &&
+    !value.startsWith("//") &&
+    !value.includes("\\")
+  );
 }
 
 /**
@@ -111,7 +116,8 @@ export function consumeCallback(): CallbackResult | null {
 
   // returnTo is restored on success AND on an IdP error: redirect_uri is the bare app
   // root, so without it a cancelled sign-in would drop the game's params.
-  const returnTo = pending && isSafeReturnTo(pending.returnTo) ? pending.returnTo : undefined;
+  const returnTo =
+    pending && isSafeReturnTo(pending.returnTo) ? pending.returnTo : undefined;
   if (error) return { error, returnTo };
   if (!pending || pending.state !== state) return { error: "state_mismatch" };
   return { code: code ?? undefined, verifier: pending.verifier, returnTo };

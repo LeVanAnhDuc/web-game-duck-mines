@@ -33,6 +33,23 @@ export async function exchangeCode(
   return { accessToken: data.access_token };
 }
 
+const optionalString = (value: unknown): boolean =>
+  value === undefined || value === null || typeof value === "string";
+
+/** A malformed userinfo must never reach rendering. */
+function isProfile(value: unknown): value is DuckerProfile {
+  if (typeof value !== "object" || value === null) return false;
+  const v = value as Record<string, unknown>;
+  return (
+    typeof v.sub === "string" &&
+    v.sub !== "" &&
+    optionalString(v.name) &&
+    optionalString(v.email) &&
+    optionalString(v.picture) &&
+    (v.email_verified === undefined || typeof v.email_verified === "boolean")
+  );
+}
+
 export async function fetchProfile(
   config: DuckerConfig,
   accessToken: string,
@@ -42,5 +59,7 @@ export async function fetchProfile(
     headers: { Authorization: `Bearer ${accessToken}` },
   });
   if (!response.ok) throw new Error(`userinfo_failed_${response.status}`);
-  return (await response.json()) as DuckerProfile;
+  const data: unknown = await response.json();
+  if (!isProfile(data)) throw new Error("userinfo_invalid");
+  return data;
 }

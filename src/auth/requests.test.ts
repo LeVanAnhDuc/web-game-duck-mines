@@ -57,4 +57,18 @@ describe("requests", () => {
     fetchMock.mockResolvedValue(json({}, 401));
     await expect(fetchProfile(config, "at")).rejects.toThrow("userinfo_failed_401");
   });
+
+  it("rejects a malformed userinfo body", async () => {
+    fetchMock.mockResolvedValue(json(null));
+    await expect(fetchProfile(config, "at")).rejects.toThrow("userinfo_invalid");
+    fetchMock.mockResolvedValue(json({ sub: "u1", name: 5 }));
+    await expect(fetchProfile(config, "at")).rejects.toThrow("userinfo_invalid");
+    fetchMock.mockResolvedValue(json({ sub: "" }));
+    await expect(fetchProfile(config, "at")).rejects.toThrow("userinfo_invalid");
+  });
+
+  it("accepts a minimal profile", async () => {
+    fetchMock.mockResolvedValue(json({ sub: "u1" }));
+    await expect(fetchProfile(config, "at")).resolves.toEqual({ sub: "u1" });
+  });
 });
