@@ -114,6 +114,21 @@ describe("AccountButton", () => {
     expect(document.activeElement).toBe(signOut);
   });
 
+  it("keeps menu keys away from a game-style window listener while open", () => {
+    store.set(signedIn);
+    render(<AccountButton />);
+    const seen: string[] = [];
+    const game = (event: KeyboardEvent) => seen.push(event.key);
+    window.addEventListener("keydown", game);
+    fireEvent.click(trigger());
+    fireEvent.keyDown(document.activeElement ?? document.body, { key: "ArrowUp" });
+    fireEvent.keyDown(document.activeElement ?? document.body, { key: "Escape" });
+    expect(seen).toEqual([]);
+    fireEvent.keyDown(document.body, { key: "ArrowUp" });
+    expect(seen).toEqual(["ArrowUp"]);
+    window.removeEventListener("keydown", game);
+  });
+
   it("closes on Tab without pulling focus back to the menu", () => {
     store.set(signedIn);
     render(<AccountButton />);
