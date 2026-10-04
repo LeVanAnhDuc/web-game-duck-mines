@@ -168,3 +168,28 @@ gian vừa lập là một kỷ lục.
   phải kéo.
 
 **Chức năng liên quan:** FR-16 · FR-13
+
+## US-06 · Đăng nhập bằng Ducker ID (tuỳ chọn, sau cờ tính năng)
+
+**Bối cảnh:** Bản build có bật cờ và đủ biến Ducker ID (hiện chỉ chạy ở máy; bản
+deploy không có). Người chơi muốn biết mình đang là ai, không đổi gì về cách chơi.
+
+**Các bước:**
+1. Bấm biểu tượng "Đăng nhập" ở header, trước nút sáng/tối.
+2. Trang chuyển sang Ducker ID, đăng nhập nếu chưa.
+3. Quay về đúng màn hình cũ (tham số như `?seed=` còn nguyên, URL sạch), thấy avatar.
+4. Bấm avatar: tên, email, "Mở hồ sơ Ducker ID", "Đăng xuất".
+5. Đăng xuất thì avatar trở lại nút "Đăng nhập". Tải lại trang cũng về chưa đăng nhập.
+
+**Kết quả mong đợi:** Biết mình đang đăng nhập bằng tài khoản nào; bàn đang chơi, kỷ
+lục và cài đặt không bị đụng tới.
+
+**Điều gì có thể sai:**
+- Từ chối ở Ducker ID, `state` bị sửa, mở tab thứ hai giữa chừng → về chưa đăng nhập,
+  URL sạch, không báo lỗi.
+- Issuer treo hoặc trả hồ sơ sai dạng → về chưa đăng nhập sau tối đa 15 giây.
+- `sessionStorage` bị chặn → bấm không đi đâu cả (không kẹt ở callback).
+- Bấm đúp, hoặc quay lại bằng nút Back → vẫn bấm đăng nhập lại được.
+- Cờ tắt hoặc thiếu một biến → không có nút, không có request, không đụng storage.
+
+**Chức năng liên quan:** FR-19

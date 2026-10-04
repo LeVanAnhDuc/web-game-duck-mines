@@ -4,7 +4,7 @@
 [![Deploy](https://github.com/LeVanAnhDuc/web-game-duck-mines/actions/workflows/deploy.yml/badge.svg)](https://github.com/LeVanAnhDuc/web-game-duck-mines/actions/workflows/deploy.yml)
 [![Release](https://img.shields.io/github/v/release/LeVanAnhDuc/web-game-duck-mines?sort=semver)](https://github.com/LeVanAnhDuc/web-game-duck-mines/releases)
 
-A Minesweeper clone built with Next.js and plain DOM. No server, no sign-in, no
+A Minesweeper clone built with Next.js and plain DOM. No server, no game accounts, no
 analytics: it exports to static HTML and everything happens in your browser.
 
 **Play**: https://levananhduc.github.io/web-game-duck-mines/
@@ -88,11 +88,12 @@ analytics: it exports to static HTML and everything happens in your browser.
   - Every cell announces its position and state to a screen reader
   - Right click flags, middle click chords, and the browser menu stays out of the way
 
-- **Nothing to install, nothing to sign into**
+- **Nothing to install, no game account to create**
 
   - Static export, so it runs from any file host
   - `?seed=` gives you a specific board, so two people can play the same one
-  - No account, no analytics, no cookie: nothing about you leaves your device
+  - No game account, no analytics, no cookie: nothing about you leaves your device
+  - Optional sign-in with Ducker ID, identity only (behind a feature flag, off in the deployed build)
 
 ## Controls
 
@@ -121,8 +122,16 @@ pnpm lint
 pnpm build        # writes out/
 ```
 
-`pnpm test:e2e` needs a build first (`pnpm build`) and a Chromium install
-(`pnpm exec playwright install chromium`).
+`pnpm test:e2e` needs a build first (`pnpm build`), the sign-in export (`pnpm build:e2e-auth`,
+flag on against a fake issuer) and a Chromium install (`pnpm exec playwright install chromium`).
+
+### Ducker ID sign-in (optional, off by default)
+
+`cp .env.example .env`, then set `NEXT_PUBLIC_DUCKER_CLIENT_ID` to the client registered in
+Ducker ID (redirect URI `http://localhost:3300/`, and add `http://localhost:3300` to its
+`CORS_ORIGINS`) and run `pnpm dev -p 3300`. The button only renders when
+`NEXT_PUBLIC_FEATURE_DUCKER_SIGN_IN=true` **and** all four `NEXT_PUBLIC_DUCKER_*` values
+are set; the deploy workflow passes none of them. See ADR-0013.
 
 Two checks enforce thresholds that would otherwise only be written down:
 
@@ -158,7 +167,7 @@ hand and getting it slightly wrong.
 | Workflow | When | What it does |
 | --- | --- | --- |
 | `ci.yml` | every pull request and push to `main` | Two parallel jobs: lint + typecheck + unit tests + dependency audit, and build + first-load-JS budget + the end-to-end suite at four viewports |
-| `deploy.yml` | push to `main` | Rebuilds with `GITHUB_PAGES=true` and publishes `out/` to GitHub Pages. It re-runs the tests rather than trusting a green run it cannot see |
+| `deploy.yml` | push to `main` | Rebuilds with `NEXT_PUBLIC_BASE_PATH=/<repo>` and publishes `out/` to GitHub Pages. It re-runs the tests rather than trusting a green run it cannot see |
 | `release.yml` | push to `main` | Works out the next version, composes the notes, and publishes a GitHub release |
 
 ## Releases and versioning

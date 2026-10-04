@@ -21,7 +21,7 @@ KHÔNG chứa: quy ước format/naming (-> lint config), kiến trúc (-> archi
 -->
 
 Cả 9 bất biến mặc định đã bị bỏ: chúng nói về server, datastore, migration, tiền và
-quyền sở hữu dữ liệu — không có thứ nào trong dự án này. Thay bằng 9 bất biến thật.
+quyền sở hữu dữ liệu — không có thứ nào trong dự án này. Thay bằng 10 bất biến thật.
 
 | # | Bất biến | Vi phạm thì sao |
 | --- | --- | --- |
@@ -34,3 +34,4 @@ quyền sở hữu dữ liệu — không có thứ nào trong dự án này. Th
 | 7 | Sau khi thắng hoặc thua, **mọi** action trong reducer là no-op | Chơi tiếp được sau khi đã nổ; đồng hồ chạy tiếp; kỷ lục ghi sai |
 | 8 | Ô chưa mở **phải có viền**; ô đã mở **không viền** | Đây là cơ chế duy nhất phân biệt hai trạng thái — độ sáng không đủ 3:1, đã đo. Bỏ viền vì thẩm mỹ là phá cả hệ thống ([ADR-0001](../decisions/0001-design-tokens.md)) |
 | 9 | Không viết hex màu thẳng trong code; chỉ đọc qua `var(--…)` | Một theme đúng, theme kia sai, và chỉ phát hiện khi có người đổi sang chế độ tối |
+| 10 | Mã đăng nhập Ducker ID chỉ nằm trong `src/auth/`; **cờ tắt thì không đọc `location.search`, không đụng storage, không gọi mạng**. Khoá `sessionStorage` duy nhất là `ducker.pkce`, và nó **không** đi qua `safeStorage` (không phải dữ liệu game) | Một lần đọc URL hay storage lọt ra ngoài cờ làm bản deploy chạm vào thứ nó cam kết không chạm (`NFR-DATA-04`), và không test nào đỏ vì bản có cờ vẫn chạy đúng ([ADR-0013](../decisions/0013-ducker-id-sign-in.md)) |

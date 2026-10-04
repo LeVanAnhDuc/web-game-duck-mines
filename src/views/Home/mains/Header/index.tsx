@@ -6,6 +6,9 @@ import { Moon, Settings as SettingsIcon, Sun } from "lucide-react";
 // types
 import type { ThemeChoice } from "@/game/settings/types";
 
+// components
+import { AccountButton } from "../../components/AccountButton";
+
 // others
 import { strings } from "@/lib/strings";
 
@@ -22,6 +25,7 @@ export function Header({
     <header className="ms-header">
       <span className="ms-wordmark">{strings.appName}</span>
       <div className="ms-header-actions">
+        <AccountButton />
         {/*
           A shortcut, not the setting: it flips between the two explicit choices.
           "System" stays reachable only in the sheet, because a three-way cycle

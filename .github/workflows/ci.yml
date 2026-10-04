@@ -83,6 +83,10 @@ jobs:
       - name: First-load JS budget
         run: node scripts/check-bundle-size.mjs out
 
+      # Flag-on build against a fake issuer, for the Ducker ID sign-in e2e (out-auth/).
+      - name: Build the sign-in e2e export
+        run: pnpm build:e2e-auth
+
       - name: Install Chromium
         run: pnpm exec playwright install --with-deps chromium
 

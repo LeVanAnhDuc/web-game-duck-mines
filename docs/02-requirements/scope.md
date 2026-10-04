@@ -38,6 +38,7 @@ KHÔNG chứa: cách hiện thực, ngưỡng phi chức năng (-> nfr.md), lý 
 | FR-16 | Bàn tuỳ chỉnh: tự đặt cột × hàng × mìn. **Không ghi kỷ lục** | US-05 | custom-board | xong |
 | FR-17 | Gợi ý xoay ngang khi bàn không vừa dọc mà vừa nếu xoay | US-04 | touch | xong |
 | FR-18 | Tiếng nổ sinh bằng WebAudio + công tắc tắt tiếng, mặc định tắt | US-01 | settings-records | xong |
+| FR-19 | Đăng nhập Ducker ID tuỳ chọn (OIDC + PKCE, chỉ danh tính), sau cờ tính năng, tắt ở bản deploy | US-06 | ducker-id-sign-in | xong |
 
 **Thứ tự làm:** `core-game` ✅ → `deploy` ✅ → `settings-records` → `touch` →
 `custom-board`.
