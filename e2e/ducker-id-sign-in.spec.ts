@@ -159,3 +159,56 @@ test("the sign-in button is at least 44px and does not overlap its neighbours", 
   );
   expect(overflow).toBeLessThanOrEqual(0);
 });
+
+for (const width of [320, 360, 375]) {
+  test(`the open menu stays inside the viewport and does not move the header at ${width}px`, async ({
+    page,
+  }) => {
+    await page.setViewportSize({ width, height: 720 });
+    await fakeIssuer(page);
+    await page.goto("/");
+    const header = page.locator("header.ms-header");
+    await signInButton(page).click();
+    await expect(account(page)).toBeVisible();
+    const before = await header.boundingBox();
+    await account(page).click();
+    const menu = page.getByTestId("account-menu");
+    await expect(menu).toBeVisible();
+    const box = (await menu.boundingBox())!;
+    expect(box.x).toBeGreaterThanOrEqual(0);
+    expect(box.x + box.width).toBeLessThanOrEqual(width);
+    expect(await header.boundingBox()).toEqual(before);
+    expect(await menu.evaluate((el) => getComputedStyle(el).position)).toBe("absolute");
+    test.info().annotations.push({ type: "menu-box", description: JSON.stringify(box) });
+    console.log(`menu@${width}`, JSON.stringify(box), "header", JSON.stringify(before));
+  });
+}
+
+test("the signed-out header fits at 320px: no overlap, no sideways scroll, 44px targets", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 720 });
+  await fakeIssuer(page);
+  await page.goto("/");
+  const boxes = [];
+  for (const locator of [
+    signInButton(page),
+    page.getByTestId("theme-toggle"),
+    page.getByTestId("open-settings"),
+  ]) {
+    const b = (await locator.boundingBox())!;
+    expect(b.width).toBeGreaterThanOrEqual(44);
+    expect(b.height).toBeGreaterThanOrEqual(44);
+    boxes.push(b);
+  }
+  for (let i = 0; i < boxes.length - 1; i += 1) {
+    expect(boxes[i].x + boxes[i].width).toBeLessThanOrEqual(boxes[i + 1].x + 0.5);
+  }
+  const word = (await page.locator(".ms-wordmark").boundingBox())!;
+  expect(word.x + word.width).toBeLessThanOrEqual(boxes[0].x);
+  expect(word.height).toBeLessThan(30);
+  const overflow = await page.evaluate(
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
+  );
+  expect(overflow).toBeLessThanOrEqual(0);
+});

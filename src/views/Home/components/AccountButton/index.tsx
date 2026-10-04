@@ -2,7 +2,7 @@
 
 // libs
 import { LogIn, LogOut, UserRound } from "lucide-react";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // hooks
 import { useAccountMenu, useDuckerAuth } from "@/hooks";
@@ -22,6 +22,7 @@ export function AccountButton() {
   const menu = useAccountMenu();
   const signInRef = useRef<HTMLButtonElement>(null);
   const focusSignIn = useRef(false);
+  const [pictureFailed, setPictureFailed] = useState(false);
   const signedIn = auth.status === "signed-in" && auth.profile !== null;
 
   // After "Đăng xuất" the trigger unmounts; focus must land on the sign-in button in
@@ -34,6 +35,10 @@ export function AccountButton() {
   }, [signedIn]);
 
   if (!auth.enabled) return null;
+
+  // Server and first client render: an inert slot of the same size as the sign-in
+  // button, so nothing can be clicked before hydration and the header does not shift.
+  if (auth.status === "idle") return <span className="ms-iconbtn" aria-hidden="true" />;
 
   if (!signedIn || !auth.profile) {
     const loading = auth.status === "loading";
@@ -69,19 +74,33 @@ export function AccountButton() {
         onClick={menu.toggle}
       >
         <span className="ms-avatar">
-          {profile.picture ? (
+          {profile.picture && !pictureFailed ? (
             // eslint-disable-next-line @next/next/no-img-element -- static export, external avatar
-            <img src={profile.picture} alt="" width={32} height={32} referrerPolicy="no-referrer" />
+            <img
+              src={profile.picture}
+              alt=""
+              width={32}
+              height={32}
+              referrerPolicy="no-referrer"
+              onError={() => setPictureFailed(true)}
+            />
           ) : (
             <span aria-hidden="true">{initialOf(profile)}</span>
           )}
         </span>
       </button>
       {menu.open && (
-        <div ref={menu.menuRef} role="menu" className="ms-account-menu" data-testid="account-menu">
-          <div className="ms-account-who">
+        <div
+          ref={menu.menuRef}
+          role="menu"
+          className="ms-account-menu"
+          data-testid="account-menu"
+        >
+          <div className="ms-account-who" role="none">
             {main ? <p className="ms-account-name">{main}</p> : null}
-            {name && profile.email ? <p className="ms-account-email">{profile.email}</p> : null}
+            {name && profile.email ? (
+              <p className="ms-account-email">{profile.email}</p>
+            ) : null}
           </div>
           <a
             role="menuitem"

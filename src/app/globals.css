@@ -305,6 +305,7 @@ a:hover {
 }
 
 .ms-iconbtn {
+  flex: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -339,7 +340,7 @@ a:hover {
  * mau thi no sai (MASTER.md section 0).
  */
 .ms-account {
-  position: relative;
+  position: static;
 }
 
 .ms-avatar {
@@ -480,6 +481,7 @@ a:hover {
 }
 
 .ms-header {
+  position: relative; /* the account menu anchors to the header edge, not to its trigger */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -495,6 +497,7 @@ a:hover {
 }
 
 .ms-wordmark {
+  white-space: nowrap;
   font-size: 18px;
   font-weight: 600;
   letter-spacing: -0.01em;

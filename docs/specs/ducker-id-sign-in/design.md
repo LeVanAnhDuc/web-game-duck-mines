@@ -21,6 +21,9 @@ Phần riêng của repo này; hành vi chung (trạng thái, callback, cấu h�
 - **Bàn phím:** mũi tên lên/xuống/Home/End di chuyển giữa các mục; Esc đóng và trả focus
   cho nút; Tab hoặc focus rời menu thì đóng mà không giật focus; sau "Đăng xuất" focus về nút "Đăng nhập".
 
+- **Vị trí menu:** neo vào `.ms-header` (`position: relative`; `.ms-account` là `static`), không neo vào nút, để menu luôn nằm trong khung nhìn từ 320px. Mở menu không làm header đổi kích thước.
+- **Bóng đổ:** `0 4px 12px rgb(0 0 0 / 16%)` là literal, giống mọi bóng đổ khác trong `globals.css` (repo chưa có token bóng); chấp nhận là ngoại lệ, không phát minh token mới.
+
 ## 2. Tệp
 
 | Tệp | Việc |

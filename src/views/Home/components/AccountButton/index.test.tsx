@@ -64,6 +64,23 @@ describe("AccountButton", () => {
     expect(container.innerHTML).toBe("");
   });
 
+  it("renders an inert same-size slot while idle", () => {
+    store.set({ ...base, status: "idle", profile: null });
+    const { container } = render(<AccountButton />);
+    expect(screen.queryByRole("button")).toBeNull();
+    expect(container.querySelector(".ms-iconbtn")?.getAttribute("aria-hidden")).toBe("true");
+  });
+
+  it("falls back to the initial when the avatar image fails", () => {
+    store.set({ ...signedIn, profile: { ...signedIn.profile, picture: "http://x.test/a.png" } });
+    const { container } = render(<AccountButton />);
+    const img = container.querySelector("img")!;
+    expect(img.getAttribute("referrerpolicy")).toBe("no-referrer");
+    fireEvent.error(img);
+    expect(container.querySelector("img")).toBeNull();
+    expect(container.querySelector(".ms-avatar")?.textContent).toBe("L");
+  });
+
   it("shows the sign-in button when signed out and starts login on click", () => {
     store.set({ ...base, status: "signed-out", profile: null });
     render(<AccountButton />);
