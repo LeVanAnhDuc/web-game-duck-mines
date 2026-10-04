@@ -4,6 +4,7 @@ import {
   consumeCallback,
   resetCaptureForTests,
   resetLoginForTests,
+  settleCallbackUrl,
   startLogin,
 } from "./duckerAuth";
 
@@ -83,6 +84,40 @@ describe("captureCallback", () => {
   });
 });
 
+describe("settleCallbackUrl", () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+    resetCaptureForTests();
+  });
+
+  it("restores the clean URL when something re-pollutes it after capture", () => {
+    sessionStorage.setItem("ducker.pkce", PENDING("/?seed=3"));
+    window.history.replaceState(null, "", "/?code=c1&state=s1");
+    captureCallback();
+    window.history.replaceState(null, "", "/?code=c1&state=s1");
+    settleCallbackUrl();
+    expect(window.location.search).toBe("?seed=3");
+  });
+
+  it("is one-shot: a second call is a no-op even if the URL changed meanwhile", () => {
+    sessionStorage.setItem("ducker.pkce", PENDING("/?seed=3"));
+    window.history.replaceState(null, "", "/?code=c1&state=s1");
+    captureCallback();
+    settleCallbackUrl();
+    window.history.replaceState(null, "", "/?other=2");
+    settleCallbackUrl();
+    expect(window.location.search).toBe("?other=2");
+  });
+
+  it("is a no-op when there was no callback", () => {
+    window.history.replaceState(null, "", "/?seed=3&x=1");
+    captureCallback();
+    window.history.replaceState(null, "", "/?other=2");
+    settleCallbackUrl();
+    expect(window.location.search).toBe("?other=2");
+  });
+});
+
 describe("startLogin", () => {
   const assign = vi.fn();
   beforeEach(() => {
@@ -123,6 +158,16 @@ describe("startLogin", () => {
       throw new Error("blocked");
     });
     await startLogin(config);
+    expect(assign).not.toHaveBeenCalled();
+    spy.mockRestore();
+    await startLogin(config);
+    expect(assign).toHaveBeenCalledTimes(1);
+  });
+
+  it("removes the pending entry and re-arms when the login start throws", async () => {
+    const spy = vi.spyOn(crypto.subtle, "digest").mockRejectedValue(new Error("boom"));
+    await expect(startLogin(config)).rejects.toThrow("boom");
+    expect(sessionStorage.getItem("ducker.pkce")).toBeNull();
     expect(assign).not.toHaveBeenCalled();
     spy.mockRestore();
     await startLogin(config);

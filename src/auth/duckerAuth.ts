@@ -77,6 +77,7 @@ export async function startLogin(config: DuckerConfig): Promise<void> {
     url.searchParams.set("code_challenge_method", "S256");
     window.location.assign(url.toString());
   } catch (error) {
+    clearPending();
     starting = false;
     throw error;
   }
@@ -125,6 +126,10 @@ export function consumeCallback(): CallbackResult | null {
 
 let captured: CallbackResult | null = null;
 let didCapture = false;
+let settledUrl: string | null = null;
+
+const currentUrl = (): string =>
+  window.location.pathname + window.location.search + window.location.hash;
 
 /** Chạy một lần khi module nạp trên trình duyệt, trước mọi code game đọc URL. */
 export function captureCallback(): void {
@@ -138,6 +143,24 @@ export function captureCallback(): void {
       // never let a bad returnTo blank the game at load
     }
   }
+  if (captured) settledUrl = currentUrl();
+}
+
+/**
+ * After hydration Next's app router writes its own hydration URL back into history,
+ * and that URL still carries ?code&state - which would undo the cleanup above and let
+ * an F5 re-send a spent code. Called from a mount effect to put the clean URL back.
+ */
+export function settleCallbackUrl(): void {
+  if (settledUrl === null) return;
+  const target = settledUrl;
+  settledUrl = null; // one-shot: a later remount must not rewrite the URL behind Next's back
+  if (currentUrl() === target) return;
+  try {
+    window.history.replaceState(window.history.state, "", target);
+  } catch {
+    // leave the URL as it is rather than break the game
+  }
 }
 
 export function capturedCallback(): CallbackResult | null {
@@ -148,6 +171,7 @@ export function capturedCallback(): CallbackResult | null {
 export function resetCaptureForTests(): void {
   captured = null;
   didCapture = false;
+  settledUrl = null;
 }
 
 if (typeof window !== "undefined" && DUCKER_CONFIG) captureCallback();
