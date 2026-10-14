@@ -6,11 +6,14 @@ tĩnh ở :4173, bản bật cờ Ducker ID ở :4391; project `app-touch` = Pix
 
 | Từ | Về | Trạng thái |
 |---|---|---|
-| `client/e2e/core-game.spec.ts` | `src/tests/e2e/board/core-game.e2e.ts` | chưa chuẩn hóa |
-| `client/e2e/touch.spec.ts` | `src/tests/e2e/touch/touch.e2e.ts` | chưa chuẩn hóa |
-| `client/e2e/ducker-id-flag-off.spec.ts` | `src/tests/e2e/ducker-id/flag-off.e2e.ts` | chưa chuẩn hóa |
-| `client/e2e/ducker-id-sign-in.spec.ts` | `src/tests/e2e/ducker-id/sign-in.e2e.ts` | chưa chuẩn hóa |
+| `client/e2e/core-game.spec.ts` | `src/tests/e2e/board/first-move.e2e.ts` (git mv), các case tách theo module: board (load, first move ×20, clock, seed), marking (2 case cờ), game-result (dialog kết quả), settings (đổi bàn + nhớ, hỏi bỏ bàn, tiếng tắt), theme (ghi đè hệ), custom-board (4 case), accessibility (3 case phím + grayscale), responsive (375px không cuộn ngang), privacy (không file âm thanh) | đã chuẩn hóa |
+| `client/e2e/touch.spec.ts` | `src/tests/e2e/touch/gestures.e2e.ts` (git mv) + `touch/board-frame.e2e.ts`; case NFR-PERF-06 → `board/performance.e2e.ts` | đã chuẩn hóa |
+| `client/e2e/ducker-id-flag-off.spec.ts` | `src/tests/e2e/ducker-id/flag-off.e2e.ts` | đã chuẩn hóa |
+| `client/e2e/ducker-id-sign-in.spec.ts` | `src/tests/e2e/ducker-id/sign-in.e2e.ts`; issuer giả → `src/fixtures/issuer.fixture.ts` | đã chuẩn hóa |
 | `client/playwright.config.ts` (5 viewport + touch + 2 auth project, 2 webServer) | `playwright.config.ts` | gộp |
+
+Case cũ bị bỏ khi chuẩn hóa: "dragging pans the board" (chỉ gán `scrollLeft` bằng JS, không chứng minh cử chỉ) — thay bằng
+TC-TOUCH-010 kéo touch thật qua CDP. Không case nào khác bị bỏ.
 
 Unit + component test (vitest, `client/src/**/*.test.ts(x)`) ở lại `client/`: chúng thuộc về code.
 

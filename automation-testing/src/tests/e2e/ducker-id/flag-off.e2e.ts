@@ -1,22 +1,26 @@
-import { expect, test } from "@/fixtures";
+import { test, expect } from "@/fixtures";
+import { SEED } from "@/data/test-data";
 
-/**
- * The deployed build ships with the Ducker ID flag off (ADR-0013): no button, no
- * account menu, and still not one request that leaves the site (NFR "no network after
- * load" - the exception only applies once the flag is on and the player clicks).
- */
-test("flag off: no sign-in button and no outside request", async ({ page, baseURL }) => {
+// ADR-0013: the deployed build ships with the Ducker ID flag off - no button, no menu, no storage, no outside request.
+// Runs on the "app" project, i.e. the normal (flag-off) export.
+
+test("cờ tắt thì không có nút đăng nhập, không chạm storage, không request ra ngoài", { tag: ["@TC-DUCKERID-001", "@smoke"] }, async ({
+  page,
+  gamePage,
+  baseURL,
+}) => {
+  const site = new URL(baseURL!).origin;
   const outside: string[] = [];
   page.on("request", (r) => {
     const url = r.url();
-    if (!url.startsWith(baseURL!) && !url.startsWith("data:") && !url.startsWith("blob:")) {
-      outside.push(url);
-    }
+    if (!url.startsWith(site) && !url.startsWith("data:") && !url.startsWith("blob:")) outside.push(url);
   });
-  await page.goto("/?seed=20260903");
-  await expect(page.locator("button.ms-cell")).toHaveCount(81);
-  await expect(page.getByRole("button", { name: "Đăng nhập" })).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Tài khoản Ducker ID" })).toHaveCount(0);
+  await gamePage.goto(SEED, "code=x&state=y");
+  await expect(gamePage.cells()).toHaveCount(81);
+  await expect(gamePage.account.signInButton()).toHaveCount(0);
+  await expect(gamePage.account.trigger()).toHaveCount(0);
   expect(await page.evaluate(() => sessionStorage.length)).toBe(0);
+  // with the flag off the URL is not read either: a stray ?code= is left exactly where it was
+  expect(await page.evaluate(() => window.location.search)).toContain("code=x");
   expect(outside).toEqual([]);
 });

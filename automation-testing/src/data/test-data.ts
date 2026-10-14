@@ -14,3 +14,12 @@ export const STORAGE = {
   records: "minesweeper.records.v1",
   settings: "minesweeper.settings.v1",
 } as const;
+
+// The flag-on e2e export (../client/scripts/build-e2e-auth.mjs) signs in against this fake issuer. It is never resolved:
+// the issuer fixture answers every request to it (ADR-0013).
+export const DUCKER = {
+  issuer: "http://ducker.test",
+  profilePath: "/profile",
+  user: { sub: "u1", name: "Lê Văn Anh Đức", email: "duc@ducker.id" },
+  pkceKey: "ducker.pkce",
+} as const;

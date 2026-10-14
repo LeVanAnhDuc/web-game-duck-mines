@@ -485,7 +485,8 @@ export class AccountMenu {
   constructor(private readonly page: Page) {}
 
   signInButton(): Locator {
-    return this.page.getByRole("button", { name: copy.account.signIn });
+    // exact: the in-flight label "Đang đăng nhập…" contains "đăng nhập" too
+    return this.page.getByRole("button", { name: copy.account.signIn, exact: true });
   }
   trigger(): Locator {
     return this.page.getByRole("button", { name: copy.account.menuLabel });
@@ -498,5 +499,13 @@ export class AccountMenu {
   }
   signOutItem(): Locator {
     return this.page.getByRole("menuitem", { name: copy.account.signOut });
+  }
+
+  /** Clicks "Đăng nhập" and waits for the round trip: away to the issuer's authorize URL and back, page loaded. */
+  async signInRoundTrip(issuer: string): Promise<void> {
+    const bounced = this.page.waitForResponse((r) => r.url().startsWith(`${issuer}/oauth/authorize`));
+    await this.signInButton().click();
+    await bounced;
+    await this.page.waitForLoadState("load");
   }
 }
