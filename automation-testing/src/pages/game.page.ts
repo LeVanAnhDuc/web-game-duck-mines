@@ -172,6 +172,15 @@ export class GamePage extends BasePage {
   async flag(index: number): Promise<void> {
     await this.cell(index).click({ button: "right" });
   }
+  /**
+   * Fires the native contextmenu event a right click produces and reports whether the game suppressed the browser
+   * menu (defaultPrevented). The event itself is what flags the cell.
+   */
+  async contextMenu(index: number): Promise<boolean> {
+    return this.cell(index).evaluate(
+      (el) => !el.dispatchEvent(new MouseEvent("contextmenu", { bubbles: true, cancelable: true, button: 2 })),
+    );
+  }
   async chordWithMiddleClick(index: number): Promise<void> {
     await this.cell(index).click({ button: "middle" });
   }
