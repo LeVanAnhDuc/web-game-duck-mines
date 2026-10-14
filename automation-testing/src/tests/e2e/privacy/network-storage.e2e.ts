@@ -35,7 +35,7 @@ test("tải và chơi không gửi một request nào ra ngoài site", { tag: ["
 
 test("sau khi tải xong, chơi không gọi mạng lần nào nữa", { tag: ["@TC-PRIVACY-002", "@smoke"] }, async ({ page, gamePage }) => {
   // BUG: defects/privacy.md#bug-privacy-01
-  test.fail();
+  test.fail(process.platform === "win32", "reproduces on Windows Chromium; ubuntu CI Chromium already has the font at load");
   await gamePage.goto(SEED);
   await page.waitForLoadState("networkidle");
   const after: string[] = [];

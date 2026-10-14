@@ -15,6 +15,9 @@
   `next/font/google` (`client/src/app/layout.tsx`) không được preload trong bản xuất tĩnh (`out/index.html` không có
   `<link rel="preload" … woff2>`), nên mặt chữ chỉ được tải lúc lần đầu dùng. Mất mạng sau khi tải trang thì chữ số rơi về
   font dự phòng (game vẫn chơi được — TC-PRIVACY-003 xanh).
+- **Phạm vi:** tái hiện được trên Chromium của Playwright chạy Windows (máy dev). Trên Chromium ubuntu của CI, font đã có
+  trước khi trang tải xong nên test xanh → spec chỉ đánh `test.fail()` khi `process.platform === "win32"`. Cùng một bản
+  build, khác hệ điều hành: hành vi tải font lười của trình duyệt khác nhau, nên người chơi trên Windows là người gặp.
 - **Ghi chú:** ghi ngày 2026-10-15. Tên file đổi theo build; điều cần sửa là font chữ số có mặt trước khi trang được coi là
   "tải xong" (preload, hoặc nhúng).
 
