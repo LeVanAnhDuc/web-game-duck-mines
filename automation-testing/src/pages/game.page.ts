@@ -171,6 +171,11 @@ export class GamePage extends BasePage {
     return (await this.states()).filter((c) => c.state === "empty" || c.state === "number").length;
   }
 
+  /** The colour the board is painted on - what tells light from dark at a glance. */
+  async boardBackground(): Promise<string> {
+    return this.grid().evaluate((el) => getComputedStyle(el).backgroundColor);
+  }
+
   // ── acting ──────────────────────────────────────────────────────────────
 
   async reveal(index: number): Promise<void> {
