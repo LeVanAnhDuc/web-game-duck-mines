@@ -134,7 +134,7 @@ và tính cả thời gian tải vào ngưỡng.
 | nhu cầu tiếp cận | dàn bắt buộc có ít nhất một người |
 | động cơ, nỗi sợ | định hướng cái persona chú ý tới |
 | `patience_threshold` | 2–6 bước bế tắc liên tiếp thì bỏ cuộc. Bỏ cuộc là kết quả hợp lệ |
-| ngôn ngữ | UI sản phẩm 100% tiếng Việt (`src/lib/strings.ts`) — persona nói tiếng Việt |
+| ngôn ngữ | UI sản phẩm 100% tiếng Việt (`client/src/lib/strings.ts`) — persona nói tiếng Việt |
 | `goal_in_user_words` cho từng Red Route được giao | bằng từ của người chơi, cấm từ của sản phẩm |
 
 ## 8 · Kích thước và thành phần dàn
