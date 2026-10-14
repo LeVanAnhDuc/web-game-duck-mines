@@ -177,7 +177,7 @@ hand and getting it slightly wrong.
 
 | Workflow | When | What it does |
 | --- | --- | --- |
-| `ci.yml` | every pull request and push to `main` | Two parallel jobs: lint + typecheck + unit tests + dependency audit, and build + first-load-JS budget + the end-to-end suite at four viewports |
+| `ci.yml` | every pull request and push to `main` | Parallel jobs: lint + typecheck + unit tests in `client/`; dependency review on pull requests; and build + first-load-JS budget + the `automation-testing/` regression suite (typecheck, traceability check, every module on desktop, a touch phone and the sign-in build) |
 | `deploy.yml` | push to `main` | Rebuilds with `NEXT_PUBLIC_BASE_PATH=/<repo>` and publishes `out/` to GitHub Pages. It re-runs the tests rather than trusting a green run it cannot see |
 | `release.yml` | push to `main` | Works out the next version, composes the notes, and publishes a GitHub release |
 
