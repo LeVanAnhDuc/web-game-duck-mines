@@ -56,6 +56,13 @@ export class GamePage extends BasePage {
     await this.waitHydrated();
   }
 
+  /** Puts values in localStorage before any page script runs, on every navigation of this page. */
+  async seedStorage(entries: Record<string, unknown>): Promise<void> {
+    await this.page.addInitScript((items) => {
+      for (const [key, value] of Object.entries(items)) localStorage.setItem(key, JSON.stringify(value));
+    }, entries);
+  }
+
   async reload(): Promise<void> {
     await this.page.reload();
     await this.waitHydrated();
@@ -217,13 +224,20 @@ export class GamePage extends BasePage {
     await this.goto(seed);
     await this.reveal(firstMove);
     await this.page.evaluate(async () => {
+      // a macrotask, so React has committed the click; MessageChannel is not faked by page.clock
+      const nextTask = () =>
+        new Promise((r) => {
+          const ch = new MessageChannel();
+          ch.port1.onmessage = () => r(null);
+          ch.port2.postMessage(0);
+        });
       const outcome = () => document.querySelector('[data-testid="outcome"]')?.textContent ?? "";
       const cells = Array.from(document.querySelectorAll<HTMLButtonElement>('[role="grid"] button'));
       for (const cell of cells) {
         if (outcome()) break;
         if (!/chưa mở$/.test(cell.getAttribute("aria-label") ?? "")) continue;
         cell.click();
-        await new Promise((r) => requestAnimationFrame(() => r(null)));
+        await nextTask();
       }
     });
     const states = await this.states();
@@ -237,12 +251,18 @@ export class GamePage extends BasePage {
   /** Opens every cell that is not a mine, the fast way (in-page clicks), which wins the board. */
   async openAllSafe(mines: ReadonlySet<number>): Promise<void> {
     await this.page.evaluate(async (mineList) => {
+      const nextTask = () =>
+        new Promise((r) => {
+          const ch = new MessageChannel();
+          ch.port1.onmessage = () => r(null);
+          ch.port2.postMessage(0);
+        });
       const skip = new Set(mineList);
       const cells = Array.from(document.querySelectorAll<HTMLButtonElement>('[role="grid"] button'));
       for (const [i, cell] of cells.entries()) {
         if (skip.has(i) || !/chưa mở$/.test(cell.getAttribute("aria-label") ?? "")) continue;
         cell.click();
-        await new Promise((r) => requestAnimationFrame(() => r(null)));
+        await nextTask();
       }
     }, [...mines]);
   }
