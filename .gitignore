@@ -13,6 +13,8 @@
 /node_modules/
 /.next/
 /out/
+/out-auth/
+/.worktrees/
 /next-env.d.ts
 *.tsbuildinfo
 

@@ -43,9 +43,11 @@ jobs:
 
       - run: pnpm build
         env:
-          # Only set here. It switches on basePath for the /web-game-duck-mines
-          # sub-path; `pnpm dev` and a local build stay at the root.
-          GITHUB_PAGES: 'true'
+          # Only set here. It switches on basePath for the /<repo> sub-path;
+          # `pnpm dev` and a local build stay at the root.
+          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+          # Ducker ID sign-in is shipped dark: the flag and DUCKER_* vars are
+          # deliberately not passed (ADR-0013).
 
       - uses: actions/configure-pages@v5
 

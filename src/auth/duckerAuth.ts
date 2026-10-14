@@ -1,0 +1,177 @@
+// types
+import type { CallbackResult, DuckerConfig, PendingAuth } from "./types";
+
+// others
+import { DUCKER_CONFIG, DUCKER_PKCE_KEY, appRootPath } from "./constants";
+import { challengeOf, randomUrlSafeToken } from "./pkce";
+
+/*
+ * The only file (with requests.ts) that touches sessionStorage / the URL for the
+ * Ducker ID sign-in. The `ducker.pkce` entry is auth state, not game data, so it
+ * deliberately does NOT go through game/storage/safeStorage.ts (ADR-0013).
+ */
+
+const CALLBACK_PARAMS = ["code", "state", "error", "error_description", "iss"];
+
+export function redirectUri(): string {
+  return new URL(appRootPath(), window.location.origin).toString();
+}
+
+function readPending(): PendingAuth | null {
+  try {
+    const raw = sessionStorage.getItem(DUCKER_PKCE_KEY);
+    return raw ? (JSON.parse(raw) as PendingAuth) : null;
+  } catch {
+    return null;
+  }
+}
+
+function clearPending(): void {
+  try {
+    sessionStorage.removeItem(DUCKER_PKCE_KEY);
+  } catch {
+    // sessionStorage bị chặn - coi như không có phiên chờ
+  }
+}
+
+/** A second click while the first is still on its way must not start a second login. */
+let starting = false;
+
+if (typeof window !== "undefined") {
+  // Back from Ducker ID restores the page from bfcache with `starting` still true.
+  window.addEventListener("pageshow", (event) => {
+    if (event.persisted) starting = false;
+  });
+}
+
+/** Chỉ dành cho test. */
+export function resetLoginForTests(): void {
+  starting = false;
+}
+
+/** Dựng URL authorize rồi chuyển cả trang sang Ducker ID. */
+export async function startLogin(config: DuckerConfig): Promise<void> {
+  if (starting) return;
+  starting = true;
+  try {
+    const verifier = randomUrlSafeToken();
+    const state = randomUrlSafeToken();
+    const pending: PendingAuth = {
+      state,
+      verifier,
+      returnTo: window.location.pathname + window.location.search,
+    };
+    try {
+      sessionStorage.setItem(DUCKER_PKCE_KEY, JSON.stringify(pending));
+    } catch {
+      starting = false;
+      return; // không cất được verifier thì đừng đi, sẽ kẹt ở callback
+    }
+    const url = new URL("/oauth/authorize", config.issuer);
+    url.searchParams.set("response_type", "code");
+    url.searchParams.set("client_id", config.clientId);
+    url.searchParams.set("redirect_uri", redirectUri());
+    url.searchParams.set("scope", config.scope);
+    url.searchParams.set("state", state);
+    url.searchParams.set("code_challenge", await challengeOf(verifier));
+    url.searchParams.set("code_challenge_method", "S256");
+    window.location.assign(url.toString());
+  } catch (error) {
+    clearPending();
+    starting = false;
+    throw error;
+  }
+}
+
+/** Only a same-origin path may be fed to replaceState ("//evil" would throw at load). */
+function isSafeReturnTo(value: unknown): value is string {
+  return (
+    typeof value === "string" &&
+    value.startsWith("/") &&
+    !value.startsWith("//") &&
+    !value.includes("\\")
+  );
+}
+
+/**
+ * Đọc ?code / ?error rồi dọn ĐÚNG các tham số OAuth khỏi URL - tham số của game
+ * (?seed...) giữ nguyên. Code chỉ dùng được một lần, để lại trên URL thì F5
+ * sẽ đem đổi lần nữa.
+ */
+export function consumeCallback(): CallbackResult | null {
+  const params = new URLSearchParams(window.location.search);
+  const code = params.get("code");
+  const error = params.get("error");
+  const state = params.get("state");
+  if (!code && !error) return null;
+
+  const pending = readPending();
+  clearPending();
+  for (const key of CALLBACK_PARAMS) params.delete(key);
+  const query = params.toString();
+  window.history.replaceState(
+    window.history.state,
+    "",
+    window.location.pathname + (query ? `?${query}` : "") + window.location.hash,
+  );
+
+  // returnTo is restored on success AND on an IdP error: redirect_uri is the bare app
+  // root, so without it a cancelled sign-in would drop the game's params.
+  const returnTo =
+    pending && isSafeReturnTo(pending.returnTo) ? pending.returnTo : undefined;
+  if (error) return { error, returnTo };
+  if (!pending || pending.state !== state) return { error: "state_mismatch" };
+  return { code: code ?? undefined, verifier: pending.verifier, returnTo };
+}
+
+let captured: CallbackResult | null = null;
+let didCapture = false;
+let settledUrl: string | null = null;
+
+const currentUrl = (): string =>
+  window.location.pathname + window.location.search + window.location.hash;
+
+/** Chạy một lần khi module nạp trên trình duyệt, trước mọi code game đọc URL. */
+export function captureCallback(): void {
+  if (didCapture) return;
+  didCapture = true;
+  captured = consumeCallback();
+  if (captured?.returnTo) {
+    try {
+      window.history.replaceState(window.history.state, "", captured.returnTo);
+    } catch {
+      // never let a bad returnTo blank the game at load
+    }
+  }
+  if (captured) settledUrl = currentUrl();
+}
+
+/**
+ * After hydration Next's app router writes its own hydration URL back into history,
+ * and that URL still carries ?code&state - which would undo the cleanup above and let
+ * an F5 re-send a spent code. Called from a mount effect to put the clean URL back.
+ */
+export function settleCallbackUrl(): void {
+  if (settledUrl === null) return;
+  const target = settledUrl;
+  settledUrl = null; // one-shot: a later remount must not rewrite the URL behind Next's back
+  if (currentUrl() === target) return;
+  try {
+    window.history.replaceState(window.history.state, "", target);
+  } catch {
+    // leave the URL as it is rather than break the game
+  }
+}
+
+export function capturedCallback(): CallbackResult | null {
+  return captured;
+}
+
+/** Chỉ dành cho test. */
+export function resetCaptureForTests(): void {
+  captured = null;
+  didCapture = false;
+  settledUrl = null;
+}
+
+if (typeof window !== "undefined" && DUCKER_CONFIG) captureCallback();

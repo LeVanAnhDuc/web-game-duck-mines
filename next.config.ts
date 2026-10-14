@@ -2,11 +2,11 @@ import type { NextConfig } from "next";
 
 /**
  * GitHub Pages serves the site from /<repo-name>; running locally it sits at the
- * root. GITHUB_PAGES is set only by the deploy workflow, so `pnpm dev` and a local
- * `pnpm build` keep serving from the root.
+ * root. NEXT_PUBLIC_BASE_PATH is set only by the deploy workflow (and by a developer
+ * who wants to rehearse it), so `pnpm dev` and a local `pnpm build` keep serving from
+ * the root. Unset or empty means the site root - an explicit branch, not a default.
  */
-const isGithubPages = process.env.GITHUB_PAGES === "true";
-const basePath = "/web-game-duck-mines";
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ? process.env.NEXT_PUBLIC_BASE_PATH : undefined;
 
 const nextConfig: NextConfig = {
   /**
@@ -16,8 +16,8 @@ const nextConfig: NextConfig = {
    * of things that do not export.
    */
   output: "export",
-  basePath: isGithubPages ? basePath : undefined,
-  assetPrefix: isGithubPages ? basePath : undefined,
+  basePath,
+  assetPrefix: basePath,
   trailingSlash: true,
   images: { unoptimized: true },
 };

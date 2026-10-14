@@ -17,6 +17,15 @@ export const strings = {
   theme: "Đổi sáng / tối",
   settings: "Cài đặt",
 
+  // Optional Ducker ID sign-in (ADR-0013). Identity only.
+  account: {
+    signIn: "Đăng nhập",
+    signingIn: "Đang đăng nhập…",
+    menuLabel: "Tài khoản Ducker ID",
+    openProfile: "Mở hồ sơ Ducker ID",
+    signOut: "Đăng xuất",
+  },
+
   boardGrid: "Bàn dò mìn",
   cellHidden: (row: number, col: number) => `hàng ${row}, cột ${col}, chưa mở`,
   cellFlagged: (row: number, col: number) => `hàng ${row}, cột ${col}, đã cắm cờ`,

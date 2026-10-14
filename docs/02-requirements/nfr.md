@@ -22,8 +22,9 @@ Tài liệu thiết kế của feature tham chiếu ID ở dòng `Liên quan:` �
 -->
 
 **Hình dạng dự án này quyết định phần lớn bảng dưới:** một trang tĩnh, chạy hoàn toàn
-ở client, **không server · không database · không tài khoản · không PII · không gọi
-mạng nào sau khi tải trang**. Nên 14 ngưỡng mặc định đã bị đánh `(bỏ)` — chúng nói về
+ở client, **không server · không database · không tài khoản do game sở hữu · không PII được lưu · không gọi
+mạng nào sau khi tải trang** (một ngoại lệ có giới hạn cho đăng nhập Ducker ID tuỳ chọn, tắt mặc định — xem
+[ADR-0013](../decisions/0013-ducker-id-sign-in.md) và `NFR-DATA-04`). Nên 14 ngưỡng mặc định đã bị đánh `(bỏ)` — chúng nói về
 một hệ thống không tồn tại ở đây. Giữ số, không xoá dòng, vì commit và test sau này
 vẫn có thể nhắc tới ID cũ.
 
@@ -79,7 +80,7 @@ vẫn có thể nhắc tới ID cũ.
 | ~~NFR-REL-01~~ | ~~Mọi lệnh gọi ra ngoài có timeout~~ **(bỏ)** — không gọi ra ngoài sau khi tải trang | — |
 | ~~NFR-REL-02~~ | ~~Tác vụ ghi quan trọng là idempotent~~ **(bỏ)** — không có tác vụ ghi ra ngoài máy người chơi | — |
 | NFR-REL-03 | Không có trạng thái loading vô hạn. `localStorage` không dùng được thì game **vẫn chơi được đầy đủ**, chỉ mất lưu kỷ lục, và nói rõ điều đó bằng một dòng — không dialog, không chặn | test nhánh `localStorage` ném lỗi + thử tay ở chế độ riêng tư |
-| NFR-REL-04 | Game chơi được **offline** sau lần tải đầu | thử tay: tải trang, ngắt mạng, reload |
+| NFR-REL-04 | Game chơi được **offline** sau lần tải đầu (đăng nhập Ducker ID là ngoại lệ tuỳ chọn, tắt mặc định — ADR-0013) | thử tay: tải trang, ngắt mạng, reload |
 
 ## Data & Privacy
 
@@ -88,6 +89,6 @@ vẫn có thể nhắc tới ID cũ.
 | ~~NFR-DATA-01~~ | ~~Trường nào là PII được liệt kê rõ~~ **(bỏ)** — xem NFR-DATA-04 | — |
 | ~~NFR-DATA-02~~ | ~~Xoá tài khoản thì xoá toàn bộ PII~~ **(bỏ)** — không có tài khoản | — |
 | ~~NFR-DATA-03~~ | ~~Có đường khôi phục dữ liệu~~ **(bỏ)** — không có dữ liệu phía server để khôi phục; kỷ lục nằm trên máy người chơi và mất được, đó là đánh đổi có ý thức | — |
-| NFR-DATA-04 | Dự án **không thu bất kỳ PII nào**, không analytics, không cookie. `localStorage` chỉ chứa: kỷ lục theo độ khó, độ khó đang chọn, theme, bật/tắt dấu hỏi. Người chơi xoá được toàn bộ bằng một nút trong cài đặt | grep toàn bộ chỗ ghi `localStorage` + review |
+| NFR-DATA-04 | Dự án **không thu bất kỳ PII nào**, không analytics, không cookie. `localStorage` chỉ chứa: kỷ lục theo độ khó, độ khó đang chọn, theme, bật/tắt dấu hỏi. Người chơi xoá được toàn bộ bằng một nút trong cài đặt. **Ngoại lệ có giới hạn (ADR-0013):** khi cờ đăng nhập Ducker ID bật, thêm đúng một khoá `sessionStorage` là `ducker.pkce` (state + verifier PKCE, xoá khi quay về), và hồ sơ (tên, email, ảnh) chỉ nằm trong bộ nhớ, không bao giờ ghi xuống. Mạng chỉ tới issuer đã cấu hình và tới URL ảnh đại diện nó trả về, chỉ sau khi người chơi bấm đăng nhập; cờ tắt (bản deploy) thì không có gì | grep toàn bộ chỗ ghi `localStorage` + review |
 
 **Trường PII trong dự án này:** không có. Xem `NFR-DATA-04`.
