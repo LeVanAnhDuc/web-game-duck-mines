@@ -1,7 +1,7 @@
 # web-game-duck-mines-automation-testing
 
 Bộ test E2E Playwright cho **Duck Mines**: test UI trên trình duyệt thật và test API qua HTTP, chạy với môi trường
-dev/stg thật. Repo này chỉ phục vụ một web: toàn bộ code và tài liệu test nằm trong `src/`.
+dev (bản xuất tĩnh build tại chỗ) và prd (GitHub Pages). Repo này chỉ phục vụ một web: toàn bộ code và tài liệu test nằm trong `src/`.
 Mỗi thư mục trong `src/` có `README.md` nói rõ chứa gì, không chứa gì và được import gì. Đọc README đó trước khi thêm file.
 
 ## Duck Mines: điều riêng của web này
@@ -13,8 +13,10 @@ Mỗi thư mục trong `src/` có `README.md` nói rõ chứa gì, không chứa
   nhập Ducker ID, issuer giả `http://ducker.test`) ở `:4391`. `CLIENT_PREBUILT=1` bỏ bước build khi chạy lại.
 - **prd = GitHub Pages dưới `/web-game-duck-mines/`.** `baseURL` giữ path và kết thúc bằng `/`, nên page object đi tới
   `./` hoặc `./?seed=…` — **không bao giờ** `/…` (dấu `/` đầu bỏ mất path).
-- **Bàn cố định bằng `?seed=`**: cùng seed + cùng nước đầu → cùng bàn. Test cần biết mìn ở đâu thì dùng helper
-  `src/utils/board-oracle.ts` (thua một lần để bàn tự lộ mìn, rồi chơi lại cùng seed) — không import code game.
+- **Bàn cố định bằng `?seed=`**: cùng seed + cùng nước đầu → cùng bàn. Test cần biết mìn ở đâu thì dùng
+  `GamePage.learnMines(seed, firstMove)` (thua một lần để bàn tự lộ mìn, rồi tải lại cùng seed) và `src/utils/grid.ts`
+  (ô kề, đếm mìn quanh) — không import code game.
+- **Thời gian giả:** đồng hồ và cử chỉ giữ ngón dùng `page.clock` (install → `runFor`), không `waitForTimeout`.
 - **Project:** `app` (Desktop Chrome), `app-touch` (Pixel 5, chỉ `tests/e2e/touch/`), `app-auth` (bản bật cờ, chỉ
   `tests/e2e/ducker-id/sign-in.e2e.ts`, chỉ có trên dev).
 
@@ -163,7 +165,6 @@ Flow làm feature có hook (vd `feature-flow` của skill `scaffold-webapp-proje
 | `pnpm test` | toàn bộ test trên ENV trong `.env` (mặc định dev), trừ `@e2e-full` |
 | `pnpm test:smoke` | chỉ `@smoke` |
 | `pnpm test:full` | tất cả, kể cả `@e2e-full` |
-| `pnpm test:stg` | như `pnpm test`, trên stg |
 | `pnpm test src/tests/e2e/sign-in` | một module, một tầng |
 | `pnpm test -g "@TC-SIGNIN-007"` | một test case |
 | `pnpm test:unit` | unit test `config/`, `utils/` |

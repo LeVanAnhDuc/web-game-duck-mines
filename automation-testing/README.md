@@ -1,6 +1,6 @@
 # web-game-duck-mines-automation-testing
 
-E2E Playwright cho **Duck Mines**: test UI trên trình duyệt thật và test API qua HTTP, chạy với môi trường dev/stg thật.
+E2E Playwright cho **Duck Mines**: test UI trên trình duyệt thật và test API qua HTTP, chạy với môi trường dev (bản xuất tĩnh build tại chỗ) và prd (GitHub Pages).
 Quy ước đầy đủ (cấu trúc, phân lớp, tag, format, luật cứng): `CLAUDE.md`. Mỗi thư mục trong `src/` có `README.md` riêng.
 
 ## Bắt đầu
