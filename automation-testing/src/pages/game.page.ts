@@ -171,12 +171,41 @@ export class GamePage extends BasePage {
     return (await this.states()).filter((c) => c.state === "empty" || c.state === "number").length;
   }
 
+  /** One computed CSS property of a cell (border, outline, transition…), as the browser resolved it. */
+  async cellStyle(index: number, property: string): Promise<string> {
+    return this.cell(index).evaluate((el, prop) => getComputedStyle(el).getPropertyValue(prop), property);
+  }
+
+  /** The cell indexes that are in the tab order (roving tabindex: exactly one is expected). */
+  async tabbableCells(): Promise<number[]> {
+    return this.cells().evaluateAll((els) =>
+      els.flatMap((el, i) => (el.getAttribute("tabindex") === "0" ? [i] : [])),
+    );
+  }
+
   /** The colour the board is painted on - what tells light from dark at a glance. */
   async boardBackground(): Promise<string> {
     return this.grid().evaluate((el) => getComputedStyle(el).backgroundColor);
   }
 
   // ── acting ──────────────────────────────────────────────────────────────
+
+  /** Tabs into the board's single tab stop (the cursor cell) the way a keyboard user does: focus lands on the cursor. */
+  async focusBoard(): Promise<void> {
+    const [cursor] = await this.tabbableCells();
+    await this.cell(cursor).focus();
+  }
+
+  /** Walks the keyboard cursor to `index` with arrow keys (the game acts on its cursor, not on DOM focus). */
+  async cursorTo(index: number): Promise<void> {
+    await this.focusBoard();
+    const { cols } = await this.size();
+    const [from] = await this.tabbableCells();
+    const dRow = Math.floor(index / cols) - Math.floor(from / cols);
+    const dCol = (index % cols) - (from % cols);
+    for (let i = 0; i < Math.abs(dRow); i += 1) await this.page.keyboard.press(dRow > 0 ? "ArrowDown" : "ArrowUp");
+    for (let i = 0; i < Math.abs(dCol); i += 1) await this.page.keyboard.press(dCol > 0 ? "ArrowRight" : "ArrowLeft");
+  }
 
   async reveal(index: number): Promise<void> {
     await this.cell(index).click();
