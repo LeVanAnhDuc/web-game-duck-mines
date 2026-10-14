@@ -207,6 +207,66 @@ export class GamePage extends BasePage {
     for (let i = 0; i < Math.abs(dCol); i += 1) await this.page.keyboard.press(dCol > 0 ? "ArrowRight" : "ArrowLeft");
   }
 
+  /** The centre of a cell on screen, in viewport coordinates. */
+  async cellCentre(index: number): Promise<{ x: number; y: number }> {
+    await this.cell(index).scrollIntoViewIfNeeded();
+    const box = await this.cell(index).boundingBox();
+    if (!box) throw new Error(`cell ${index} has no box`);
+    return { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+  }
+
+  /**
+   * One phase of a finger on the board, as a touch PointerEvent at a point. Playwright's tap() is down+up in one go;
+   * the two-phase gesture (ADR-0004) needs the phases apart: settle, slide, lift elsewhere.
+   */
+  async finger(type: "pointerdown" | "pointermove" | "pointerup", at: { x: number; y: number }): Promise<void> {
+    await this.page.evaluate(
+      ({ type, x, y }) => {
+        const target = document.elementFromPoint(x, y) ?? document.body;
+        target.dispatchEvent(
+          new PointerEvent(type, { pointerId: 1, pointerType: "touch", isPrimary: true, clientX: x, clientY: y, bubbles: true }),
+        );
+      },
+      { type, ...at },
+    );
+  }
+
+  /** A real touch drag through the browser's own input pipeline (CDP), so the browser decides whether it pans. */
+  async drag(from: { x: number; y: number }, to: { x: number; y: number }, steps = 8): Promise<void> {
+    const cdp = await this.page.context().newCDPSession(this.page);
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [from] });
+    for (let i = 1; i <= steps; i += 1) {
+      const x = from.x + ((to.x - from.x) * i) / steps;
+      const y = from.y + ((to.y - from.y) * i) / steps;
+      await cdp.send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x, y }] });
+    }
+    await cdp.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    await cdp.detach();
+  }
+
+  async viewportScroll(): Promise<{ left: number; top: number; overflowX: number; overflowY: number }> {
+    return this.boardViewport().evaluate((el) => ({
+      left: el.scrollLeft,
+      top: el.scrollTop,
+      overflowX: el.scrollWidth - el.clientWidth,
+      overflowY: el.scrollHeight - el.clientHeight,
+    }));
+  }
+
+  /** How far the page itself scrolls sideways (should never be more than 0). */
+  async pageOverflowX(): Promise<number> {
+    return this.page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+  }
+
+  /** Whether a real tap at the centre of the cell would land on the cell (not on something covering it). */
+  async isCellUncovered(index: number): Promise<boolean> {
+    const { x, y } = await this.cellCentre(index);
+    return this.page.evaluate(
+      ({ x, y, index }) => document.elementFromPoint(x, y)?.closest("[data-index]")?.getAttribute("data-index") === String(index),
+      { x, y, index },
+    );
+  }
+
   async reveal(index: number): Promise<void> {
     await this.cell(index).click();
   }
