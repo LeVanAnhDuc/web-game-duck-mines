@@ -37,9 +37,9 @@ vẫn có thể nhắc tới ID cũ.
 | ~~NFR-PERF-03~~ | ~~Không có truy vấn N+1~~ **(bỏ)** — không có datastore | — |
 | ~~NFR-PERF-04~~ | ~~Mọi cột filter/sort đều có index~~ **(bỏ)** — không có bảng | — |
 | NFR-PERF-05 | Tính reveal cho vùng trống lớn nhất của bàn Khó (30×16) < 16ms | benchmark trong vitest, chạy trên bàn có seed cố định |
-| NFR-PERF-06 | Từ lúc chạm đến lúc bàn vẽ xong < 50ms trên bàn Khó | e2e `NFR-PERF-06` trong `e2e/touch.spec.ts`: click rồi chờ **hai** frame, tức là sau khi đã vẽ xong. **Đo 04.09.2026: 26.6ms và 35.5ms** |
-| NFR-PERF-08 | Âm thanh **không thêm một byte asset nào** — sinh lúc chạy, không file `.mp3`/`.wav`/`.ogg` trong `out/` | `scripts/check-bundle-size.mjs` + `git ls-files` |
-| NFR-PERF-07 | First-load JS < 200KB gzip | `scripts/check-bundle-size.mjs`, chạy trong CI. Đo từ **HTML đã xuất** chứ không đọc bảng `next build` — bảng đó đổi theo bản Next, HTML thì là thứ trình duyệt thật sự tải |
+| NFR-PERF-06 | Từ lúc chạm đến lúc bàn vẽ xong < 50ms trên bàn Khó | e2e `TC-BOARD-014` (NFR-PERF-06) trong `automation-testing/src/tests/e2e/board/performance.e2e.ts`: click rồi chờ **hai** frame, tức là sau khi đã vẽ xong. **Đo 04.09.2026: 26.6ms và 35.5ms** |
+| NFR-PERF-08 | Âm thanh **không thêm một byte asset nào** — sinh lúc chạy, không file `.mp3`/`.wav`/`.ogg` trong `client/out/` | `client/scripts/check-bundle-size.mjs` + `git ls-files` |
+| NFR-PERF-07 | First-load JS < 200KB gzip | `client/scripts/check-bundle-size.mjs`, chạy trong CI. Đo từ **HTML đã xuất** chứ không đọc bảng `next build` — bảng đó đổi theo bản Next, HTML thì là thứ trình duyệt thật sự tải |
 
 ## Security
 
@@ -49,7 +49,7 @@ vẫn có thể nhắc tới ID cũ.
 | NFR-SEC-02 | Không log gì ra console ở bản production | grep `console.` trong CI |
 | ~~NFR-SEC-03~~ | ~~Rate limit endpoint đăng nhập~~ **(bỏ)** — không có đăng nhập | — |
 | NFR-SEC-04 | Secret chỉ đọc từ biến môi trường. Không hardcode, không commit | grep + review |
-| NFR-SEC-05 | Dependency không có lỗ hổng mức high trở lên | `pnpm audit --json \| node scripts/check-audit.mjs`, chạy ở máy. Script cần thiết vì nó vừa lọc đúng ngưỡng "high trở lên", vừa TỪ CHỐI báo pass khi bản audit không thật sự quét được cây dependency. Cổng chặn trong CI là job `dependency-review` chứ không phải lệnh này |
+| NFR-SEC-05 | Dependency không có lỗ hổng mức high trở lên | `pnpm audit --json \| node scripts/check-audit.mjs` trong `client/`, chạy ở máy. Script cần thiết vì nó vừa lọc đúng ngưỡng "high trở lên", vừa TỪ CHỐI báo pass khi bản audit không thật sự quét được cây dependency. Cổng chặn trong CI là job `dependency-review` chứ không phải lệnh này |
 | ~~NFR-SEC-06~~ | ~~Lỗi trả về client không chứa stack trace~~ **(bỏ)** — không có lỗi từ server | — |
 
 ## Accessibility

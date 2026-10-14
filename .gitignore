@@ -9,24 +9,25 @@
 # sinh ra nó (luật chơi + solver + emitter), giữ ở máy để seed lại khi sửa mockup.
 /.design/
 
-# Toolchain
-/node_modules/
-/.next/
-/out/
-/out-auth/
+# Toolchain — the app lives in client/, the regression suite in automation-testing/
+node_modules/
+.next/
+/client/out/
+/client/out-auth/
 /.worktrees/
-/next-env.d.ts
+/client/next-env.d.ts
 *.tsbuildinfo
 
 # Sinh ra trong workflow release, khong commit
 /RELEASE_NOTES.md
 
-# Playwright
-/.playwright-mcp/
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
+# Playwright (automation-testing/ and any local MCP session)
+.playwright-mcp/
+test-results/
+playwright-report/
+blob-report/
+playwright/.cache/
+.auth/
 
 # --- Claude Code: theo doi config + skills, bo qua worktrees/doc-state ---
 /.claude/*

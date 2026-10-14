@@ -25,7 +25,7 @@ quyền sở hữu dữ liệu — không có thứ nào trong dự án này. Th
 
 | # | Bất biến | Vi phạm thì sao |
 | --- | --- | --- |
-| 1 | `src/game/core/` **không import** React, next, hay bất kỳ API DOM nào | Luật chơi bắt đầu phụ thuộc render. Test phải dựng jsdom, rồi chậm dần, rồi bị bỏ. Ranh giới tan từng PR một |
+| 1 | `client/src/game/core/` **không import** React, next, hay bất kỳ API DOM nào | Luật chơi bắt đầu phụ thuộc render. Test phải dựng jsdom, rồi chậm dần, rồi bị bỏ. Ranh giới tan từng PR một |
 | 2 | Mìn sinh **sau** nước đầu, loại trừ ô đã bấm **và 8 ô kề** | Sinh lúc tạo bàn thì "first-click-safe" vẫn có vẻ hoạt động, test vẫn xanh, nhưng người chơi nổ ở nước đầu |
 | 3 | Đồng hồ **không nằm trong** `GameState` | Mỗi giây một state mới → re-render 480 ô mỗi giây. Không test nào đỏ, chỉ là máy nóng và pin hết |
 | 4 | `Cell` phải `memo` và **chỉ nhận prop nguyên thuỷ** | Truyền object hoặc callback mới mỗi lần render làm `memo` vô hiệu hoàn toàn, im lặng tuyệt đối |
@@ -34,4 +34,4 @@ quyền sở hữu dữ liệu — không có thứ nào trong dự án này. Th
 | 7 | Sau khi thắng hoặc thua, **mọi** action trong reducer là no-op | Chơi tiếp được sau khi đã nổ; đồng hồ chạy tiếp; kỷ lục ghi sai |
 | 8 | Ô chưa mở **phải có viền**; ô đã mở **không viền** | Đây là cơ chế duy nhất phân biệt hai trạng thái — độ sáng không đủ 3:1, đã đo. Bỏ viền vì thẩm mỹ là phá cả hệ thống ([ADR-0001](../decisions/0001-design-tokens.md)) |
 | 9 | Không viết hex màu thẳng trong code; chỉ đọc qua `var(--…)` | Một theme đúng, theme kia sai, và chỉ phát hiện khi có người đổi sang chế độ tối |
-| 10 | Mã đăng nhập Ducker ID chỉ nằm trong `src/auth/`; **cờ tắt thì không đọc `location.search`, không đụng storage, không gọi mạng**. Khoá `sessionStorage` duy nhất là `ducker.pkce`, và nó **không** đi qua `safeStorage` (không phải dữ liệu game) | Một lần đọc URL hay storage lọt ra ngoài cờ làm bản deploy chạm vào thứ nó cam kết không chạm (`NFR-DATA-04`), và không test nào đỏ vì bản có cờ vẫn chạy đúng ([ADR-0013](../decisions/0013-ducker-id-sign-in.md)) |
+| 10 | Mã đăng nhập Ducker ID chỉ nằm trong `client/src/auth/`; **cờ tắt thì không đọc `location.search`, không đụng storage, không gọi mạng**. Khoá `sessionStorage` duy nhất là `ducker.pkce`, và nó **không** đi qua `safeStorage` (không phải dữ liệu game) | Một lần đọc URL hay storage lọt ra ngoài cờ làm bản deploy chạm vào thứ nó cam kết không chạm (`NFR-DATA-04`), và không test nào đỏ vì bản có cờ vẫn chạy đúng ([ADR-0013](../decisions/0013-ducker-id-sign-in.md)) |

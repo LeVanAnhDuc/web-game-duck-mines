@@ -112,22 +112,33 @@ The first click is always safe: mines are laid **after** it, never under it.
 
 ## Commands
 
+The game app lives in `client/`; run these from there.
+
 ```bash
+cd client
 pnpm install
 pnpm dev          # http://localhost:3000
 pnpm test         # unit + component tests
-pnpm test:e2e     # Playwright, against the static export in out/
 pnpm typecheck
 pnpm lint
 pnpm build        # writes out/
 ```
 
-`pnpm test:e2e` needs a build first (`pnpm build`), the sign-in export (`pnpm build:e2e-auth`,
-flag on against a fake issuer) and a Chromium install (`pnpm exec playwright install chromium`).
+The end-to-end regression suite is its own package in `automation-testing/` (Playwright):
+it builds the static export, serves it the way GitHub Pages does, and runs every feature
+against it — including a second export with Ducker ID sign-in switched on against a fake
+issuer.
+
+```bash
+cd automation-testing
+pnpm install && pnpm exec playwright install chromium
+pnpm test             # builds ../client, serves it on :4173, runs the suite
+pnpm coverage:check   # requirement ↔ test case ↔ spec ↔ bug traceability
+```
 
 ### Ducker ID sign-in (optional, off by default)
 
-`cp .env.example .env`, then set `NEXT_PUBLIC_DUCKER_CLIENT_ID` to the client registered in
+`cp client/.env.example client/.env`, then set `NEXT_PUBLIC_DUCKER_CLIENT_ID` to the client registered in
 Ducker ID (redirect URI `http://localhost:3300/`, and add `http://localhost:3300` to its
 `CORS_ORIGINS`) and run `pnpm dev -p 3300`. The button only renders when
 `NEXT_PUBLIC_FEATURE_DUCKER_SIGN_IN=true` **and** all four `NEXT_PUBLIC_DUCKER_*` values
@@ -143,7 +154,7 @@ pnpm check:audit    # NFR-SEC-05: fails on high/critical advisories only
 ## How it is put together
 
 ```
-src/
+client/src/
   game/core/      the rules as pure functions — board, reveal, mark, custom, reducer
   game/input/     keyboard and pointer, both producing the same actions
   game/score/     records per difficulty, behind a repository interface
@@ -153,7 +164,7 @@ src/
   views/Home/     the DOM board and the surrounding UI
 ```
 
-`src/game/` never imports React — `purity.test.ts` asserts it. That is why the rules
+`client/src/game/` never imports React — `purity.test.ts` asserts it. That is why the rules
 can be tested by calling them, with no board rendered and no browser started, and it
 is why the same rules could later drive a different renderer without being rewritten.
 
@@ -166,7 +177,7 @@ hand and getting it slightly wrong.
 
 | Workflow | When | What it does |
 | --- | --- | --- |
-| `ci.yml` | every pull request and push to `main` | Two parallel jobs: lint + typecheck + unit tests + dependency audit, and build + first-load-JS budget + the end-to-end suite at four viewports |
+| `ci.yml` | every pull request and push to `main` | Parallel jobs: lint + typecheck + unit tests in `client/`; dependency review on pull requests; and build + first-load-JS budget + the `automation-testing/` regression suite (typecheck, traceability check, every module on desktop, a touch phone and the sign-in build) |
 | `deploy.yml` | push to `main` | Rebuilds with `NEXT_PUBLIC_BASE_PATH=/<repo>` and publishes `out/` to GitHub Pages. It re-runs the tests rather than trusting a green run it cannot see |
 | `release.yml` | push to `main` | Works out the next version, composes the notes, and publishes a GitHub release |
 
