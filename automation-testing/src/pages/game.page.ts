@@ -302,13 +302,13 @@ export class SettingsSheet {
     return this.abandonQuestion().getByRole("button", { name: copy.settings.abandonCancel });
   }
   customCols(): Locator {
-    return this.page.getByTestId("custom-cols");
+    return this.dialog().getByLabel(copy.settings.customCols, { exact: true });
   }
   customRows(): Locator {
-    return this.page.getByTestId("custom-rows");
+    return this.dialog().getByLabel(copy.settings.customRows, { exact: true });
   }
   customMines(): Locator {
-    return this.page.getByTestId("custom-mines");
+    return this.dialog().getByLabel(copy.settings.customMines, { exact: true });
   }
   customFields(): Locator {
     return this.page.getByTestId("custom-fields");
@@ -318,6 +318,9 @@ export class SettingsSheet {
   }
   customUnranked(): Locator {
     return this.page.getByTestId("custom-unranked");
+  }
+  customCeiling(max: number): Locator {
+    return this.dialog().getByText(copy.settings.customMaxMines(max));
   }
   unsureSwitch(): Locator {
     return this.dialog().getByRole("switch", { name: copy.settings.unsureLabel });
