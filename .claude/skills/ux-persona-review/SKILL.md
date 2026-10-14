@@ -34,7 +34,7 @@ description: Use when you want to know how a real stranger experiences Duck Mine
 3. **Hai đường vào khác hẳn nhau.** Chuột (chuột phải cắm cờ, chuột giữa chord, bàn phím
    đầy đủ) và ngón tay (chạm hai pha, giữ để cắm cờ, thanh chế độ Mở/Cờ, pan/zoom). Một
    persona chỉ đi được một đường. Dàn persona phải phủ cả hai, và persona điện thoại phải
-   chạy ở viewport hẹp thật — `mobile-375` là mốc mà suite e2e đang dùng.
+   chạy ở viewport hẹp thật — 375px là mốc mà suite `automation-testing/` đang dùng.
 
 ## Chạy
 

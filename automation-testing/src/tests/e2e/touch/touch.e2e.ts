@@ -1,5 +1,6 @@
-import { expect, test, type Page } from "@playwright/test";
-import { ENGAGE_MS, FLAG_MS } from "../src/game/input/touchGesture";
+import type { Page } from "@playwright/test";
+import { expect, test } from "@/fixtures";
+import { ENGAGE_MS, FLAG_MS } from "@/data/test-data";
 
 /**
  * Only runs on the project that actually has a touch screen. Everything here is

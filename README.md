@@ -119,14 +119,22 @@ cd client
 pnpm install
 pnpm dev          # http://localhost:3000
 pnpm test         # unit + component tests
-pnpm test:e2e     # Playwright, against the static export in out/
 pnpm typecheck
 pnpm lint
 pnpm build        # writes out/
 ```
 
-`pnpm test:e2e` needs a build first (`pnpm build`), the sign-in export (`pnpm build:e2e-auth`,
-flag on against a fake issuer) and a Chromium install (`pnpm exec playwright install chromium`).
+The end-to-end regression suite is its own package in `automation-testing/` (Playwright):
+it builds the static export, serves it the way GitHub Pages does, and runs every feature
+against it — including a second export with Ducker ID sign-in switched on against a fake
+issuer.
+
+```bash
+cd automation-testing
+pnpm install && pnpm exec playwright install chromium
+pnpm test             # builds ../client, serves it on :4173, runs the suite
+pnpm coverage:check   # requirement ↔ test case ↔ spec ↔ bug traceability
+```
 
 ### Ducker ID sign-in (optional, off by default)
 

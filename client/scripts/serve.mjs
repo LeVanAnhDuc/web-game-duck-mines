@@ -3,7 +3,8 @@ import { createServer } from "node:http";
 import { extname, join, normalize, resolve } from "node:path";
 
 /**
- * Serves ./out the way GitHub Pages will, for the e2e suite.
+ * Serves ./out the way GitHub Pages will, for the regression suite in
+ * ../automation-testing (its playwright.config.ts webServer starts it).
  *
  * `next start` cannot serve a static export, and `python -m http.server` is
  * single-threaded - four Playwright projects running in parallel starve it and the

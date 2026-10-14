@@ -3,9 +3,10 @@ import { existsSync, renameSync, rmSync } from "node:fs";
 
 /**
  * Builds the static export once more with Ducker ID sign-in switched ON against a
- * fake issuer, into ./out-auth, for e2e/ducker-id-sign-in.spec.ts.
+ * fake issuer, into ./out-auth, for the ducker-id module of the regression suite
+ * (../automation-testing/src/tests/e2e/ducker-id/sign-in.e2e.ts).
  *
- * The normal `pnpm build` output (./out, flag off) is what every other e2e project
+ * The normal `pnpm build` output (./out, flag off) is what every other e2e test
  * tests and is left exactly as it was: `out` is parked while the flag-on build runs
  * and put back afterwards. The issuer is never resolved - the spec routes every
  * request to it (ADR-0013).

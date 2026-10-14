@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, test } from "@/fixtures";
 
 /**
  * The deployed build ships with the Ducker ID flag off (ADR-0013): no button, no

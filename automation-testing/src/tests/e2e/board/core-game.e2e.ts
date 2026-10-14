@@ -1,4 +1,5 @@
-import { expect, test, type Page } from "@playwright/test";
+import type { Page } from "@playwright/test";
+import { expect, test } from "@/fixtures";
 
 /**
  * These run against the exported static site, so they check the thing that ships.

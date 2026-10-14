@@ -16,7 +16,6 @@
     "release:notes": "pnpm dlx git-cliff@2.13.1 --workdir .. --unreleased --tag $(pnpm dlx git-cliff@2.13.1 --workdir .. --bumped-version) --strip all",
     "start": "next start",
     "test": "vitest run",
-    "test:e2e": "playwright test",
     "test:watch": "vitest",
     "typecheck": "tsc --noEmit"
   },
@@ -27,7 +26,6 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@playwright/test": "^1.48.0",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/node": "^22.0.0",
