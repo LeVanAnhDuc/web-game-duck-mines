@@ -26,7 +26,11 @@ test("đồng hồ chạy từ nước đầu và hiển thị phút:giây", { t
 test("đồng hồ không dừng ở 999 giây", { tag: ["@TC-BOARD-009"] }, async ({ page, gamePage }) => {
   await gamePage.goto(SEED);
   await gamePage.reveal(40);
-  await page.clock.runFor(1_000_000);
+  // fastForward jumps the clock and fires each due timer once. runFor would replay 4000
+  // intervals and ~60k animation frames, which overran the 30s test timeout on Windows.
+  // The display is a Date.now difference, so one tick after the jump is enough.
+  await page.clock.fastForward(1_000_000);
+  await page.clock.runFor(250);
   await expect(gamePage.timer()).toHaveText("16:40");
 });
 
